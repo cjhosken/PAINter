@@ -9,7 +9,9 @@ int main(int argc, char** argv) {
     char quit = 0;
     SDL_Event event;
     SDL_Init(SDL_INIT_VIDEO);
+    SDL_Surface *icon = IMG_Load("assets/images/ross.jpg");
     SDL_Window *window = SDL_CreateWindow("PAINter", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, APP_WIDTH, APP_HEIGHT, 0);
+    SDL_SetWindowIcon(window, icon);
 
     while (!quit) {
         SDL_WaitEvent(&event);

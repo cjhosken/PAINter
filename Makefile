@@ -8,7 +8,7 @@ DATE=15.11.2023
 CC=gcc
 
 painter:
-	$(CC) -lSDL2 -o $(NAME) main.c
+	$(CC) -lSDL2 -lSDL2_image -o $(NAME) main.c
 	echo "PAINter has been compiled!"
 
 # Copyright © 2023 Christopher Hosken
