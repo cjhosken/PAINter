@@ -32,4 +32,4 @@
 *.app
 
 # The PAINter file
-PAINter.*
+./PAINter

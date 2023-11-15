@@ -1,4 +1,5 @@
-#include "include/SDL2/SDL.h"
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 
 const int APP_WIDTH = 1280;
 const int APP_HEIGHT = 720;

@@ -1,6 +1,9 @@
 # PAINter
 "There’s nothing more painful than using a basic paint program"
 
+### Installation
+On new linux machines, run `sudo apt install libsdl2-dev`
+
 
 ### Useful Links
 Recommended reading:
