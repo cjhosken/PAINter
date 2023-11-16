@@ -24,6 +24,8 @@ typedef struct {
         
         SDL_SetWindowIcon(window, icon);
         SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
+
+        return true;
     }
 
     int run() {
