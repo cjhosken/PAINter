@@ -4,16 +4,18 @@
 #include "../../common.h"
 #include "rect.h"
 
+
 typedef struct {
     SDL_Rect rect;
     SDL_Color color = {255, 255, 255, 0};
     SDL_Surface* icon;
 
     bool pressed;
+
     void (*action)(void);
 
     void setAction(void (*func)(void)) {
-        action=func;
+        action = func;
     }
 
 } SDL_Button;
