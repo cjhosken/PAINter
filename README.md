@@ -5,6 +5,13 @@
 On new linux machines, run `sudo apt install libsdl2-dev`
 
 
+using SDL2_image and SDL_draw
+
+### USED LINKS
+https://stackoverflow.com/questions/21890627/drawing-a-rectangle-with-sdl2
+https://stackoverflow.com/questions/39133873/how-to-set-a-gui-button-in-the-win32-window-using-sdl-c
+
+
 ### Useful Links
 Recommended reading:
 • http://gigi.nullneuron.net/gigilabs/sdl2-pixel-drawing/
