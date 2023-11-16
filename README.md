@@ -5,7 +5,7 @@
 On new linux machines, run `sudo apt install libsdl2-dev`
 
 
-using SDL2_image and SDL_draw
+using SDL2_image and SDL_ttf
 
 ### USED LINKS
 https://stackoverflow.com/questions/21890627/drawing-a-rectangle-with-sdl2

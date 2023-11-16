@@ -7,7 +7,7 @@ DATE=15.11.2023
 
 CC=gcc
 
-LINKER_FLAGS = -lSDL2 -lSDL2_image
+LINKER_FLAGS = -lSDL2 -lSDL2_image 
 
 painter:
 	$(CC) main.cpp $(LINKER_FLAGS) -o $(NAME) 
