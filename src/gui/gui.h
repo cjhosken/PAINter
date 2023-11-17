@@ -4,9 +4,10 @@
 #include "../../common.h"
 #include "button.h"
 #include "slider.h"
-
+#include "canvas.h"
 
 typedef struct {
+    SDL_Canvas canvas;
     SDL_Button iconButton;
     SDL_Button loadImageButton;
     SDL_Button addImageButton;
@@ -41,6 +42,10 @@ typedef struct {
     };
 
     void init() {
+        SDL_Rect canvasRect = {0, 0, 1280, 720};
+        canvas.rect = canvasRect;
+        canvas.image = IMG_Load("assets/images/landscape.jpeg");
+
         SDL_Rect iconButtonRect = {25, 8, 48, 48};
         iconButton.rect = iconButtonRect;
         iconButton.icon = IMG_Load("assets/images/ross.jpg");
@@ -96,23 +101,23 @@ typedef struct {
 
     void draw(SDL_Renderer* renderer) {
     // CANVAS
-    SDL_Rect canvasRect = {0, 0, 1280, 720};
-    SDL_Color canvasColor = {255, 255, 255, 255};
-    drawRect(renderer, canvasColor, canvasRect);
+    drawCanvas(renderer, canvas);
 
     // BUILD NAV BAR
     SDL_Rect navRect = {0, 0, 1280, 64};
-    SDL_Color navColor = {245, 245, 245, 255};
+    SDL_Color navColor = {225, 225, 225, 200};
     drawRect(renderer, navColor, navRect);
 
     // LOAD AND SAVING BUTTONS
+    
     drawButton(renderer, iconButton);
     drawButton(renderer, loadImageButton);
     drawButton(renderer, addImageButton);
     drawButton(renderer, saveImageButton);
+    
 
     // THICKNESS BUTTONS
-    drawSlider(renderer, thickSlider);
+    //drawSlider(renderer, thickSlider);
 
     // COLOR BUTTONS
     /*
@@ -122,24 +127,31 @@ typedef struct {
     drawRect(renderer, {216, 134, 255, 255}, {926, 20, 24, 24});
     drawRect(renderer, {89, 89, 89, 255}, {969, 20, 24, 24});
     */
+    
     drawButton(renderer, colorsButton);
     drawButton(renderer, pickerButton);
+    
 
 
     // MIN AND CLOSE BUTTONS
+    
     drawButton(renderer, minimizeButton);
     drawButton(renderer, closeButton);
+    
 
 
     // BUILD SIDE BAR
+    
     SDL_Rect sideRect = {16, 80, 64, 280};
-    SDL_Color sideColor = {245, 245, 245, 255};
+    SDL_Color sideColor = {225, 225, 225, 200};
     drawRect(renderer, sideColor, sideRect, 24);
-
+    
+   
     drawButton(renderer, brushButton);
     drawButton(renderer, eraserButton);
     drawButton(renderer, fillButton);
     drawButton(renderer, shapeButton);
+    
 }
 
 } SDL_Gui;

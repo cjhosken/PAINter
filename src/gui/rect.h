@@ -18,21 +18,23 @@ void drawRect(SDL_Renderer* renderer, SDL_Color color, SDL_Rect rect) {
 void drawRect(SDL_Renderer* renderer, SDL_Color color, SDL_Rect rect, int radius) {
 
     SDL_Rect r1 = {rect.x, rect.y+radius, rect.w, rect.h-radius*2};
-    SDL_Rect r2 = {rect.x+radius, rect.y, rect.w-radius*2, rect.h};
+    SDL_Rect r2 = {rect.x+radius, rect.y, rect.w-radius*2, radius};
+    SDL_Rect r3 = {rect.x+radius, rect.y+rect.h-radius, rect.w-radius*2, radius};
 
     drawRect(renderer, color, r1);
     drawRect(renderer, color, r2);
+    drawRect(renderer, color, r3);
 
-    SDL_Circle ctl = {rect.x+radius, rect.y+radius, radius};
-    SDL_Circle ctr = {rect.x+rect.w-radius, rect.y+radius, radius};
-    SDL_Circle cbr = {rect.x+rect.w-radius, rect.y+rect.h-radius, radius};
-    SDL_Circle cbl = {rect.x+radius, rect.y+rect.h-radius, radius};
+    SDL_Circle ctl = {rect.x, rect.y, radius};
+    SDL_Circle ctr = {rect.x+rect.w, rect.y, radius};
+    SDL_Circle cbr = {rect.x+rect.w, rect.y+rect.h, radius};
+    SDL_Circle cbl = {rect.x, rect.y+rect.h, radius};
 
 
-    drawCircle(renderer, color, ctl);
-    drawCircle(renderer, color, ctr);
-    drawCircle(renderer, color, cbr);
-    drawCircle(renderer, color, cbl);
+    drawPartialCircle(renderer, color, ctl, -radius, -radius);
+    drawPartialCircle(renderer, color, ctr, radius, -radius);
+    drawPartialCircle(renderer, color, cbr, radius, radius);
+    drawPartialCircle(renderer, color, cbl, -radius, radius);
 }
 
 #endif

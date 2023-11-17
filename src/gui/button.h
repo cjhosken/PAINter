@@ -23,7 +23,6 @@ typedef struct {
 void drawButton(SDL_Renderer *renderer, SDL_Button button) {
     // Convert the imageSurface to a texture
     SDL_Texture* imageTexture = SDL_CreateTextureFromSurface(renderer, button.icon);
-    SDL_FreeSurface(button.icon);
 
     // Draw the rectangle
     drawRect(renderer, button.color, button.rect);
