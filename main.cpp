@@ -40,6 +40,8 @@ int run()
     running = true;
 
     int mX, mY;
+    bool hold = false;
+    int rX, rY, lX, lY, offsetX, offsetY;
 
 
     while (running)
@@ -62,8 +64,11 @@ int run()
                         break;
                     
                     case SDL_BUTTON_MIDDLE:
-                        gui.canvas->rect->x = mX - gui.canvas->rect->w / 2;
-                        gui.canvas->rect->y = mY - gui.canvas->rect->h / 2;
+                        rX = gui.canvas->rect->x;
+                        rY = gui.canvas->rect->y;
+                        lX = mX;
+                        lY = mY;
+                        hold = true;
                         break;
                 }
                 break;
@@ -73,16 +78,20 @@ int run()
                     case SDL_MOUSEWHEEL:
                         float s = 25;
                         float ar = (float) gui.canvas->rect->h / gui.canvas->rect->w;
+
+                        float sX = s * (gui.canvas->rect->x - mX) / (float) gui.canvas->rect->w;
+                        float sY = s * (gui.canvas->rect->y - mY) / (float) gui.canvas->rect->h;
+
                         if (event.wheel.y > 0) {
-                            gui.canvas->rect->x -= s / 2;
-                            gui.canvas->rect->y -= s * ar / 2;
+                            gui.canvas->rect->x += sX;
+                            gui.canvas->rect->y += sY;
                             gui.canvas->rect->w += s;
                             gui.canvas->rect->h += s * ar;
                         } 
 
                         if (event.wheel.y < 0) {
-                            gui.canvas->rect->x += s / 2;
-                            gui.canvas->rect->y += s * ar / 2;
+                            gui.canvas->rect->x -= sX;
+                            gui.canvas->rect->y -= sY;
                             gui.canvas->rect->w -= s;
                             gui.canvas->rect->h -= s * ar;
                         }
@@ -102,10 +111,23 @@ int run()
                 mY = event.motion.y;
                 break;
 
+            case SDL_MOUSEBUTTONUP:
+                offsetX = 0;
+                offsetY = 0;
+                hold = false;
+                break;
+
             case SDL_QUIT:
                 running = false;
                 break;
 
+        }
+
+        if (hold) {
+            offsetX = mX - lX;
+            offsetY = mY - lY;
+            gui.canvas->rect->x = rX + offsetX;
+            gui.canvas->rect->y = rY + offsetY;
         }
 
         gui.draw(renderer);
