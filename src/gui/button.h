@@ -18,22 +18,20 @@ typedef struct {
         action = func;
     }
 
+    void draw(SDL_Renderer* renderer) {
+        SDL_Texture* imageTexture = SDL_CreateTextureFromSurface(renderer, icon);
+
+        // Draw the rectangle
+        drawRect(renderer, color, rect);
+
+        // Render the image texture onto the rectangle
+        SDL_RenderCopy(renderer, imageTexture, NULL, &rect);
+
+        // Free the texture when done
+        SDL_DestroyTexture(imageTexture);
+    }
+
 } SDL_Button;
-
-void drawButton(SDL_Renderer *renderer, SDL_Button button) {
-    // Convert the imageSurface to a texture
-    SDL_Texture* imageTexture = SDL_CreateTextureFromSurface(renderer, button.icon);
-
-    // Draw the rectangle
-    drawRect(renderer, button.color, button.rect);
-
-    // Render the image texture onto the rectangle
-    SDL_RenderCopy(renderer, imageTexture, NULL, &(button.rect));
-
-    // Free the texture when done
-    SDL_DestroyTexture(imageTexture);
-    
-}
 
 bool isMouseOver(SDL_Button *button, int mouseX, int mouseY) {
     return (

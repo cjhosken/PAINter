@@ -7,101 +7,102 @@
 #include "canvas.h"
 
 typedef struct {
-    SDL_Canvas canvas;
-    SDL_Button iconButton;
-    SDL_Button loadImageButton;
-    SDL_Button addImageButton;
-    SDL_Button saveImageButton;
+    SDL_Canvas* canvas;
+    SDL_Button* iconButton = new SDL_Button();
+    SDL_Button* loadImageButton = new SDL_Button();
+    SDL_Button* addImageButton = new SDL_Button();
+    SDL_Button* saveImageButton = new SDL_Button();
 
-    SDL_Button colorsButton;
-    SDL_Button pickerButton;
+    SDL_Button* colorsButton = new SDL_Button();
+    SDL_Button* pickerButton = new SDL_Button();
 
-    SDL_Button minimizeButton;
-    SDL_Button closeButton;
+    SDL_Button* minimizeButton = new SDL_Button();
+    SDL_Button* closeButton = new SDL_Button();
 
-    SDL_Button brushButton;
-    SDL_Button eraserButton;
-    SDL_Button fillButton;
-    SDL_Button shapeButton;
+    SDL_Button* brushButton = new SDL_Button();
+    SDL_Button* eraserButton = new SDL_Button();
+    SDL_Button* fillButton = new SDL_Button();
+    SDL_Button* shapeButton = new SDL_Button();
 
-    SDL_Slider thickSlider;
+    SDL_Slider* thickSlider = new SDL_Slider();
 
-    SDL_Button *buttons[12] = {
-        &iconButton,
-        &loadImageButton,
-        &addImageButton,
-        &saveImageButton,
-        &colorsButton,
-        &pickerButton,
-        &minimizeButton,
-        &closeButton,
-        &brushButton,
-        &eraserButton,
-        &fillButton,
-        &shapeButton
+    SDL_Button *buttons[13] = {
+        iconButton,
+        loadImageButton,
+        addImageButton,
+        saveImageButton,
+        colorsButton,
+        colorsButton,
+        pickerButton,
+        minimizeButton,
+        closeButton,
+        brushButton,
+        eraserButton,
+        fillButton,
+        shapeButton
     };
 
     void init() {
-        SDL_Rect canvasRect = {0, 0, 1280, 720};
-        canvas.rect = canvasRect;
-        canvas.image = IMG_Load("assets/images/landscape.jpeg");
+        canvas = new SDL_Canvas();
+        canvas->setRect(0, 0, 1280, 720);
+        canvas->setImage(IMG_Load("assets/images/landscape.jpeg"));
 
         SDL_Rect iconButtonRect = {25, 8, 48, 48};
-        iconButton.rect = iconButtonRect;
-        iconButton.icon = IMG_Load("assets/images/ross.jpg");
+        (*iconButton).rect = iconButtonRect;
+        (*iconButton).icon = IMG_Load("assets/images/ross.jpg");
 
         SDL_Rect loadImageButtonRect = {102, 16, 32, 32};
-        loadImageButton.rect = loadImageButtonRect;
-        loadImageButton.icon = IMG_Load("assets/icons/image_48.png");
+        (*loadImageButton).rect = loadImageButtonRect;
+        (*loadImageButton).icon = IMG_Load("assets/icons/image_48.png");
 
         SDL_Rect addImageButtonRect = {153, 16, 32, 32};
-        addImageButton.rect = addImageButtonRect;
-        addImageButton.icon = IMG_Load("assets/icons/add_image_48.png");
+        (*addImageButton).rect = addImageButtonRect;
+        (*addImageButton).icon = IMG_Load("assets/icons/add_image_48.png");
 
         SDL_Rect saveImageButtonRect = {204, 16, 32, 32};
-        saveImageButton.rect = saveImageButtonRect;
-        saveImageButton.icon = IMG_Load("assets/icons/save_48.png");
+        (*saveImageButton).rect = saveImageButtonRect;
+        (*saveImageButton).icon = IMG_Load("assets/icons/save_48.png");
 
         SDL_Rect colorsButtonRect = {1012, 18, 24, 24};
-        colorsButton.rect = colorsButtonRect;
-        colorsButton.icon = IMG_Load("assets/icons/colors_48.png");
+        (*colorsButton).rect = colorsButtonRect;
+        (*colorsButton).icon = IMG_Load("assets/icons/colors_48.png");
 
         SDL_Rect pickerButtonRect = {1055, 18, 24, 24};
-        pickerButton.rect = pickerButtonRect;
-        pickerButton.icon = IMG_Load("assets/icons/picker_48.png");
+        (*pickerButton).rect = pickerButtonRect;
+        (*pickerButton).icon = IMG_Load("assets/icons/picker_48.png");
 
         SDL_Rect minimizeButtonRect = {1198, 18, 24, 24};
-        minimizeButton.rect = minimizeButtonRect;
-        minimizeButton.icon = IMG_Load("assets/icons/minimize_48.png");
+        (*minimizeButton).rect = minimizeButtonRect;
+        (*minimizeButton).icon = IMG_Load("assets/icons/minimize_48.png");
 
         SDL_Rect closeButtonRect = {1240, 18, 24, 24};
-        closeButton.rect = closeButtonRect;
-        closeButton.icon = IMG_Load("assets/icons/close_48.png");
+        (*closeButton).rect = closeButtonRect;
+        (*closeButton).icon = IMG_Load("assets/icons/close_48.png");
 
         SDL_Rect brushButtonRect = {32, 104, 32, 32};
-        brushButton.rect = brushButtonRect;
-        brushButton.icon = IMG_Load("assets/icons/brush_48.png");
+        (*brushButton).rect = brushButtonRect;
+        (*brushButton).icon = IMG_Load("assets/icons/brush_48.png");
 
         SDL_Rect eraserButtonRect = {32, 171, 32, 32};
-        eraserButton.rect = eraserButtonRect;
-        eraserButton.icon = IMG_Load("assets/icons/eraser_48.png");
+        (*eraserButton).rect = eraserButtonRect;
+        (*eraserButton).icon = IMG_Load("assets/icons/eraser_48.png");
 
         SDL_Rect fillButtonRect = {32, 238, 32, 32};
-        fillButton.rect = fillButtonRect;
-        fillButton.icon = IMG_Load("assets/icons/fill_48.png");
+        (*fillButton).rect = fillButtonRect;
+        (*fillButton).icon = IMG_Load("assets/icons/fill_48.png");
 
         SDL_Rect shapeButtonRect = {32, 305, 32, 32};
-        shapeButton.rect = shapeButtonRect;
-        shapeButton.icon = IMG_Load("assets/icons/shapes_48.png");
+        (*shapeButton).rect = shapeButtonRect;
+        (*shapeButton).icon = IMG_Load("assets/icons/shapes_48.png");
 
 
         SDL_Circle sliderCircle = {6, 400, 32};
-        thickSlider.circle = sliderCircle;
+        (*thickSlider).circle = sliderCircle;
     }
 
     void draw(SDL_Renderer* renderer) {
     // CANVAS
-    drawCanvas(renderer, canvas);
+    (*canvas).draw(renderer);
 
     // BUILD NAV BAR
     SDL_Rect navRect = {0, 0, 1280, 64};
@@ -110,10 +111,10 @@ typedef struct {
 
     // LOAD AND SAVING BUTTONS
     
-    drawButton(renderer, iconButton);
-    drawButton(renderer, loadImageButton);
-    drawButton(renderer, addImageButton);
-    drawButton(renderer, saveImageButton);
+    iconButton->draw(renderer);
+    loadImageButton->draw(renderer);
+    addImageButton->draw(renderer);
+    saveImageButton->draw(renderer);
     
 
     // THICKNESS BUTTONS
@@ -128,15 +129,15 @@ typedef struct {
     drawRect(renderer, {89, 89, 89, 255}, {969, 20, 24, 24});
     */
     
-    drawButton(renderer, colorsButton);
-    drawButton(renderer, pickerButton);
+    colorsButton->draw(renderer);
+    pickerButton->draw(renderer);
     
 
 
     // MIN AND CLOSE BUTTONS
     
-    drawButton(renderer, minimizeButton);
-    drawButton(renderer, closeButton);
+    minimizeButton->draw(renderer);
+    closeButton->draw(renderer);
     
 
 
@@ -146,12 +147,10 @@ typedef struct {
     SDL_Color sideColor = {225, 225, 225, 200};
     drawRect(renderer, sideColor, sideRect, 24);
     
-   
-    drawButton(renderer, brushButton);
-    drawButton(renderer, eraserButton);
-    drawButton(renderer, fillButton);
-    drawButton(renderer, shapeButton);
-    
+    brushButton->draw(renderer);
+    eraserButton->draw(renderer);
+    fillButton->draw(renderer);
+    shapeButton->draw(renderer);
 }
 
 } SDL_Gui;
