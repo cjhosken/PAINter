@@ -117,6 +117,23 @@ int run()
                         gui.canvas->rect->y = 0;
                         gui.canvas->rect->w = gui.canvas->image->w;
                         gui.canvas->rect->h = gui.canvas->image->h;
+                        break;
+                    
+                    case SDLK_b:
+                        editMode = Mode::DRAW;
+                        break;
+
+                    case SDLK_e:
+                        editMode = Mode::ERASE;
+                        break;
+
+                    case SDLK_f:
+                        editMode = Mode::FILL;
+                        break;
+
+                    case SDLK_s:
+                        editMode = Mode::SHAPE;
+                        break;
                 }
                 break;
 
