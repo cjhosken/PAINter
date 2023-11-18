@@ -51,12 +51,13 @@ int run()
     running = true;
 
     bool hold = false;
-    int rX, rY, lX, lY, offsetX, offsetY;
+    bool drag = false;
+    int rX, rY, lX, lY, uX, uY;
 
 
     while (running)
     {
-        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+        SDL_SetRenderDrawColor(renderer, 240, 240, 240, 255);
         SDL_RenderClear(renderer);
         SDL_WaitEvent(&event);
 
@@ -69,8 +70,17 @@ int run()
                         for (SDL_MyButton* b : gui.buttons) {
                             if (b->mouseOver(mX, mY)) {
                                 b->action();
+                                drag=false;
+                                break;
                             }
                         }
+
+                        if (mY < 64) {
+                            SDL_GetWindowPosition(window, &rX, &rY);
+                            SDL_GetGlobalMouseState(&lX, &lY);
+                            drag = true;
+                        }
+
                         break;
                     
                     case SDL_BUTTON_MIDDLE:
@@ -140,12 +150,12 @@ int run()
             case SDL_MOUSEMOTION:
                 mX = event.motion.x;
                 mY = event.motion.y;
+                SDL_GetGlobalMouseState(&uX, &uY);
                 break;
 
             case SDL_MOUSEBUTTONUP:
-                offsetX = 0;
-                offsetY = 0;
                 hold = false;
+                drag = false;
                 break;
 
             case SDL_QUIT:
@@ -155,10 +165,12 @@ int run()
         }
 
         if (hold) {
-            offsetX = mX - lX;
-            offsetY = mY - lY;
-            gui.canvas->rect->x = rX + offsetX;
-            gui.canvas->rect->y = rY + offsetY;
+            gui.canvas->rect->x = rX + mX - lX;
+            gui.canvas->rect->y = rY + mY- lY;
+        }
+
+        if (drag) {
+            SDL_SetWindowPosition(window,rX + uX - lX, rY + uY- lY);
         }
 
         for (SDL_MyButton* b : gui.buttons) {
