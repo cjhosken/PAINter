@@ -52,6 +52,7 @@ int run()
 
     bool hold = false;
     bool drag = false;
+    bool buttonPressed = false;
     int rX, rY, lX, lY, uX, uY;
 
 
@@ -67,15 +68,17 @@ int run()
                 switch (event.button.button)
                 {
                     case SDL_BUTTON_LEFT:
+                        buttonPressed = false;
                         for (SDL_MyButton* b : gui.buttons) {
                             if (b->mouseOver(mX, mY)) {
                                 b->action();
                                 drag=false;
+                                buttonPressed = true;
                                 break;
                             }
                         }
 
-                        if (mY < 64) {
+                        if (!buttonPressed && mY < 64) {
                             SDL_GetWindowPosition(window, &rX, &rY);
                             SDL_GetGlobalMouseState(&lX, &lY);
                             drag = true;
@@ -173,7 +176,8 @@ int run()
             SDL_SetWindowPosition(window,rX + uX - lX, rY + uY- lY);
         }
 
-        for (SDL_MyButton* b : gui.buttons) {
+        else {
+            for (SDL_MyButton* b : gui.buttons) {
             b->setActive(false);
         }
         switch (editMode) {
@@ -194,6 +198,7 @@ int run()
         gui.draw(renderer);
 
         SDL_RenderPresent(renderer);
+        }
     }
     // https://gigi.nullneuron.net/gigilabs/handling-keyboard-and-mouse-events-in-sdl2/
 
