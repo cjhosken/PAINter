@@ -17,6 +17,12 @@ int run();
 void dispose();
 void minimize();
 
+
+void drawMode();
+void eraseMode();
+void fillMode();
+void shapeMode();
+
 // https://gigi.nullneuron.net/gigilabs/sdl2-pixel-drawing/
 int main(int argc, char **argv)
 {
@@ -32,6 +38,11 @@ int main(int argc, char **argv)
     gui.closeButton->setAction(dispose);
     gui.minimizeButton->setAction(minimize);
 
+    gui.brushButton->setAction(drawMode);
+    gui.eraserButton->setAction(eraseMode);
+    gui.fillButton->setAction(fillMode);
+    gui.shapeButton->setAction(shapeMode);
+
     return run();
 }
 
@@ -39,7 +50,6 @@ int run()
 {
     running = true;
 
-    int mX, mY;
     bool hold = false;
     int rX, rY, lX, lY, offsetX, offsetY;
 
@@ -56,8 +66,8 @@ int run()
                 switch (event.button.button)
                 {
                     case SDL_BUTTON_LEFT:
-                        for (SDL_Button* b : gui.buttons) {
-                            if (isMouseOver(b, mX, mY)) {
+                        for (SDL_MyButton* b : gui.buttons) {
+                            if (b->mouseOver(mX, mY)) {
                                 b->action();
                             }
                         }
@@ -102,7 +112,11 @@ int run()
             case SDL_KEYDOWN:
                 switch (event.key.keysym.sym) 
                 {
-
+                    case SDLK_h:
+                        gui.canvas->rect->x = 0;
+                        gui.canvas->rect->y = 0;
+                        gui.canvas->rect->w = gui.canvas->image->w;
+                        gui.canvas->rect->h = gui.canvas->image->h;
                 }
                 break;
 
@@ -130,6 +144,24 @@ int run()
             gui.canvas->rect->y = rY + offsetY;
         }
 
+        for (SDL_MyButton* b : gui.buttons) {
+            b->setActive(false);
+        }
+        switch (editMode) {
+            case DRAW:
+                gui.brushButton->setActive(true);
+                break;
+            case ERASE:
+                gui.eraserButton->setActive(true);
+                break;
+            case FILL:
+                gui.fillButton->setActive(true);
+                break;
+            case SHAPE:
+                gui.shapeButton->setActive(true);
+                break;
+        }
+
         gui.draw(renderer);
 
         SDL_RenderPresent(renderer);
@@ -152,6 +184,22 @@ void dispose()
 void minimize()
 {
     SDL_MinimizeWindow(window);
+}
+
+void drawMode() {
+    editMode = Mode::DRAW;
+}
+
+void eraseMode() {
+    editMode = Mode::ERASE;
+}
+
+void fillMode() {
+    editMode = Mode::FILL;
+}
+
+void shapeMode() {
+    editMode = Mode::SHAPE;
 }
 // end
 

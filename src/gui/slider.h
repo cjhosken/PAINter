@@ -4,16 +4,25 @@
 #include "../../common.h"
 #include "circle.h"
 
-typedef struct {
+typedef struct SDL_MySlider {
     float value;
-    SDL_Circle circle;
-    SDL_Color color;
-} SDL_Slider;
+    SDL_MyCircle* circle = new SDL_MyCircle();
+    SDL_Color* color = new SDL_Color();
 
-void drawSlider(SDL_Renderer *renderer, SDL_Slider slider) {
-    SDL_RenderDrawLine(renderer, 328, 32, 488, 32);
+    void setCircle(SDL_MyCircle* c) {
+        circle = c;
+    }
 
-    drawCircle(renderer, slider.color, slider.circle);
-}
+    void setColor(SDL_Color* c) {
+        color = c;
+    }
+
+    void draw(SDL_Renderer *renderer) {
+        SDL_RenderDrawLine(renderer, 328, 32, 488, 32);
+
+        circle->draw(renderer, 0, 0);
+    }
+} SDL_MySlider;
+
 
 #endif

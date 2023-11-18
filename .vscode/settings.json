@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "sdl.h": "c",
-        "random": "cpp"
+        "random": "cpp",
+        "new": "cpp"
     }
 }
