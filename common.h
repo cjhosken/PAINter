@@ -10,9 +10,11 @@ enum Mode {
     DRAW,
     ERASE,
     FILL,
-    SHAPE
+    SHAPE,
+    PICKER
 };
 
 Mode editMode = Mode::DRAW;
+SDL_Color* activeColor = new SDL_Color({89, 89, 89, 255});
 
 #endif

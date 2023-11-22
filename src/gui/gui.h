@@ -60,6 +60,20 @@ void saveImage() {
     SDL_DestroyWindow(dialog);
 }
 
+void openColorWheel() {
+    SDL_Window* dialog = SDL_CreateWindow("Color Picker", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 300, 200, SDL_WINDOW_HIDDEN);
+    SDL_ShowWindow(dialog);
+
+    if (SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "pick a color",
+                    "Please pick a color.", dialog) < 0) {
+                    SDL_Log("Error displaying message box: %s", SDL_GetError());
+                }
+
+    SDL_DestroyWindow(dialog);
+    activeColor = new SDL_Color({255, 0, 0, 255});
+}
+
+
 
 typedef struct SDL_Gui {
     SDL_MyCanvas* canvas;
@@ -111,6 +125,7 @@ typedef struct SDL_Gui {
         colorsButton = new SDL_MyButton();
         colorsButton->setRect(1012, 18 ,24, 24);
         colorsButton->setIcon(IMG_Load("assets/icons/colors_48.png"));
+        colorsButton->setAction(openColorWheel);
 
         pickerButton = new SDL_MyButton();
         pickerButton->setRect(1055, 18 ,24, 24);
@@ -179,16 +194,11 @@ typedef struct SDL_Gui {
     
 
     // THICKNESS BUTTONS
-    //drawSlider(renderer, thickSlider);
+    thickSlider->draw(renderer);
 
     // COLOR BUTTONS
-    /*
-    drawRect(renderer, {255, 101, 101, 255}, {797, 20, 24, 24});
-    drawRect(renderer, {93, 235, 99, 255}, {840, 20, 24, 24});
-    drawRect(renderer, {94, 139, 255, 255}, {883, 20, 24, 24});
-    drawRect(renderer, {216, 134, 255, 255}, {926, 20, 24, 24});
-    drawRect(renderer, {89, 89, 89, 255}, {969, 20, 24, 24});
-    */
+    
+    drawRect(renderer, activeColor, new SDL_Rect({969, 20, 24, 24}));
     
     colorsButton->draw(renderer);
     pickerButton->draw(renderer);
@@ -200,7 +210,6 @@ typedef struct SDL_Gui {
     minimizeButton->draw(renderer);
     closeButton->draw(renderer);
     
-
 
     // BUILD SIDE BAR
     
