@@ -54,6 +54,8 @@ int run()
     bool sliderActive = false;
     int rX, rY, lX, lY, uX, uY;
 
+    SDL_Surface *cursorSurface;
+
     while (running)
     {
         SDL_WaitEvent(&event);
@@ -241,18 +243,23 @@ int run()
             {
             case DRAW:
                 gui.brushButton->setActive(true);
+                cursorSurface = IMG_Load("assets/icons/circle_48.png");
                 break;
             case ERASE:
                 gui.eraserButton->setActive(true);
+                cursorSurface = IMG_Load("assets/icons/circle_48.png");
                 break;
             case FILL:
                 gui.fillButton->setActive(true);
+                cursorSurface = IMG_Load("assets/icons/fill_48.png");
                 break;
             case SHAPE:
                 gui.shapeButton->setActive(true);
+                cursorSurface = IMG_Load("assets/icons/circle_48.png");
                 break;
             case PICKER:
                 gui.pickerButton->setActive(true);
+                cursorSurface = IMG_Load("assets/icons/picker_48.png");
             }
 
             SDL_SetRenderDrawColor(renderer, 240, 240, 240, 255);
@@ -261,7 +268,6 @@ int run()
 
             SDL_RenderPresent(renderer);
 
-            SDL_Surface *cursorSurface = IMG_Load("assets/icons/circle_48.png");
             SDL_Cursor *cursor = SDL_CreateColorCursor(cursorSurface, 24, 24);
             SDL_SetCursor(cursor);
             SDL_FreeSurface(cursorSurface);
