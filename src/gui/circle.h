@@ -63,6 +63,10 @@ typedef struct SDL_MyCircle {
         SDL_DestroyTexture(texture);
     }
 
+    int isMouseOver(int mouseX, int mouseY) {
+        return SDL_sqrt(SDL_pow(x - mouseX, 2.0) + SDL_pow(y - mouseY, 2.0)) <= radius;
+    }
+
 } SDL_MyCircle;
 
 #endif

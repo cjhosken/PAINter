@@ -17,38 +17,29 @@ int run();
 void dispose();
 void minimize();
 
-void drawMode();
-void eraseMode();
-void fillMode();
-void shapeMode();
-void pickerMode();
+void setModeDraw();
+void setModeErase();
+void setModeFill();
+void setModeShape();
+void setPickerMode();
 void pickColor();
 
 // https://gigi.nullneuron.net/gigilabs/sdl2-pixel-drawing/
 int main(int argc, char **argv)
 {
     SDL_Init(SDL_INIT_VIDEO);
-    icon = IMG_Load("assets/images/ross.jpg");
-    window = SDL_CreateWindow("PAINter", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_BORDERLESS); // SDL_WINDOW_BORDERLESS
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    SDL_SetWindowIcon(window, icon);
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
+
+    window = SDL_CreateWindow("PAINter", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_BORDERLESS);
+    icon = IMG_Load("assets/images/ross.jpg");
+    SDL_SetWindowIcon(window, icon);
+
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
     gui.init();
 
     gui.closeButton->setAction(dispose);
     gui.minimizeButton->setAction(minimize);
-
-    gui.brushButton->setAction(drawMode);
-    gui.eraserButton->setAction(eraseMode);
-    gui.fillButton->setAction(fillMode);
-    gui.shapeButton->setAction(shapeMode);
-
-    gui.pickerButton->setAction(pickerMode);
-
-    SDL_Surface* cursorSurface = IMG_Load("assets/icons/picker_48.png");
-    SDL_Cursor* cursor = SDL_CreateColorCursor(cursorSurface, 0, 0);
-    //SDL_SetCursor(cursor);
 
     return run();
 }
@@ -60,6 +51,7 @@ int run()
     bool hold = false;
     bool drag = false;
     bool buttonPressed = false;
+    bool sliderActive = false;
     int rX, rY, lX, lY, uX, uY;
 
     while (running)
@@ -78,25 +70,55 @@ int run()
                     editMode = Mode::DRAW;
                     break;
                 }
+
                 buttonPressed = false;
                 for (SDL_MyButton *b : gui.buttons)
                 {
-                    if (b->mouseOver(mX, mY))
+                    if (b->pressEvent())
                     {
-                        b->action();
                         drag = false;
                         buttonPressed = true;
                         break;
                     }
                 }
 
-                if (!buttonPressed && mY < 64)
+                if (gui.thickSlider->pressEvent())
                 {
-                    SDL_GetWindowPosition(window, &rX, &rY);
-                    SDL_GetGlobalMouseState(&lX, &lY);
-                    drag = true;
+                    hold = true;
+                    sliderActive = true;
+                    lX = mX;
+                    lY = mY;
+                    break;
                 }
 
+                if (!buttonPressed)
+                {
+                    if (mY < 64)
+                    {
+                        SDL_GetWindowPosition(window, &rX, &rY);
+                        SDL_GetGlobalMouseState(&lX, &lY);
+                        drag = true;
+                    }
+
+                    else
+                    {
+                        switch (editMode)
+                        {
+
+                        case Mode::DRAW:
+                            break;
+
+                        case Mode::ERASE:
+                            break;
+
+                        case Mode::FILL:
+                            break;
+
+                        case Mode::SHAPE:
+                            break;
+                        }
+                    }
+                }
                 break;
 
             case SDL_BUTTON_MIDDLE:
@@ -166,6 +188,9 @@ int run()
             case SDLK_s:
                 editMode = Mode::SHAPE;
                 break;
+            case SDLK_p:
+                editMode = Mode::PICKER;
+                break;
             }
             break;
 
@@ -178,6 +203,8 @@ int run()
         case SDL_MOUSEBUTTONUP:
             hold = false;
             drag = false;
+            buttonPressed = false;
+            sliderActive = false;
             break;
 
         case SDL_QUIT:
@@ -187,8 +214,16 @@ int run()
 
         if (hold)
         {
-            gui.canvas->rect->x = rX + mX - lX;
-            gui.canvas->rect->y = rY + mY - lY;
+            if (sliderActive)
+            {
+
+                gui.thickSlider->setValue(gui.thickSlider->value + (mX - lX) * 0.005f);
+            }
+            else
+            {
+                gui.canvas->rect->x = rX + mX - lX;
+                gui.canvas->rect->y = rY + mY - lY;
+            }
         }
 
         if (drag)
@@ -216,6 +251,8 @@ int run()
             case SHAPE:
                 gui.shapeButton->setActive(true);
                 break;
+            case PICKER:
+                gui.pickerButton->setActive(true);
             }
 
             SDL_SetRenderDrawColor(renderer, 240, 240, 240, 255);
@@ -223,6 +260,11 @@ int run()
             gui.draw(renderer);
 
             SDL_RenderPresent(renderer);
+
+            SDL_Surface *cursorSurface = IMG_Load("assets/icons/circle_48.png");
+            SDL_Cursor *cursor = SDL_CreateColorCursor(cursorSurface, 24, 24);
+            SDL_SetCursor(cursor);
+            SDL_FreeSurface(cursorSurface);
         }
     }
     // https://gigi.nullneuron.net/gigilabs/handling-keyboard-and-mouse-events-in-sdl2/
@@ -245,69 +287,44 @@ void minimize()
     SDL_MinimizeWindow(window);
 }
 
-void drawMode()
-{
-    editMode = Mode::DRAW;
-}
-
-void eraseMode()
-{
-    editMode = Mode::ERASE;
-}
-
-void fillMode()
-{
-    editMode = Mode::FILL;
-}
-
-void shapeMode()
-{
-    editMode = Mode::SHAPE;
-}
-
-void pickerMode()
-{
-    editMode = Mode::PICKER;
-}
-
 void pickColor()
 {
     SDL_Surface *getPixel_Surface = SDL_CreateRGBSurface(0, width, height, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
     SDL_RenderReadPixels(renderer, NULL, SDL_PIXELFORMAT_ARGB8888, getPixel_Surface->pixels, getPixel_Surface->pitch);
     const Uint8 getPixel_bpp = getPixel_Surface->format->BytesPerPixel;
 
-        SDL_Color pixelColor;
-        Uint8 *pPixel = (Uint8 *)getPixel_Surface->pixels + mY * getPixel_Surface->pitch + mX * getPixel_bpp;
+    SDL_Color pixelColor;
+    Uint8 *pPixel = (Uint8 *)getPixel_Surface->pixels + mY * getPixel_Surface->pitch + mX * getPixel_bpp;
 
-        Uint32 pixelData;
+    Uint32 pixelData;
 
-        switch (getPixel_bpp)
-        {
-        case 1:
-            pixelData = *pPixel;
-            break;
-        case 2:
-            pixelData = *(Uint16 *)pPixel;
-            break;
-        case 3:
-            if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
-                pixelData = pPixel[0] << 16 | pPixel[1] << 8 | pPixel[2];
-            else
-                pixelData = pPixel[0] | pPixel[1] << 8 | pPixel[2] << 16;
-            break;
-        case 4:
-            pixelData = *(Uint32 *)pPixel;
-            break;
-        }
-
-        SDL_GetRGBA(pixelData, getPixel_Surface->format, &pixelColor.r, &pixelColor.g, &pixelColor.b, &pixelColor.a);
-
-        printf("Pixel color at (%d, %d): R=%d, G=%d, B=%d, A=%d\n", mX, mY, pixelColor.r, pixelColor.g, pixelColor.b, 255);
-
-        activeColor = new SDL_Color({pixelColor.r, pixelColor.g, pixelColor.b, 255});
-
-        // https://www.reddit.com/r/sdl/comments/tzrw7m/getting_specific_pixel_color_from_render/
+    switch (getPixel_bpp)
+    {
+    case 1:
+        pixelData = *pPixel;
+        break;
+    case 2:
+        pixelData = *(Uint16 *)pPixel;
+        break;
+    case 3:
+        if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
+            pixelData = pPixel[0] << 16 | pPixel[1] << 8 | pPixel[2];
+        else
+            pixelData = pPixel[0] | pPixel[1] << 8 | pPixel[2] << 16;
+        break;
+    case 4:
+        pixelData = *(Uint32 *)pPixel;
+        break;
     }
-    // end
 
-    // Copyright © 2023 Christopher Hosken
+    SDL_GetRGBA(pixelData, getPixel_Surface->format, &pixelColor.r, &pixelColor.g, &pixelColor.b, &pixelColor.a);
+
+    // printf("Pixel color at (%d, %d): R=%d, G=%d, B=%d, A=%d\n", mX, mY, pixelColor.r, pixelColor.g, pixelColor.b, 255);
+
+    activeColor = new SDL_Color({pixelColor.r, pixelColor.g, pixelColor.b, 255});
+
+    // https://www.reddit.com/r/sdl/comments/tzrw7m/getting_specific_pixel_color_from_render/
+}
+// end
+
+// Copyright © 2023 Christopher Hosken

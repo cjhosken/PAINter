@@ -67,6 +67,14 @@ typedef struct SDL_MyButton
             mouseY >= rect->y && mouseY <= rect->y + rect->h);
     }
 
+    int pressEvent() {
+        if (mouseOver(mX, mY)) {
+            action();
+            return 1;
+        }
+        return 0;
+    }
+
 } SDL_MyButton;
 
 #endif

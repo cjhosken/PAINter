@@ -2,78 +2,10 @@
 #define GUI_H
 
 #include "../../common.h"
+#include "actions.h"
 #include "button.h"
 #include "slider.h"
 #include "canvas.h"
-
-void openAppPage() {
-    SDL_OpenURL("https://github.com/cjhosken/PAINter");
-}
-
-void loadImage() {
-    const char* filename = SDL_GetBasePath();
-    char selectedFile[1024];
-
-    SDL_strlcpy(selectedFile, filename, sizeof(selectedFile));
-    SDL_free((void*)filename);
-
-    SDL_Rect* windowPtr = nullptr;
-    SDL_Window* dialog = SDL_CreateWindow("Open File", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 300, 200, SDL_WINDOW_HIDDEN);
-    SDL_ShowWindow(dialog);
-
-    if (SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "Select a file",
-                    "Please select a file.", dialog) < 0) {
-                    SDL_Log("Error displaying message box: %s", SDL_GetError());
-                }
-
-    SDL_DestroyWindow(dialog);
-}
-
-void addImage() {
-    SDL_Window* dialog = SDL_CreateWindow("Create Image", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 300, 200, SDL_WINDOW_HIDDEN);
-    SDL_ShowWindow(dialog);
-
-    if (SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "make image",
-                    "Please make an image.", dialog) < 0) {
-                    SDL_Log("Error displaying message box: %s", SDL_GetError());
-                }
-
-    SDL_DestroyWindow(dialog);
-}
-
-void saveImage() {
-    const char* filename = SDL_GetBasePath();
-    char selectedFile[1024];
-
-    SDL_strlcpy(selectedFile, filename, sizeof(selectedFile));
-    SDL_free((void*)filename);
-
-    SDL_Rect* windowPtr = nullptr;
-    SDL_Window* dialog = SDL_CreateWindow("Open File", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 300, 200, SDL_WINDOW_HIDDEN);
-    SDL_ShowWindow(dialog);
-
-    if (SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "Select a file",
-                    "Please save a file.", dialog) < 0) {
-                    SDL_Log("Error displaying message box: %s", SDL_GetError());
-                }
-
-    SDL_DestroyWindow(dialog);
-}
-
-void openColorWheel() {
-    SDL_Window* dialog = SDL_CreateWindow("Color Picker", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 300, 200, SDL_WINDOW_HIDDEN);
-    SDL_ShowWindow(dialog);
-
-    if (SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "pick a color",
-                    "Please pick a color.", dialog) < 0) {
-                    SDL_Log("Error displaying message box: %s", SDL_GetError());
-                }
-
-    SDL_DestroyWindow(dialog);
-    activeColor = new SDL_Color({255, 0, 0, 255});
-}
-
-
 
 typedef struct SDL_Gui {
     SDL_MyCanvas* canvas;
@@ -105,7 +37,7 @@ typedef struct SDL_Gui {
         iconButton = new SDL_MyButton();
         iconButton->setRect(25, 8, 48, 48);
         iconButton->setIcon(IMG_Load("assets/images/ross.jpg"));
-        iconButton->setAction(openAppPage);
+        iconButton->setAction(openWebPage);
 
         loadImageButton = new SDL_MyButton();
         loadImageButton->setRect(102, 16, 32, 32);
@@ -130,6 +62,7 @@ typedef struct SDL_Gui {
         pickerButton = new SDL_MyButton();
         pickerButton->setRect(1055, 18 ,24, 24);
         pickerButton->setIcon(IMG_Load("assets/icons/picker_48.png"));
+        pickerButton->setAction(setModePicker);
 
         minimizeButton = new SDL_MyButton();
         minimizeButton->setRect(1198, 18, 24, 24);
@@ -142,25 +75,26 @@ typedef struct SDL_Gui {
         brushButton = new SDL_MyButton();
         brushButton->setRect(32, 104, 32, 32);
         brushButton->setIcon(IMG_Load("assets/icons/brush_48.png"));
+        brushButton->setAction(setModeDraw);
 
         eraserButton = new SDL_MyButton();
         eraserButton->setRect(32, 171, 32, 32);
         eraserButton->setIcon(IMG_Load("assets/icons/eraser_48.png"));
+        eraserButton->setAction(setModeErase);
 
         fillButton = new SDL_MyButton();
         fillButton->setRect(32, 238, 32, 32);
         fillButton->setIcon(IMG_Load("assets/icons/fill_48.png"));
+        fillButton->setAction(setModeFill);
 
         shapeButton = new SDL_MyButton();
         shapeButton->setRect(32, 305, 32, 32);
         shapeButton->setIcon(IMG_Load("assets/icons/shapes_48.png"));
+        shapeButton->setAction(setModeShape);
 
-
-        SDL_MyCircle* sliderCircle = new SDL_MyCircle();
-        sliderCircle->setPosition(6, 400);
-        sliderCircle->setRadius(32);
         thickSlider = new SDL_MySlider();
-        thickSlider->setCircle(sliderCircle);
+        thickSlider->setRect(new SDL_Rect({328, 32, 160, 1}));
+        thickSlider->setColor(new SDL_Color({0, 0, 0, 255}));
 
         buttons[0] = iconButton;
         buttons[1] = loadImageButton;
@@ -192,7 +126,6 @@ typedef struct SDL_Gui {
     addImageButton->draw(renderer);
     saveImageButton->draw(renderer);
     
-
     // THICKNESS BUTTONS
     thickSlider->draw(renderer);
 

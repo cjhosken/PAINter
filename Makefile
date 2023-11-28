@@ -3,11 +3,11 @@
 NAME=PAINter
 AUTHOR=ChristopherHosken
 VERSION=v1
-DATE=15.11.2023
+DATE=23.11.2023
 
 CC=g++
 
-LINKER_FLAGS = -lSDL2 -lSDL2_image 
+LINKER_FLAGS = -lSDL2 -lSDL2_image
 
 painter:
 	$(CC) main.cpp $(LINKER_FLAGS) -o $(NAME) 
