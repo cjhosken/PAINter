@@ -1,4 +1,3 @@
-#include <iostream>
 #include "common.h"
 #include "src/gui/gui.h"
 
@@ -12,6 +11,7 @@ SDL_Window *window;
 SDL_Renderer *renderer;
 SDL_Gui gui;
 bool running;
+SDL_MySlider* sliderActive = nullptr;
 
 int run();
 void dispose();
@@ -23,14 +23,17 @@ void setModeFill();
 void setModeShape();
 void setPickerMode();
 void pickColor();
+void openColorWheel();
 
 // https://gigi.nullneuron.net/gigilabs/sdl2-pixel-drawing/
 int main(int argc, char **argv)
 {
-    if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
-        printf("error: %s \n", SDL_GetError());
-        if (SDL_Init(SDL_INIT_VIDEO) != 0) {
-            printf("error: %s \n", SDL_GetError());
+    if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
+    {
+        //printf("error: %s \n", SDL_GetError());
+        if (SDL_Init(SDL_INIT_VIDEO) != 0)
+        {
+            //printf("error: %s \n", SDL_GetError());
             return 1;
         }
     }
@@ -50,6 +53,8 @@ int main(int argc, char **argv)
     gui.closeButton->setAction(dispose);
     gui.minimizeButton->setAction(minimize);
 
+    gui.colorsButton->setAction(openColorWheel);
+
     return run();
 }
 
@@ -60,7 +65,6 @@ int run()
     bool hold = false;
     bool drag = false;
     bool buttonPressed = false;
-    bool sliderActive = false;
     int rX, rY, lX, lY, uX, uY;
 
     SDL_Surface *cursorSurface;
@@ -68,9 +72,10 @@ int run()
     while (running)
     {
         SDL_WaitEvent(&event);
-
-        switch (event.type)
+        if (SDL_GetWindowID(window) == event.window.windowID)
         {
+            switch (event.type)
+            {
             case SDL_MOUSEBUTTONDOWN:
                 switch (event.button.button)
                 {
@@ -96,7 +101,7 @@ int run()
                     if (gui.thickSlider->pressEvent())
                     {
                         hold = true;
-                        sliderActive = true;
+                        sliderActive = gui.thickSlider;
                         lX = mX;
                         lY = mY;
                         break;
@@ -177,32 +182,33 @@ int run()
             case SDL_KEYDOWN:
                 switch (event.key.keysym.sym)
                 {
-                    case SDLK_h:
-                        gui.canvas->rect->x = 0;
-                        gui.canvas->rect->y = 0;
-                        gui.canvas->rect->w = gui.canvas->image->w;
-                        gui.canvas->rect->h = gui.canvas->image->h;
-                        break;
+                case SDLK_h:
+                    gui.canvas->rect->x = 0;
+                    gui.canvas->rect->y = 0;
+                    gui.canvas->rect->w = gui.canvas->image->w;
+                    gui.canvas->rect->h = gui.canvas->image->h;
+                    break;
 
-                    case SDLK_b:
-                        editMode = Mode::DRAW;
-                        break;
+                case SDLK_b:
+                    editMode = Mode::DRAW;
+                    break;
 
-                    case SDLK_e:
-                        editMode = Mode::ERASE;
-                        break;
+                case SDLK_e:
+                    editMode = Mode::ERASE;
+                    break;
 
-                    case SDLK_f:
-                        editMode = Mode::FILL;
-                        break;
+                case SDLK_f:
+                    editMode = Mode::FILL;
+                    break;
 
-                    case SDLK_s:
-                        editMode = Mode::SHAPE;
-                        break;
-                    case SDLK_p:
-                        editMode = Mode::PICKER;
-                        break;
-                    default: break;
+                case SDLK_s:
+                    editMode = Mode::SHAPE;
+                    break;
+                case SDLK_p:
+                    editMode = Mode::PICKER;
+                    break;
+                default:
+                    break;
                 }
                 break;
 
@@ -216,22 +222,51 @@ int run()
                 hold = false;
                 drag = false;
                 buttonPressed = false;
-                sliderActive = false;
+                sliderActive = nullptr;
                 break;
 
             case SDL_QUIT:
                 running = false;
                 break;
 
-            default: break;
+            default:
+                break;
+            }
+        } else {
+            switch (event.window.event) {
+                case SDL_WINDOWEVENT_CLOSE:
+                    gui.dialog->close();
+                    break;
+            }
+
+            switch (event.type) {
+                case SDL_MOUSEMOTION:
+                    mX = event.motion.x;
+                    mY = event.motion.y;
+                    break;
+                
+                case SDL_BUTTON_LEFT:
+                    buttonPressed = false;
+                        for (SDL_MySlider *s : gui.dialog->sliders)
+                        {
+                            if (s->pressEvent())
+                            {
+                                hold = true;
+                                sliderActive = s;
+                                lX = mX;
+                                lY = mY;
+                                break;
+                            }
+                        }
+            }
         }
 
         if (hold)
         {
-            if (sliderActive)
+            if (sliderActive != nullptr)
             {
 
-                gui.thickSlider->setValue(gui.thickSlider->value + (mX - lX) * 0.005f);
+                sliderActive->setValue((mX - sliderActive->rect->x) / (float) sliderActive->rect->w);
             }
             else
             {
@@ -276,6 +311,7 @@ int run()
 
             SDL_SetRenderDrawColor(renderer, 240, 240, 240, 255);
             SDL_RenderClear(renderer);
+
             gui.draw(renderer);
 
             SDL_RenderPresent(renderer);
@@ -306,7 +342,8 @@ void minimize()
     SDL_MinimizeWindow(window);
 }
 
-void pickColor() {
+void pickColor()
+{
 
     SDL_Color pixelColor = {0, 0, 0, 255};
     Uint32 pixels[10];
@@ -320,7 +357,8 @@ void pickColor() {
     SDL_Surface *s = SDL_CreateRGBSurface(0, 5, 5, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
     SDL_Surface *ns = SDL_ConvertSurfaceFormat(s, SDL_PIXELFORMAT_ARGB8888, 0);
 
-    if (!SDL_RenderReadPixels(renderer, &pickerRect, SDL_PIXELFORMAT_ARGB8888, pixels, 5)) {
+    if (!SDL_RenderReadPixels(renderer, &pickerRect, SDL_PIXELFORMAT_ARGB8888, pixels, 5))
+    {
         SDL_GetRGB(pixels[0], ns->format, &(pixelColor.r), &(pixelColor.g), &(pixelColor.b));
         // printf("Pixel color at (%d, %d): R=%d, G=%d, B=%d, A=%d\n", mX, mY, pixelColor.r, pixelColor.g, pixelColor.b, 255);
 
@@ -331,6 +369,11 @@ void pickColor() {
     SDL_FreeSurface(ns);
 
     // FROM PRESENTATION
+}
+
+void openColorWheel()
+{
+    gui.dialog->invoke();
 }
 // end
 

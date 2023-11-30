@@ -1,9 +1,9 @@
 # inspired by MakeFileTutorial from https://makefiletutorial.com/
 
 NAME=PAINter
-AUTHOR=ChristopherHosken
+AUTHOR=Christopher_Hosken
 VERSION=v1
-DATE=23.11.2023
+DATE=30.11.2023
 
 CC=clang++
 

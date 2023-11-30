@@ -6,6 +6,7 @@
 #include "button.h"
 #include "slider.h"
 #include "canvas.h"
+#include "colordialog.h"
 
 typedef struct SDL_Gui {
     SDL_MyCanvas* canvas;
@@ -28,6 +29,8 @@ typedef struct SDL_Gui {
     SDL_MySlider* thickSlider;
 
     SDL_MyButton *buttons[12];
+
+    SDL_MyColorDialog* dialog;
 
     void init() {
         canvas = new SDL_MyCanvas();
@@ -57,7 +60,6 @@ typedef struct SDL_Gui {
         colorsButton = new SDL_MyButton();
         colorsButton->setRect(1012, 18 ,24, 24);
         colorsButton->setIcon(IMG_Load("assets/icons/colors_48.png"));
-        colorsButton->setAction(openColorWheel);
 
         pickerButton = new SDL_MyButton();
         pickerButton->setRect(1055, 18 ,24, 24);
@@ -108,6 +110,8 @@ typedef struct SDL_Gui {
         buttons[9] = eraserButton;
         buttons[10] = fillButton;
         buttons[11] = shapeButton;
+
+        dialog = new SDL_MyColorDialog();
     }
 
     void draw(SDL_Renderer* renderer) {
@@ -136,14 +140,11 @@ typedef struct SDL_Gui {
     colorsButton->draw(renderer);
     pickerButton->draw(renderer);
     
-
-
     // MIN AND CLOSE BUTTONS
     
     minimizeButton->draw(renderer);
     closeButton->draw(renderer);
     
-
     // BUILD SIDE BAR
     
     SDL_Rect sideRect = {16, 80, 64, 280};
@@ -154,6 +155,10 @@ typedef struct SDL_Gui {
     eraserButton->draw(renderer);
     fillButton->draw(renderer);
     shapeButton->draw(renderer);
+    
+    if (dialog->invoked) {
+        dialog->draw();
+    }
 }
 
 } SDL_Gui;

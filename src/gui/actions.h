@@ -2,6 +2,7 @@
 #define ACTIONS_H
 
 #include "../../common.h"
+#include "colordialog.h"
 
 void openWebPage() {
     SDL_OpenURL("https://github.com/cjhosken/PAINter");
@@ -45,20 +46,7 @@ void saveImage() {
                 }
 
     SDL_DestroyWindow(dialog);*/
-    std::system("xdg-open .");
-}
-
-void openColorWheel() {
-    SDL_Window* dialog = SDL_CreateWindow("Color Picker", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 300, 200, SDL_WINDOW_HIDDEN);
-    SDL_ShowWindow(dialog);
-
-    if (SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "pick a color",
-                    "Please pick a color.", dialog) < 0) {
-                    SDL_Log("Error displaying message box: %s", SDL_GetError());
-                }
-
-    SDL_DestroyWindow(dialog);
-    activeColor = new SDL_Color({255, 0, 0, 255});
+    //std::system("xdg-open .");
 }
 
 void setModeDraw()

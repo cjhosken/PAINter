@@ -3,12 +3,13 @@
 
 #include "../../common.h"
 #include "circle.h"
+#include "rect.h"
 
 typedef struct SDL_MySlider {
     float value = 0.5f;
     SDL_Rect* rect = new SDL_Rect();
     SDL_MyCircle* circle = new SDL_MyCircle();
-    SDL_Color* color = new SDL_Color();
+    SDL_Color* color = new SDL_Color({0, 0, 0, 255});
 
     void setRect(SDL_Rect* r) {
         rect = r;
