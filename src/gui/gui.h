@@ -18,9 +18,6 @@ typedef struct SDL_Gui {
     SDL_MyButton* colorsButton;
     SDL_MyButton* pickerButton;
 
-    SDL_MyButton* minimizeButton;
-    SDL_MyButton* closeButton;
-
     SDL_MyButton* brushButton;
     SDL_MyButton* eraserButton;
     SDL_MyButton* fillButton;
@@ -28,7 +25,7 @@ typedef struct SDL_Gui {
 
     SDL_MySlider* thickSlider;
 
-    SDL_MyButton *buttons[12];
+    SDL_MyButton *buttons[10];
 
     SDL_MyColorDialog* dialog;
 
@@ -66,14 +63,6 @@ typedef struct SDL_Gui {
         pickerButton->setIcon(IMG_Load("assets/icons/picker_48.png"));
         pickerButton->setAction(setModePicker);
 
-        minimizeButton = new SDL_MyButton();
-        minimizeButton->setRect(1198, 18, 24, 24);
-        minimizeButton->setIcon(IMG_Load("assets/icons/minimize_48.png"));
-
-        closeButton = new SDL_MyButton();
-        closeButton->setRect(1240, 18, 24, 24);
-        closeButton->setIcon(IMG_Load("assets/icons/close_48.png"));
-
         brushButton = new SDL_MyButton();
         brushButton->setRect(32, 104, 32, 32);
         brushButton->setIcon(IMG_Load("assets/icons/brush_48.png"));
@@ -104,12 +93,10 @@ typedef struct SDL_Gui {
         buttons[3] = saveImageButton;
         buttons[4] = colorsButton;
         buttons[5] = pickerButton;
-        buttons[6] = minimizeButton;
-        buttons[7] = closeButton;
-        buttons[8] = brushButton;
-        buttons[9] = eraserButton;
-        buttons[10] = fillButton;
-        buttons[11] = shapeButton;
+        buttons[6] = brushButton;
+        buttons[7] = eraserButton;
+        buttons[8] = fillButton;
+        buttons[9] = shapeButton;
 
         dialog = new SDL_MyColorDialog();
     }
@@ -140,11 +127,6 @@ typedef struct SDL_Gui {
     colorsButton->draw(renderer);
     pickerButton->draw(renderer);
     
-    // MIN AND CLOSE BUTTONS
-    
-    minimizeButton->draw(renderer);
-    closeButton->draw(renderer);
-    
     // BUILD SIDE BAR
     
     SDL_Rect sideRect = {16, 80, 64, 280};
@@ -157,6 +139,7 @@ typedef struct SDL_Gui {
     shapeButton->draw(renderer);
     
     if (dialog->invoked) {
+        dialog->update();
         dialog->draw();
     }
 }

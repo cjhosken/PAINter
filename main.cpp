@@ -1,17 +1,13 @@
 #include "common.h"
 #include "src/gui/gui.h"
 
-using namespace std;
-
 const int width = 1280, height = 720;
-SDL_Event event;
 SDL_MouseButtonEvent *mouseEvent;
 SDL_Surface *icon;
-SDL_Window *window;
 SDL_Renderer *renderer;
 SDL_Gui gui;
 bool running;
-SDL_MySlider* sliderActive = nullptr;
+SDL_MySlider *sliderActive = nullptr;
 
 int run();
 void dispose();
@@ -30,10 +26,10 @@ int main(int argc, char **argv)
 {
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
     {
-        //printf("error: %s \n", SDL_GetError());
+        // printf("error: %s \n", SDL_GetError());
         if (SDL_Init(SDL_INIT_VIDEO) != 0)
         {
-            //printf("error: %s \n", SDL_GetError());
+            // printf("error: %s \n", SDL_GetError());
             return 1;
         }
     }
@@ -42,16 +38,13 @@ int main(int argc, char **argv)
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
     IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF | IMG_INIT_WEBP);
 
-    window = SDL_CreateWindow("PAINter", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_BORDERLESS);
+    window = SDL_CreateWindow("PAINter", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_SHOWN);
     icon = IMG_Load("assets/images/ross.jpg");
     SDL_SetWindowIcon(window, icon);
 
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
     gui.init();
-
-    gui.closeButton->setAction(dispose);
-    gui.minimizeButton->setAction(minimize);
 
     gui.colorsButton->setAction(openColorWheel);
 
@@ -74,6 +67,12 @@ int run()
         SDL_WaitEvent(&event);
         if (SDL_GetWindowID(window) == event.window.windowID)
         {
+            switch (event.window.event)
+            {
+                case SDL_WINDOWEVENT_CLOSE:
+                    running = 0;
+                break;
+            }
             switch (event.type)
             {
             case SDL_MOUSEBUTTONDOWN:
@@ -109,15 +108,6 @@ int run()
 
                     if (!buttonPressed)
                     {
-                        if (mY < 64)
-                        {
-                            SDL_GetWindowPosition(window, &rX, &rY);
-                            SDL_GetGlobalMouseState(&lX, &lY);
-                            drag = true;
-                        }
-
-                        else
-                        {
                             switch (editMode)
                             {
 
@@ -133,7 +123,6 @@ int run()
                             case Mode::SHAPE:
                                 break;
                             }
-                        }
                     }
                     break;
 
@@ -215,7 +204,6 @@ int run()
             case SDL_MOUSEMOTION:
                 mX = event.motion.x;
                 mY = event.motion.y;
-                SDL_GetGlobalMouseState(&uX, &uY);
                 break;
 
             case SDL_MOUSEBUTTONUP:
@@ -232,21 +220,31 @@ int run()
             default:
                 break;
             }
-        } else {
-            switch (event.window.event) {
+        }
+        else
+        {
+            switch (event.window.event)
+            {
                 case SDL_WINDOWEVENT_CLOSE:
                     gui.dialog->close();
                     break;
+
+                default: break;
             }
 
-            switch (event.type) {
+            switch (event.type)
+            {
                 case SDL_MOUSEMOTION:
                     mX = event.motion.x;
                     mY = event.motion.y;
                     break;
-                
-                case SDL_BUTTON_LEFT:
-                    buttonPressed = false;
+
+                case SDL_MOUSEBUTTONDOWN:
+                    switch (event.button.button)
+                    {
+
+                    case SDL_BUTTON_LEFT:
+                        buttonPressed = false;
                         for (SDL_MySlider *s : gui.dialog->sliders)
                         {
                             if (s->pressEvent())
@@ -258,6 +256,16 @@ int run()
                                 break;
                             }
                         }
+                        break;
+                    }
+                    break;
+
+                case SDL_MOUSEBUTTONUP:
+                    hold = false;
+                    drag = false;
+                    buttonPressed = false;
+                    sliderActive = nullptr;
+                    break;
             }
         }
 
@@ -265,7 +273,6 @@ int run()
         {
             if (sliderActive != nullptr)
             {
-
                 sliderActive->setValue((mX - sliderActive->rect->x) / (float) sliderActive->rect->w);
             }
             else

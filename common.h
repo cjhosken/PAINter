@@ -3,6 +3,12 @@
 
 #include "include/SDL2/SDL.h"
 #include "include/SDL2/SDL_image.h"
+#include <iostream>
+
+using namespace std;
+
+SDL_Window *window;
+SDL_Event event;
 
 int mX, mY;
 

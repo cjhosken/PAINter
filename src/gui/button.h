@@ -23,7 +23,7 @@ typedef struct SDL_MyButton
     {
         SDL_Texture *imageTexture = SDL_CreateTextureFromSurface(renderer, icon);
 
-        if (mouseOver(mX, mY))
+        if (mouseOver(mX, mY) && SDL_GetWindowID(window) == event.window.windowID)
         {
             drawRect(renderer, new SDL_Color({255, 0, 0, 255}), rect);
         }

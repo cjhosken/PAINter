@@ -5,7 +5,7 @@ AUTHOR=Christopher_Hosken
 VERSION=v1
 DATE=30.11.2023
 
-CC=clang++
+CC=g++
 
 LINKER_FLAGS = -lSDL2 -lSDL2_image
 

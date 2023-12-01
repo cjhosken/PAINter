@@ -6,11 +6,11 @@
 #include "rect.h"
 
 typedef struct SDL_MyColorDialog {
-    SDL_MySlider* hSlider = new SDL_MySlider();
-    SDL_MySlider* sSlider = new SDL_MySlider();
-    SDL_MySlider* vSlider = new SDL_MySlider();
+    SDL_MySlider* rSlider = new SDL_MySlider();
+    SDL_MySlider* gSlider = new SDL_MySlider();
+    SDL_MySlider* bSlider = new SDL_MySlider();
 
-    SDL_Window* dialog = SDL_CreateWindow("Color Picker", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 300, 200, SDL_WINDOW_HIDDEN);
+    SDL_Window* dialog = SDL_CreateWindow("PAINter Color", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 300, 200, SDL_WINDOW_HIDDEN);
 
     SDL_MySlider *sliders[3];
     SDL_Renderer* renderer = SDL_CreateRenderer(dialog, -1, SDL_RENDERER_ACCELERATED);
@@ -20,18 +20,21 @@ typedef struct SDL_MyColorDialog {
     void invoke() {
         SDL_ShowWindow(dialog);
 
-        hSlider->setRect(new SDL_Rect({50, 100, 200, 1}));
-        hSlider->setValue(0.5);
+        rSlider->setRect(new SDL_Rect({50, 100, 200, 1}));
+        rSlider->setValue(activeColor->r / 255.0f);
+        rSlider->circle->setColor(new SDL_Color({255, 0, 0, 255}));
 
-        sSlider->setRect(new SDL_Rect({50, 135, 200, 1}));
-        sSlider->setValue(1);
+        gSlider->setRect(new SDL_Rect({50, 135, 200, 1}));
+        gSlider->setValue(activeColor->g / 255.0f);
+        gSlider->circle->setColor(new SDL_Color({0, 255, 0, 255}));
 
-        vSlider->setRect(new SDL_Rect({50, 170, 200, 1}));
-        vSlider->setValue(0.3);
+        bSlider->setRect(new SDL_Rect({50, 170, 200, 1}));
+        bSlider->setValue(activeColor->b / 255.0f);
+        bSlider->circle->setColor(new SDL_Color({0, 0, 255, 255}));
 
-        sliders[0] = hSlider;
-        sliders[1] = sSlider;
-        sliders[2] = vSlider;
+        sliders[0] = rSlider;
+        sliders[1] = gSlider;
+        sliders[2] = bSlider;
 
         invoked = true;
     }
@@ -53,6 +56,10 @@ typedef struct SDL_MyColorDialog {
     void update() {
         // HSV TO RGB CONVERSION HERE
         // SET GLOBAL COLOR TO THAT
+        activeColor->a = 255;
+        activeColor->r = (int) (255 * rSlider->value);
+        activeColor->g = (int) (255 * gSlider->value);
+        activeColor->b = (int) (255 * bSlider->value);
     }
 
     void close() {
