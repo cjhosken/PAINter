@@ -20,6 +20,8 @@ void setModeShape();
 void setPickerMode();
 void pickColor();
 void openColorWheel();
+void addImage();
+void drawOnCanvas();
 
 // https://gigi.nullneuron.net/gigilabs/sdl2-pixel-drawing/
 int main(int argc, char **argv)
@@ -47,6 +49,7 @@ int main(int argc, char **argv)
     gui.init();
 
     gui.colorsButton->setAction(openColorWheel);
+    gui.addImageButton->setAction(addImage);
 
     return run();
 }
@@ -56,8 +59,8 @@ int run()
     running = true;
 
     bool hold = false;
-    bool drag = false;
     bool buttonPressed = false;
+    bool down = false;
     int rX, rY, lX, lY, uX, uY;
 
     SDL_Surface *cursorSurface;
@@ -69,8 +72,8 @@ int run()
         {
             switch (event.window.event)
             {
-                case SDL_WINDOWEVENT_CLOSE:
-                    running = 0;
+            case SDL_WINDOWEVENT_CLOSE:
+                running = 0;
                 break;
             }
             switch (event.type)
@@ -79,6 +82,7 @@ int run()
                 switch (event.button.button)
                 {
                 case SDL_BUTTON_LEFT:
+                    down = true;
                     if (editMode == Mode::PICKER)
                     {
                         pickColor();
@@ -91,7 +95,6 @@ int run()
                     {
                         if (b->pressEvent())
                         {
-                            drag = false;
                             buttonPressed = true;
                             break;
                         }
@@ -108,21 +111,7 @@ int run()
 
                     if (!buttonPressed)
                     {
-                            switch (editMode)
-                            {
-
-                            case Mode::DRAW:
-                                break;
-
-                            case Mode::ERASE:
-                                break;
-
-                            case Mode::FILL:
-                                break;
-
-                            case Mode::SHAPE:
-                                break;
-                            }
+                        drawOnCanvas();
                     }
                     break;
 
@@ -204,11 +193,15 @@ int run()
             case SDL_MOUSEMOTION:
                 mX = event.motion.x;
                 mY = event.motion.y;
+                if (down && !hold)
+                {
+                    drawOnCanvas();
+                }
                 break;
 
             case SDL_MOUSEBUTTONUP:
+                down = false;
                 hold = false;
-                drag = false;
                 buttonPressed = false;
                 sliderActive = nullptr;
                 break;
@@ -225,47 +218,48 @@ int run()
         {
             switch (event.window.event)
             {
-                case SDL_WINDOWEVENT_CLOSE:
-                    gui.dialog->close();
-                    break;
+            case SDL_WINDOWEVENT_CLOSE:
+                gui.dialog->close();
+                break;
 
-                default: break;
+            default:
+                break;
             }
 
             switch (event.type)
             {
-                case SDL_MOUSEMOTION:
-                    mX = event.motion.x;
-                    mY = event.motion.y;
-                    break;
+            case SDL_MOUSEMOTION:
+                mX = event.motion.x;
+                mY = event.motion.y;
+                break;
 
-                case SDL_MOUSEBUTTONDOWN:
-                    switch (event.button.button)
+            case SDL_MOUSEBUTTONDOWN:
+                switch (event.button.button)
+                {
+
+                case SDL_BUTTON_LEFT:
+                    buttonPressed = false;
+                    for (SDL_MySlider *s : gui.dialog->sliders)
                     {
-
-                    case SDL_BUTTON_LEFT:
-                        buttonPressed = false;
-                        for (SDL_MySlider *s : gui.dialog->sliders)
+                        if (s->pressEvent())
                         {
-                            if (s->pressEvent())
-                            {
-                                hold = true;
-                                sliderActive = s;
-                                lX = mX;
-                                lY = mY;
-                                break;
-                            }
+                            hold = true;
+                            sliderActive = s;
+                            lX = mX;
+                            lY = mY;
+                            break;
                         }
-                        break;
                     }
                     break;
+                }
+                break;
 
-                case SDL_MOUSEBUTTONUP:
-                    hold = false;
-                    drag = false;
-                    buttonPressed = false;
-                    sliderActive = nullptr;
-                    break;
+            case SDL_MOUSEBUTTONUP:
+                down = false;
+                hold = false;
+                buttonPressed = false;
+                sliderActive = nullptr;
+                break;
             }
         }
 
@@ -273,18 +267,13 @@ int run()
         {
             if (sliderActive != nullptr)
             {
-                sliderActive->setValue((mX - sliderActive->rect->x) / (float) sliderActive->rect->w);
+                sliderActive->setValue((mX - sliderActive->rect->x) / (float)sliderActive->rect->w);
             }
             else
             {
                 gui.canvas->rect->x = rX + mX - lX;
                 gui.canvas->rect->y = rY + mY - lY;
             }
-        }
-
-        if (drag)
-        {
-            SDL_SetWindowPosition(window, rX + uX - lX, rY + uY - lY);
         }
 
         else
@@ -316,17 +305,17 @@ int run()
                 cursorSurface = IMG_Load("assets/icons/picker_48.png");
             }
 
-            SDL_SetRenderDrawColor(renderer, 240, 240, 240, 255);
-            SDL_RenderClear(renderer);
-
-            gui.draw(renderer);
-
-            SDL_RenderPresent(renderer);
-
             SDL_Cursor *cursor = SDL_CreateColorCursor(cursorSurface, 24, 24);
             SDL_SetCursor(cursor);
             SDL_FreeSurface(cursorSurface);
         }
+
+        SDL_SetRenderDrawColor(renderer, 245, 245, 245, 255);
+        SDL_RenderClear(renderer);
+
+        gui.draw(renderer);
+
+        SDL_RenderPresent(renderer);
     }
     // https://gigi.nullneuron.net/gigilabs/handling-keyboard-and-mouse-events-in-sdl2/
 
@@ -381,6 +370,49 @@ void pickColor()
 void openColorWheel()
 {
     gui.dialog->invoke();
+}
+
+void addImage()
+{
+    SDL_Surface *newImage = SDL_CreateRGBSurface(0, 1920, 1080, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
+    SDL_FillRect(newImage, NULL, SDL_MapRGBA(newImage->format, 255, 255, 255, 255));
+    gui.canvas->setImage(newImage);
+}
+
+void drawOnCanvas()
+{
+    if (mY <= 64) return;
+    if ((mY > 80 && mY < 80 + 280) && (mX > 16 && mX < 16 + 64)) return;
+    int cX, cY;
+    int drawSizeFac = 64;
+    int drawSize = drawSizeFac * gui.thickSlider->value;
+
+    // map from draw shape to image
+    // cX = ((mX - rX) / rW) * iW
+    // cY = ((mY - rY) / rH) * iH
+
+    cX = ((mX - gui.canvas->rect->x) / (float) gui.canvas->rect->w) * gui.canvas->image->w - (drawSize);
+    cY = ((mY - gui.canvas->rect->y) / (float) gui.canvas->rect->h) * gui.canvas->image->h - (drawSize);
+
+    switch (editMode)
+    {
+    case Mode::DRAW:
+        SDL_BlitSurface(circle(drawSize, activeColor), NULL, gui.canvas->image, new SDL_Rect({cX, cY, drawSize, drawSize}));
+        break;
+
+    case Mode::ERASE:
+        SDL_BlitSurface(circle(drawSize, new SDL_Color({255, 255, 255, 255})), NULL, gui.canvas->image, new SDL_Rect({cX, cY, drawSize, drawSize}));
+        break;
+
+    case Mode::FILL:
+        break;
+
+    case Mode::SHAPE:
+        break;
+
+    default:
+        break;
+    }
 }
 // end
 

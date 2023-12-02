@@ -1,0 +1,9 @@
+{
+    "makefile.launchConfigurations": [
+        {
+            "cwd": "/home/s5605094/Programming/ProP_2023_ProgrammingProject_Christopher_Hosken/PAINter",
+            "binaryPath": "/home/s5605094/Programming/ProP_2023_ProgrammingProject_Christopher_Hosken/PAINter/PAINter",
+            "binaryArgs": []
+        }
+    ]
+}

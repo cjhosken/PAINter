@@ -20,15 +20,6 @@ void loadImage() {
     SDL_DestroyWindow(dialog);
 }
 
-void addImage() {
-    SDL_Window* dialog = SDL_CreateWindow("Create Image", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 300, 200, SDL_WINDOW_HIDDEN);
-    SDL_ShowWindow(dialog);
-
-
-
-    SDL_DestroyWindow(dialog);
-}
-
 void saveImage() {
     const char* filename = SDL_GetBasePath();
     char selectedFile[1024];

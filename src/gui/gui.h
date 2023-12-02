@@ -47,7 +47,6 @@ typedef struct SDL_Gui {
         addImageButton = new SDL_MyButton();
         addImageButton->setRect(153, 16, 32, 32);
         addImageButton->setIcon(IMG_Load("assets/icons/add_image_48.png"));
-        addImageButton->setAction(addImage);
 
         saveImageButton = new SDL_MyButton();
         saveImageButton->setRect(204, 16, 32, 32);
