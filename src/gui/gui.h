@@ -54,11 +54,11 @@ typedef struct SDL_Gui {
         saveImageButton->setAction(saveImage);
 
         colorsButton = new SDL_MyButton();
-        colorsButton->setRect(1012, 18 ,24, 24);
+        colorsButton->setRect(1200, 20 ,24, 24);
         colorsButton->setIcon(IMG_Load("assets/icons/colors_48.png"));
 
         pickerButton = new SDL_MyButton();
-        pickerButton->setRect(1055, 18 ,24, 24);
+        pickerButton->setRect(1240, 20 ,24, 24);
         pickerButton->setIcon(IMG_Load("assets/icons/picker_48.png"));
         pickerButton->setAction(setModePicker);
 
@@ -83,7 +83,7 @@ typedef struct SDL_Gui {
         shapeButton->setAction(setModeShape);
 
         thickSlider = new SDL_MySlider();
-        thickSlider->setRect(new SDL_Rect({328, 32, 160, 1}));
+        thickSlider->setRect(new SDL_Rect({320, 32, 400, 1}));
         thickSlider->setColor(new SDL_Color({0, 0, 0, 255}));
 
         buttons[0] = iconButton;
@@ -121,7 +121,7 @@ typedef struct SDL_Gui {
 
     // COLOR BUTTONS
     
-    drawRect(renderer, activeColor, new SDL_Rect({969, 20, 24, 24}));
+    drawRect(renderer, activeColor, new SDL_Rect({1160, 20, 24, 24}));
     
     colorsButton->draw(renderer);
     pickerButton->draw(renderer);

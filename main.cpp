@@ -8,6 +8,7 @@ SDL_Renderer *renderer;
 SDL_Gui gui;
 bool running;
 SDL_MySlider *sliderActive = nullptr;
+int drawSizeFac = 64;
 
 int run();
 void dispose();
@@ -62,7 +63,6 @@ int run()
     bool buttonPressed = false;
     bool down = false;
     int rX, rY, lX, lY, uX, uY;
-
     SDL_Surface *cursorSurface;
 
     while (running)
@@ -304,17 +304,23 @@ int run()
                 gui.pickerButton->setActive(true);
                 cursorSurface = IMG_Load("assets/icons/picker_48.png");
             }
-
-            SDL_Cursor *cursor = SDL_CreateColorCursor(cursorSurface, 24, 24);
-            SDL_SetCursor(cursor);
-            SDL_FreeSurface(cursorSurface);
         }
+
+        int drawSize = drawSizeFac * gui.thickSlider->value * (float) (gui.canvas->rect->w / 1280.0f) * 2;
+        SDL_Surface* scaledSurface = SDL_CreateRGBSurface(0, drawSize, drawSize, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
+        SDL_FillRect(scaledSurface, NULL, SDL_MapRGBA(scaledSurface->format, 0, 0, 0, 0));
+        SDL_BlitScaled(cursorSurface, NULL, scaledSurface, new SDL_Rect({0, 0, drawSize, drawSize}));
+
+        SDL_Cursor *cursor = SDL_CreateColorCursor(scaledSurface, drawSize/2, drawSize/2);
+        SDL_SetCursor(cursor);
+
+        SDL_FreeSurface(scaledSurface);
 
         SDL_SetRenderDrawColor(renderer, 245, 245, 245, 255);
         SDL_RenderClear(renderer);
+        
 
         gui.draw(renderer);
-
         SDL_RenderPresent(renderer);
     }
     // https://gigi.nullneuron.net/gigilabs/handling-keyboard-and-mouse-events-in-sdl2/
@@ -384,7 +390,6 @@ void drawOnCanvas()
     if (mY <= 64) return;
     if ((mY > 80 && mY < 80 + 280) && (mX > 16 && mX < 16 + 64)) return;
     int cX, cY;
-    int drawSizeFac = 64;
     int drawSize = drawSizeFac * gui.thickSlider->value;
 
     // map from draw shape to image
