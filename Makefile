@@ -1,9 +1,9 @@
 # inspired by MakeFileTutorial from https://makefiletutorial.com/
 
 NAME=PAINter
-AUTHOR=Christopher_Hosken
+AUTHOR=Christopher Hosken
 VERSION=v1
-DATE=30.11.2023
+DATE=04.12.2023
 
 CC=g++
 LINKER_FLAGS = -lSDL2 -lSDL2_image  `pkg-config --cflags --libs gtk+-3.0`
