@@ -6,10 +6,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "include/gtk/gtk.h"
+
 SDL_Window *window;
 SDL_Event event;
 
 int mX, mY;
+
+using namespace std;
 
 enum Mode
 {

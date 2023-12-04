@@ -23,6 +23,8 @@ void pickColor();
 void openColorWheel();
 void addImage();
 void drawOnCanvas();
+void loadImage();
+void saveImage();
 
 // https://gigi.nullneuron.net/gigilabs/sdl2-pixel-drawing/
 int main(int argc, char **argv)
@@ -37,6 +39,7 @@ int main(int argc, char **argv)
         }
     }
     // FROM PRESENTATION
+    gtk_init(NULL, NULL);
 
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
     IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF | IMG_INIT_WEBP);
@@ -48,6 +51,9 @@ int main(int argc, char **argv)
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
     gui.init();
+
+    gui.saveImageButton->setAction(saveImage);
+    gui.loadImageButton->setAction(loadImage);
 
     gui.colorsButton->setAction(openColorWheel);
     gui.addImageButton->setAction(addImage);
@@ -87,6 +93,7 @@ int run()
                     {
                         pickColor();
                         editMode = Mode::DRAW;
+
                         break;
                     }
 
@@ -312,7 +319,7 @@ int run()
         SDL_BlitScaled(cursorSurface, NULL, scaledSurface, new SDL_Rect({0, 0, drawSize, drawSize}));
 
         SDL_Cursor *cursor = SDL_CreateColorCursor(scaledSurface, drawSize/2, drawSize/2);
-        SDL_SetCursor(cursor);
+        //SDL_SetCursor(cursor);
 
         SDL_FreeSurface(scaledSurface);
 
@@ -418,6 +425,57 @@ void drawOnCanvas()
     default:
         break;
     }
+}
+
+void loadImage() {
+    GtkWidget *dialog = gtk_file_chooser_dialog_new("Select File",
+                                                    NULL,
+                                                    GTK_FILE_CHOOSER_ACTION_OPEN,
+                                                    "Cancel",
+                                                    GTK_RESPONSE_CANCEL,
+                                                    "Open",
+                                                    GTK_RESPONSE_ACCEPT,
+                                                    NULL);
+
+    // Show the file chooser dialog
+    gint res = gtk_dialog_run(GTK_DIALOG(dialog));
+
+    if (res == GTK_RESPONSE_ACCEPT) {
+        // Get the selected filename from the dialog
+        gchar *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
+        g_print("Selected file: %s\n", filename);
+        g_free(filename);
+    }
+
+    // Destroy the dialog
+    gtk_widget_destroy(dialog);
+}
+
+void saveImage() {
+    GtkWidget *dialog = gtk_file_chooser_dialog_new("Save File",
+                                                    NULL,
+                                                    GTK_FILE_CHOOSER_ACTION_SAVE,
+                                                    "Cancel",
+                                                    GTK_RESPONSE_CANCEL,
+                                                    "Save",
+                                                    GTK_RESPONSE_ACCEPT,
+                                                    NULL);
+
+    // Set default filename (optional)
+    gtk_file_chooser_set_current_name(GTK_FILE_CHOOSER(dialog), "drawing.png");
+
+    // Show the save dialog
+    gint res = gtk_dialog_run(GTK_DIALOG(dialog));
+
+    if (res == GTK_RESPONSE_ACCEPT) {
+        // Get the filename chosen by the user
+        gchar *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
+        g_print("Selected file for saving: %s\n", filename);
+        g_free(filename);
+    }
+
+    // Destroy the dialog
+    gtk_widget_destroy(dialog);
 }
 // end
 
