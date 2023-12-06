@@ -3,7 +3,7 @@
 NAME=PAINter
 AUTHOR=Christopher Hosken
 VERSION=v1
-DATE=04.12.2023
+DATE=06.12.2023
 
 CC=g++
 LINKER_FLAGS = -lSDL2 -lSDL2_image
