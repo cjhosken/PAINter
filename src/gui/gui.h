@@ -11,8 +11,6 @@
 typedef struct SDL_Gui {
     SDL_MyCanvas* canvas;
     SDL_MyButton* iconButton;
-    SDL_MyButton* loadImageButton;
-    SDL_MyButton* addImageButton;
     SDL_MyButton* saveImageButton;
 
     SDL_MyButton* colorsButton;
@@ -25,27 +23,17 @@ typedef struct SDL_Gui {
 
     SDL_MySlider* thickSlider;
 
-    SDL_MyButton *buttons[10];
+    SDL_MyButton *buttons[8];
 
     SDL_MyColorDialog* dialog;
 
     void init() {
         canvas = new SDL_MyCanvas();
-        canvas->setImage(IMG_Load("assets/images/landscape.jpeg"));
-        canvas->setRect(0, 0, canvas->image->w, canvas->image->h);
 
         iconButton = new SDL_MyButton();
         iconButton->setRect(25, 8, 48, 48);
         iconButton->setIcon(IMG_Load("assets/images/ross.jpg"));
         iconButton->setAction(openWebPage);
-
-        loadImageButton = new SDL_MyButton();
-        loadImageButton->setRect(102, 16, 32, 32);
-        loadImageButton->setIcon(IMG_Load("assets/icons/image_48.png"));
-
-        addImageButton = new SDL_MyButton();
-        addImageButton->setRect(153, 16, 32, 32);
-        addImageButton->setIcon(IMG_Load("assets/icons/add_image_48.png"));
 
         saveImageButton = new SDL_MyButton();
         saveImageButton->setRect(204, 16, 32, 32);
@@ -85,15 +73,13 @@ typedef struct SDL_Gui {
         thickSlider->setColor(new SDL_Color({0, 0, 0, 255}));
 
         buttons[0] = iconButton;
-        buttons[1] = loadImageButton;
-        buttons[2] = addImageButton;
-        buttons[3] = saveImageButton;
-        buttons[4] = colorsButton;
-        buttons[5] = pickerButton;
-        buttons[6] = brushButton;
-        buttons[7] = eraserButton;
-        buttons[8] = fillButton;
-        buttons[9] = shapeButton;
+        buttons[1] = saveImageButton;
+        buttons[2] = colorsButton;
+        buttons[3] = pickerButton;
+        buttons[4] = brushButton;
+        buttons[5] = eraserButton;
+        buttons[6] = fillButton;
+        buttons[7] = shapeButton;
 
         dialog = new SDL_MyColorDialog();
     }
@@ -110,8 +96,6 @@ typedef struct SDL_Gui {
     // LOAD AND SAVING BUTTONS
     
     iconButton->draw(renderer);
-    loadImageButton->draw(renderer);
-    addImageButton->draw(renderer);
     saveImageButton->draw(renderer);
     
     // THICKNESS BUTTONS

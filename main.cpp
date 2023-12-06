@@ -10,6 +10,9 @@ bool running;
 SDL_MySlider *sliderActive = nullptr;
 int drawSizeFac = 64;
 
+char* readFilePath = NULL;
+char* writeFilePath = NULL;
+
 int run();
 void dispose();
 void minimize();
@@ -21,14 +24,26 @@ void setModeShape();
 void setPickerMode();
 void pickColor();
 void openColorWheel();
-void addImage();
 void drawOnCanvas();
-void loadImage();
 void saveImage();
 
 // https://gigi.nullneuron.net/gigilabs/sdl2-pixel-drawing/
 int main(int argc, char **argv)
 {
+
+    // PAINTer -f image.png -o output
+    // process command args here
+    for (int c  = 0; c <argc;c++) {
+        if (strcmp(argv[c], "-f")==0) {
+            readFilePath = argv[c+1];
+        }
+
+        if (strcmp(argv[c], "-o") == 0) {
+            writeFilePath = argv[c+1];
+        }
+    }
+
+
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
     {
         // printf("error: %s \n", SDL_GetError());
@@ -39,7 +54,6 @@ int main(int argc, char **argv)
         }
     }
     // FROM PRESENTATION
-    gtk_init(NULL, NULL);
 
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
     IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF | IMG_INIT_WEBP);
@@ -53,10 +67,17 @@ int main(int argc, char **argv)
     gui.init();
 
     gui.saveImageButton->setAction(saveImage);
-    gui.loadImageButton->setAction(loadImage);
 
     gui.colorsButton->setAction(openColorWheel);
-    gui.addImageButton->setAction(addImage);
+
+    if (readFilePath != NULL) {
+        gui.canvas->setImage(IMG_Load(readFilePath));
+    } else {
+        SDL_Surface *newImage = SDL_CreateRGBSurface(0, 1920, 1080, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
+        SDL_FillRect(newImage, NULL, SDL_MapRGBA(newImage->format, 255, 255, 255, 255));
+        gui.canvas->setImage(newImage);
+    }
+    gui.canvas->setRect(0, 0, gui.canvas->image->w, gui.canvas->image->h);
 
     return run();
 }
@@ -319,7 +340,7 @@ int run()
         SDL_BlitScaled(cursorSurface, NULL, scaledSurface, new SDL_Rect({0, 0, drawSize, drawSize}));
 
         SDL_Cursor *cursor = SDL_CreateColorCursor(scaledSurface, drawSize/2, drawSize/2);
-        //SDL_SetCursor(cursor);
+        SDL_SetCursor(cursor);
 
         SDL_FreeSurface(scaledSurface);
 
@@ -385,13 +406,6 @@ void openColorWheel()
     gui.dialog->invoke();
 }
 
-void addImage()
-{
-    SDL_Surface *newImage = SDL_CreateRGBSurface(0, 1920, 1080, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
-    SDL_FillRect(newImage, NULL, SDL_MapRGBA(newImage->format, 255, 255, 255, 255));
-    gui.canvas->setImage(newImage);
-}
-
 void drawOnCanvas()
 {
     if (mY <= 64) return;
@@ -427,55 +441,14 @@ void drawOnCanvas()
     }
 }
 
-void loadImage() {
-    GtkWidget *dialog = gtk_file_chooser_dialog_new("Select File",
-                                                    NULL,
-                                                    GTK_FILE_CHOOSER_ACTION_OPEN,
-                                                    "Cancel",
-                                                    GTK_RESPONSE_CANCEL,
-                                                    "Open",
-                                                    GTK_RESPONSE_ACCEPT,
-                                                    NULL);
-
-    // Show the file chooser dialog
-    gint res = gtk_dialog_run(GTK_DIALOG(dialog));
-
-    if (res == GTK_RESPONSE_ACCEPT) {
-        // Get the selected filename from the dialog
-        gchar *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
-        g_print("Selected file: %s\n", filename);
-        g_free(filename);
-    }
-
-    // Destroy the dialog
-    gtk_widget_destroy(dialog);
-}
-
 void saveImage() {
-    GtkWidget *dialog = gtk_file_chooser_dialog_new("Save File",
-                                                    NULL,
-                                                    GTK_FILE_CHOOSER_ACTION_SAVE,
-                                                    "Cancel",
-                                                    GTK_RESPONSE_CANCEL,
-                                                    "Save",
-                                                    GTK_RESPONSE_ACCEPT,
-                                                    NULL);
-
-    // Set default filename (optional)
-    gtk_file_chooser_set_current_name(GTK_FILE_CHOOSER(dialog), "drawing.png");
-
-    // Show the save dialog
-    gint res = gtk_dialog_run(GTK_DIALOG(dialog));
-
-    if (res == GTK_RESPONSE_ACCEPT) {
-        // Get the filename chosen by the user
-        gchar *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
-        g_print("Selected file for saving: %s\n", filename);
-        g_free(filename);
+    if (writeFilePath != NULL) {
+        IMG_SavePNG(gui.canvas->image, writeFilePath);
+    } else {
+        IMG_SavePNG(gui.canvas->image, "./output.png");
     }
 
-    // Destroy the dialog
-    gtk_widget_destroy(dialog);
+    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "File Saved!", "Your image has been saved!", NULL);
 }
 // end
 

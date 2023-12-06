@@ -3,6 +3,8 @@
 
 #include "../../common.h"
 
+// THE CANVAS SHOULD BE DRAWN OVER THE IMAGE, NOT INTO THE IMAGE
+
 typedef struct SDL_MyCanvas {
     SDL_Rect* rect = new SDL_Rect();
     SDL_Surface* image = new SDL_Surface();
