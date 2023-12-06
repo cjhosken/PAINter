@@ -25,11 +25,11 @@ typedef struct SDL_MyButton
 
         if (mouseOver(mX, mY) && SDL_GetWindowID(window) == event.window.windowID)
         {
-            drawRect(renderer, new SDL_Color({255, 0, 0, 255}), rect);
+            drawRect(renderer, new SDL_Color({0, 0, 0, 75}), rect, 5);
         }
         else if (active)
         {
-            drawRect(renderer, new SDL_Color({0, 255, 0, 255}), rect);
+            drawRect(renderer, new SDL_Color({255, 255, 255, 255}), rect, 5);
         }
         else
         {
