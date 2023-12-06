@@ -205,9 +205,14 @@ int run()
                 case SDLK_f:
                     editMode = Mode::FILL;
                     break;
-
+                case SDLK_l:
+                    editMode = Mode::SHAPE_LINE;
+                    break;
+                case SDLK_c:
+                    editMode = Mode::SHAPE_CIRCLE;
+                    break;
                 case SDLK_s:
-                    editMode = Mode::SHAPE;
+                    editMode = Mode::SHAPE_SQUARE;
                     break;
                 case SDLK_p:
                     editMode = Mode::PICKER;
@@ -323,8 +328,16 @@ int run()
                 gui.fillButton->setActive(true);
                 cursorSurface = IMG_Load("assets/icons/fill_48.png");
                 break;
-            case SHAPE:
-                gui.shapeButton->setActive(true);
+            case SHAPE_LINE:
+                gui.shapeButtonLine->setActive(true);
+                cursorSurface = IMG_Load("assets/icons/circle_48.png");
+                break;
+            case SHAPE_CIRCLE:
+                gui.shapeButtonCircle->setActive(true);
+                cursorSurface = IMG_Load("assets/icons/circle_48.png");
+                break;
+            case SHAPE_SQUARE:
+                gui.shapeButtonSquare->setActive(true);
                 cursorSurface = IMG_Load("assets/icons/circle_48.png");
                 break;
             case PICKER:
@@ -426,7 +439,11 @@ void drawOnCanvas()
         floodFill(output, mX, mY, activeColor, getPixel(mX, mY));
         break;
 
-    case Mode::SHAPE:
+    case Mode::SHAPE_LINE:
+        break;
+    case Mode::SHAPE_CIRCLE:
+        break;
+    case Mode::SHAPE_SQUARE:
         break;
 
     default:

@@ -21,11 +21,15 @@ typedef struct SDL_Gui {
     SDL_MyButton* brushButton;
     SDL_MyButton* eraserButton;
     SDL_MyButton* fillButton;
-    SDL_MyButton* shapeButton;
+
+
+    SDL_MyButton* shapeButtonLine;
+    SDL_MyButton* shapeButtonCircle;
+    SDL_MyButton* shapeButtonSquare;
 
     SDL_MySlider* thickSlider;
 
-    SDL_MyButton *buttons[9];
+    SDL_MyButton *buttons[11];
 
     SDL_MyColorDialog* dialog;
 
@@ -69,10 +73,20 @@ typedef struct SDL_Gui {
         fillButton->setIcon(IMG_Load("assets/icons/fill_48.png"));
         fillButton->setAction(setModeFill);
 
-        shapeButton = new SDL_MyButton();
-        shapeButton->setRect(32, 305, 32, 32);
-        shapeButton->setIcon(IMG_Load("assets/icons/shapes_48.png"));
-        shapeButton->setAction(setModeShape);
+        shapeButtonLine = new SDL_MyButton();
+        shapeButtonLine->setRect(32, 305, 32, 32);
+        shapeButtonLine->setIcon(IMG_Load("assets/icons/line_48.png"));
+        shapeButtonLine->setAction(setModeShapeLine);
+
+        shapeButtonCircle = new SDL_MyButton();
+        shapeButtonCircle->setRect(32, 372, 32, 32);
+        shapeButtonCircle->setIcon(IMG_Load("assets/icons/circle_thick_48.png"));
+        shapeButtonCircle->setAction(setModeShapeCircle);
+
+        shapeButtonSquare = new SDL_MyButton();
+        shapeButtonSquare->setRect(32, 439, 32, 32);
+        shapeButtonSquare->setIcon(IMG_Load("assets/icons/box_48.png"));
+        shapeButtonSquare->setAction(setModeShapeSquare);
 
         thickSlider = new SDL_MySlider();
         thickSlider->setRect(new SDL_Rect({320, 32, 400, 1}));
@@ -85,8 +99,10 @@ typedef struct SDL_Gui {
         buttons[4] = brushButton;
         buttons[5] = eraserButton;
         buttons[6] = fillButton;
-        buttons[7] = shapeButton;
-        buttons[8] = clearImageButton;
+        buttons[7] = shapeButtonLine;
+        buttons[8] = shapeButtonCircle;
+        buttons[9] = shapeButtonSquare;
+        buttons[10] = clearImageButton;
 
         dialog = new SDL_MyColorDialog();
     }
@@ -118,14 +134,16 @@ typedef struct SDL_Gui {
     
     // BUILD SIDE BAR
     
-    SDL_Rect sideRect = {16, 80, 64, 280};
+    SDL_Rect sideRect = {16, 80, 64, 410};
     SDL_Color sideColor = {225, 225, 225, 200};
     drawRect(renderer, &sideColor, &sideRect, 24);
     
     brushButton->draw(renderer);
     eraserButton->draw(renderer);
     fillButton->draw(renderer);
-    shapeButton->draw(renderer);
+    shapeButtonLine->draw(renderer);
+    shapeButtonCircle->draw(renderer);
+    shapeButtonSquare->draw(renderer);
     
     if (dialog->invoked) {
         dialog->update();

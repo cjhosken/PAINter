@@ -19,12 +19,14 @@ enum Mode
     DRAW,
     ERASE,
     FILL,
-    SHAPE,
+    SHAPE_LINE,
+    SHAPE_CIRCLE,
+    SHAPE_SQUARE,
     PICKER
 };
 
 Mode editMode = Mode::DRAW;
-SDL_Color *activeColor = new SDL_Color({255, 255, 255, 255});
+SDL_Color *activeColor = new SDL_Color({0, 0, 0, 255});
 
 SDL_Surface *circle(int radius, SDL_Color *color, int tX, int tY)
 {

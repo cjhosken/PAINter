@@ -24,9 +24,19 @@ void setModeFill()
     editMode = Mode::FILL;
 }
 
-void setModeShape()
+void setModeShapeLine()
 {
-    editMode = Mode::SHAPE;
+    editMode = Mode::SHAPE_LINE;
+}
+
+void setModeShapeCircle()
+{
+    editMode = Mode::SHAPE_CIRCLE;
+}
+
+void setModeShapeSquare()
+{
+    editMode = Mode::SHAPE_SQUARE;
 }
 
 void setModePicker()
