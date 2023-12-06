@@ -30,7 +30,6 @@ void saveImage();
 // https://gigi.nullneuron.net/gigilabs/sdl2-pixel-drawing/
 int main(int argc, char **argv)
 {
-
     // PAINTer -f image.png -o output
     // process command args here
     for (int c  = 0; c <argc;c++) {
@@ -42,7 +41,6 @@ int main(int argc, char **argv)
             writeFilePath = argv[c+1];
         }
     }
-
 
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
     {
