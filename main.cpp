@@ -4,7 +4,6 @@
 const int width = 1280, height = 720;
 SDL_MouseButtonEvent *mouseEvent;
 SDL_Surface *icon;
-SDL_Renderer *renderer;
 SDL_Gui gui;
 bool running;
 SDL_MySlider *sliderActive = nullptr;
@@ -374,29 +373,7 @@ void minimize()
 
 void pickColor()
 {
-
-    SDL_Color pixelColor = {0, 0, 0, 255};
-    Uint32 pixels[10];
-
-    SDL_Rect pickerRect;
-    pickerRect.x = mX;
-    pickerRect.y = mY;
-    pickerRect.w = 1;
-    pickerRect.h = 1;
-
-    SDL_Surface *s = SDL_CreateRGBSurface(0, 5, 5, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
-    SDL_Surface *ns = SDL_ConvertSurfaceFormat(s, SDL_PIXELFORMAT_ARGB8888, 0);
-
-    if (!SDL_RenderReadPixels(renderer, &pickerRect, SDL_PIXELFORMAT_ARGB8888, pixels, 5))
-    {
-        SDL_GetRGB(pixels[0], ns->format, &(pixelColor.r), &(pixelColor.g), &(pixelColor.b));
-        // printf("Pixel color at (%d, %d): R=%d, G=%d, B=%d, A=%d\n", mX, mY, pixelColor.r, pixelColor.g, pixelColor.b, 255);
-
-        activeColor = new SDL_Color({pixelColor.r, pixelColor.g, pixelColor.b, 255});
-    }
-
-    SDL_FreeSurface(s);
-    SDL_FreeSurface(ns);
+    activeColor = getPixel();
 
     // FROM PRESENTATION
 }
@@ -423,14 +400,19 @@ void drawOnCanvas()
     switch (editMode)
     {
     case Mode::DRAW:
-        SDL_BlitSurface(circle(drawSize, activeColor), NULL, gui.canvas->overlay, new SDL_Rect({cX, cY, drawSize, drawSize}));
+        SDL_BlitSurface(circle(drawSize, activeColor, 0, 0), NULL, gui.canvas->overlay, new SDL_Rect({cX, cY, drawSize, drawSize}));
         break;
 
     case Mode::ERASE:
-        SDL_BlitSurface(circle(drawSize, new SDL_Color({255, 255, 255, 255})), NULL, gui.canvas->overlay, new SDL_Rect({cX, cY, drawSize, drawSize}));
+        SDL_BlitSurface(circle(drawSize, new SDL_Color({255, 255, 255, 255}), 0, 0), NULL, gui.canvas->overlay, new SDL_Rect({cX, cY, drawSize, drawSize}));
         break;
 
     case Mode::FILL:
+        /*SDL_Surface *output = SDL_CreateRGBSurface(0, gui.canvas->image->w, gui.canvas->image->h, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
+        SDL_BlitSurface(gui.canvas->image, NULL, output, NULL);
+        SDL_BlitSurface(gui.canvas->overlay, NULL, output, NULL);
+
+        SDL_FreeSurface(output);*/
         break;
 
     case Mode::SHAPE:
@@ -443,7 +425,7 @@ void drawOnCanvas()
 
 void clearImage() {
     SDL_Surface *empty = SDL_CreateRGBSurface(0, gui.canvas->image->w, gui.canvas->image->h, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
-    SDL_FillRect(empty, NULL, SDL_MapRGBA(empty->format, 0, 0, 0, 0));
+    SDL_FillRect(empty, NULL, SDL_MapRGBA(empty->format, 255, 255, 255, 0));
     gui.canvas->overlay = empty;
 }
 

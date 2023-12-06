@@ -24,35 +24,7 @@ typedef struct SDL_MyCircle {
 
     void draw(SDL_Renderer *renderer, int trimX, int trimY)
     {
-        SDL_Surface *surface = SDL_CreateRGBSurfaceWithFormat(0, radius * 2, radius * 2, 32, SDL_PIXELFORMAT_RGBA8888);
-
-        int i;
-        int j;
-
-        for (i = -radius; i <= radius; ++i)
-        {
-            for (j = -radius; j <= radius; ++j)
-            {
-                if (j * j + i * i <= radius * radius)
-                {
-                    int dX = radius + j - trimX;
-                    int dY = radius + i - trimY;
-                    if (dX >= 0 && dX < surface->w && dY >= 0 && dY < surface->h)
-                    {
-                        // Calculate the pixel offset
-
-                        Uint32 *pixels = (Uint32 *)surface->pixels;
-                        int pixelIndex = dY * (surface->pitch / sizeof(Uint32)) + dX;
-
-                        // Create the pixel value combining RGBA components
-                        Uint32 pixelValue = SDL_MapRGBA(surface->format, color->r, color->g, color->b, color->a);
-
-                        // Set the pixel value
-                        pixels[pixelIndex] = pixelValue;
-                    }
-                }
-            }
-        }
+        SDL_Surface *surface = circle(radius, color, trimX, trimY);
 
         SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
         SDL_FreeSurface(surface);

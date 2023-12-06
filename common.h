@@ -7,6 +7,7 @@
 #include <stdlib.h>
 
 SDL_Window *window;
+SDL_Renderer *renderer;
 SDL_Event event;
 
 int mX, mY;
@@ -23,9 +24,9 @@ enum Mode
 };
 
 Mode editMode = Mode::DRAW;
-SDL_Color *activeColor = new SDL_Color({89, 89, 89, 255});
+SDL_Color *activeColor = new SDL_Color({255, 255, 255, 255});
 
-SDL_Surface *circle(int radius, SDL_Color *color)
+SDL_Surface *circle(int radius, SDL_Color *color, int tX, int tY)
 {
     SDL_Surface *surface = SDL_CreateRGBSurfaceWithFormat(0, radius * 2, radius * 2, 32, SDL_PIXELFORMAT_RGBA8888);
 
@@ -38,8 +39,8 @@ SDL_Surface *circle(int radius, SDL_Color *color)
         {
             if (j * j + i * i <= radius * radius)
             {
-                int dX = radius + j;
-                int dY = radius + i;
+                int dX = radius + j - tX;
+                int dY = radius + i - tY;
                 if (dX >= 0 && dX < surface->w && dY >= 0 && dY < surface->h)
                 {
                     // Calculate the pixel offset
@@ -57,6 +58,31 @@ SDL_Surface *circle(int radius, SDL_Color *color)
         }
     }
     return surface;
+}
+
+SDL_Color* getPixel() {
+    SDL_Color pixelColor = {0, 0, 0, 255};
+    Uint32 pixels[10];
+
+    SDL_Rect pickerRect;
+    pickerRect.x = mX;
+    pickerRect.y = mY;
+    pickerRect.w = 1;
+    pickerRect.h = 1;
+
+    SDL_Surface *s = SDL_CreateRGBSurface(0, 5, 5, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
+    SDL_Surface *ns = SDL_ConvertSurfaceFormat(s, SDL_PIXELFORMAT_ARGB8888, 0);
+
+    if (!SDL_RenderReadPixels(renderer, &pickerRect, SDL_PIXELFORMAT_ARGB8888, pixels, 5))
+    {
+        SDL_GetRGB(pixels[0], ns->format, &(pixelColor.r), &(pixelColor.g), &(pixelColor.b));
+        // printf("Pixel color at (%d, %d): R=%d, G=%d, B=%d, A=%d\n", mX, mY, pixelColor.r, pixelColor.g, pixelColor.b, 255);
+    }
+
+    SDL_FreeSurface(s);
+    SDL_FreeSurface(ns);
+
+    return new SDL_Color({pixelColor.r, pixelColor.g, pixelColor.b, 255});
 }
 
 #endif

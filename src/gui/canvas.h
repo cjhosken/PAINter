@@ -30,7 +30,7 @@ typedef struct SDL_MyCanvas {
     void setImage(SDL_Surface* s) {
         image = s;
         overlay = SDL_CreateRGBSurface(0, image->w, image->h, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
-        SDL_FillRect(overlay, NULL, SDL_MapRGBA(overlay->format, 0, 0, 0, 0));
+        SDL_FillRect(overlay, NULL, SDL_MapRGBA(overlay->format, 255, 255, 255, 0));
     } 
 
 } SDL_MyCanvas;
