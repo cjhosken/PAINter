@@ -60,13 +60,13 @@ SDL_Surface *circle(int radius, SDL_Color *color, int tX, int tY)
     return surface;
 }
 
-SDL_Color* getPixel() {
+SDL_Color* getPixel(int x, int y) {
     SDL_Color pixelColor = {0, 0, 0, 255};
     Uint32 pixels[10];
 
     SDL_Rect pickerRect;
-    pickerRect.x = mX;
-    pickerRect.y = mY;
+    pickerRect.x = x;
+    pickerRect.y = y;
     pickerRect.w = 1;
     pickerRect.h = 1;
 

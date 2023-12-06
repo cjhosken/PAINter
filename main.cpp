@@ -373,7 +373,7 @@ void minimize()
 
 void pickColor()
 {
-    activeColor = getPixel();
+    activeColor = getPixel(mX, mY);
 
     // FROM PRESENTATION
 }
@@ -382,6 +382,17 @@ void openColorWheel()
 {
     gui.dialog->invoke();
 }
+
+void floodFill(SDL_Surface* s, int x, int y, SDL_Color* fill, SDL_Color* pixel) {
+    if (fill == pixel) return;
+
+    if (getPixel(x, y) != pixel) return;
+    
+        // set the pixel color
+
+        // recursive flood fill
+    
+    }
 
 void drawOnCanvas()
 {
@@ -397,6 +408,10 @@ void drawOnCanvas()
     cX = ((mX - gui.canvas->rect->x) / (float) gui.canvas->rect->w) * gui.canvas->image->w - (drawSize);
     cY = ((mY - gui.canvas->rect->y) / (float) gui.canvas->rect->h) * gui.canvas->image->h - (drawSize);
 
+    SDL_Surface *output = SDL_CreateRGBSurface(0, gui.canvas->image->w, gui.canvas->image->h, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
+    SDL_BlitSurface(gui.canvas->image, NULL, output, NULL);
+    SDL_BlitSurface(gui.canvas->overlay, NULL, output, NULL);
+
     switch (editMode)
     {
     case Mode::DRAW:
@@ -408,11 +423,7 @@ void drawOnCanvas()
         break;
 
     case Mode::FILL:
-        /*SDL_Surface *output = SDL_CreateRGBSurface(0, gui.canvas->image->w, gui.canvas->image->h, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
-        SDL_BlitSurface(gui.canvas->image, NULL, output, NULL);
-        SDL_BlitSurface(gui.canvas->overlay, NULL, output, NULL);
-
-        SDL_FreeSurface(output);*/
+        floodFill(output, mX, mY, activeColor, getPixel(mX, mY));
         break;
 
     case Mode::SHAPE:
@@ -421,6 +432,7 @@ void drawOnCanvas()
     default:
         break;
     }
+    SDL_FreeSurface(output);
 }
 
 void clearImage() {
