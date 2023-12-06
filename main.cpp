@@ -26,6 +26,7 @@ void pickColor();
 void openColorWheel();
 void drawOnCanvas();
 void saveImage();
+void clearImage();
 
 // https://gigi.nullneuron.net/gigilabs/sdl2-pixel-drawing/
 int main(int argc, char **argv)
@@ -65,6 +66,7 @@ int main(int argc, char **argv)
     gui.init();
 
     gui.saveImageButton->setAction(saveImage);
+    gui.clearImageButton->setAction(clearImage);
 
     gui.colorsButton->setAction(openColorWheel);
 
@@ -421,11 +423,11 @@ void drawOnCanvas()
     switch (editMode)
     {
     case Mode::DRAW:
-        SDL_BlitSurface(circle(drawSize, activeColor), NULL, gui.canvas->image, new SDL_Rect({cX, cY, drawSize, drawSize}));
+        SDL_BlitSurface(circle(drawSize, activeColor), NULL, gui.canvas->overlay, new SDL_Rect({cX, cY, drawSize, drawSize}));
         break;
 
     case Mode::ERASE:
-        SDL_BlitSurface(circle(drawSize, new SDL_Color({255, 255, 255, 255})), NULL, gui.canvas->image, new SDL_Rect({cX, cY, drawSize, drawSize}));
+        SDL_BlitSurface(circle(drawSize, new SDL_Color({255, 255, 255, 255})), NULL, gui.canvas->overlay, new SDL_Rect({cX, cY, drawSize, drawSize}));
         break;
 
     case Mode::FILL:
@@ -439,15 +441,32 @@ void drawOnCanvas()
     }
 }
 
+void clearImage() {
+    SDL_Surface *empty = SDL_CreateRGBSurface(0, gui.canvas->image->w, gui.canvas->image->h, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
+    SDL_FillRect(empty, NULL, SDL_MapRGBA(empty->format, 0, 0, 0, 0));
+    gui.canvas->overlay = empty;
+}
+
 void saveImage() {
+    SDL_Surface *output = SDL_CreateRGBSurface(0, gui.canvas->image->w, gui.canvas->image->h, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
+    SDL_BlitSurface(gui.canvas->image, NULL, output, NULL);
+    SDL_BlitSurface(gui.canvas->overlay, NULL, output, NULL);
+
     if (writeFilePath != NULL) {
-        IMG_SavePNG(gui.canvas->image, writeFilePath);
+        IMG_SavePNG(output, writeFilePath);
     } else {
-        IMG_SavePNG(gui.canvas->image, "./output.png");
+        IMG_SavePNG(output, "./output.png");
     }
 
     SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "File Saved!", "Your image has been saved!", NULL);
+
+    SDL_FreeSurface(output);
 }
+
+
+//BRESENHAM LINE ALGOIRTHM (SEE PRESENTATION)
+
+
 // end
 
 // Copyright © 2023 Christopher Hosken

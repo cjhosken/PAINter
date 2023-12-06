@@ -13,6 +13,8 @@ typedef struct SDL_Gui {
     SDL_MyButton* iconButton;
     SDL_MyButton* saveImageButton;
 
+    SDL_MyButton* clearImageButton;
+
     SDL_MyButton* colorsButton;
     SDL_MyButton* pickerButton;
 
@@ -23,7 +25,7 @@ typedef struct SDL_Gui {
 
     SDL_MySlider* thickSlider;
 
-    SDL_MyButton *buttons[8];
+    SDL_MyButton *buttons[9];
 
     SDL_MyColorDialog* dialog;
 
@@ -36,8 +38,12 @@ typedef struct SDL_Gui {
         iconButton->setAction(openWebPage);
 
         saveImageButton = new SDL_MyButton();
-        saveImageButton->setRect(204, 16, 32, 32);
+        saveImageButton->setRect(156, 16, 32, 32);
         saveImageButton->setIcon(IMG_Load("assets/icons/save_48.png"));
+
+        clearImageButton = new SDL_MyButton();
+        clearImageButton->setRect(100, 16, 32, 32);
+        clearImageButton->setIcon(IMG_Load("assets/icons/box_48.png"));
 
         colorsButton = new SDL_MyButton();
         colorsButton->setRect(1200, 20 ,24, 24);
@@ -80,6 +86,7 @@ typedef struct SDL_Gui {
         buttons[5] = eraserButton;
         buttons[6] = fillButton;
         buttons[7] = shapeButton;
+        buttons[8] = clearImageButton;
 
         dialog = new SDL_MyColorDialog();
     }
@@ -96,6 +103,7 @@ typedef struct SDL_Gui {
     // LOAD AND SAVING BUTTONS
     
     iconButton->draw(renderer);
+    clearImageButton->draw(renderer);
     saveImageButton->draw(renderer);
     
     // THICKNESS BUTTONS
