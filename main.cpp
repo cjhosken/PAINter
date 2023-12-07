@@ -9,8 +9,12 @@ bool running;
 SDL_MySlider *sliderActive = nullptr;
 int drawSizeFac = 64;
 
-char* readFilePath = NULL;
-char* writeFilePath = NULL;
+int rX, rY;
+
+char *readFilePath = NULL;
+char *writeFilePath = NULL;
+
+SDL_MyPosition *fillStack = new SDL_MyPosition[1];
 
 int run();
 void dispose();
@@ -32,13 +36,16 @@ int main(int argc, char **argv)
 {
     // PAINTer -f image.png -o output
     // process command args here
-    for (int c  = 0; c <argc;c++) {
-        if (strcmp(argv[c], "-f")==0) {
-            readFilePath = argv[c+1];
+    for (int c = 0; c < argc; c++)
+    {
+        if (strcmp(argv[c], "-f") == 0)
+        {
+            readFilePath = argv[c + 1];
         }
 
-        if (strcmp(argv[c], "-o") == 0) {
-            writeFilePath = argv[c+1];
+        if (strcmp(argv[c], "-o") == 0)
+        {
+            writeFilePath = argv[c + 1];
         }
     }
 
@@ -69,16 +76,28 @@ int main(int argc, char **argv)
 
     gui.colorsButton->setAction(openColorWheel);
 
-    if (readFilePath != NULL) {
+    if (readFilePath != NULL)
+    {
         gui.canvas->setImage(IMG_Load(readFilePath));
-    } else {
-        SDL_Surface *newImage = SDL_CreateRGBSurface(0, 1920, 1080, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
+    }
+    else
+    {
+        SDL_Surface *newImage = SDL_CreateRGBSurface(0, 512, 512, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
         SDL_FillRect(newImage, NULL, SDL_MapRGBA(newImage->format, 255, 255, 255, 255));
         gui.canvas->setImage(newImage);
     }
     gui.canvas->setRect(0, 0, gui.canvas->image->w, gui.canvas->image->h);
 
     return run();
+}
+
+void draw()
+{
+    SDL_SetRenderDrawColor(renderer, 245, 245, 245, 255);
+    SDL_RenderClear(renderer);
+
+    gui.draw(renderer);
+    SDL_RenderPresent(renderer);
 }
 
 int run()
@@ -88,7 +107,7 @@ int run()
     bool hold = false;
     bool buttonPressed = false;
     bool down = false;
-    int rX, rY, lX, lY, uX, uY;
+    int lX, lY, uX, uY;
     SDL_Surface *cursorSurface;
 
     while (running)
@@ -346,22 +365,17 @@ int run()
             }
         }
 
-        int drawSize = drawSizeFac * gui.thickSlider->value * (float) (gui.canvas->rect->w / 1280.0f) * 2;
-        SDL_Surface* scaledSurface = SDL_CreateRGBSurface(0, drawSize, drawSize, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
+        int drawSize = drawSizeFac * gui.thickSlider->value * (float)(gui.canvas->rect->w / 1280.0f) * 2;
+        SDL_Surface *scaledSurface = SDL_CreateRGBSurface(0, drawSize, drawSize, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
         SDL_FillRect(scaledSurface, NULL, SDL_MapRGBA(scaledSurface->format, 0, 0, 0, 0));
         SDL_BlitScaled(cursorSurface, NULL, scaledSurface, new SDL_Rect({0, 0, drawSize, drawSize}));
 
-        SDL_Cursor *cursor = SDL_CreateColorCursor(scaledSurface, drawSize/2, drawSize/2);
+        SDL_Cursor *cursor = SDL_CreateColorCursor(scaledSurface, drawSize / 2, drawSize / 2);
         SDL_SetCursor(cursor);
 
         SDL_FreeSurface(scaledSurface);
 
-        SDL_SetRenderDrawColor(renderer, 245, 245, 245, 255);
-        SDL_RenderClear(renderer);
-        
-
-        gui.draw(renderer);
-        SDL_RenderPresent(renderer);
+        draw();
     }
     // https://gigi.nullneuron.net/gigilabs/handling-keyboard-and-mouse-events-in-sdl2/
 
@@ -386,7 +400,7 @@ void minimize()
 
 void pickColor()
 {
-    activeColor = getPixel(mX, mY);
+    activeColor = getPixel(NULL, mX, mY);
 
     // FROM PRESENTATION
 }
@@ -396,34 +410,55 @@ void openColorWheel()
     gui.dialog->invoke();
 }
 
-void floodFill(SDL_Surface* s, int x, int y, SDL_Color* fill, SDL_Color* pixel) {
-    if (fill == pixel) return;
+bool floodFill(SDL_MyPosition pos, SDL_Surface *read, SDL_Surface *write, SDL_Color *fill, SDL_Color *pixel)
+{
+    if (pos.x < 0 || pos.x > gui.canvas->image->w)
+        return false;
 
-    if (getPixel(x, y) != pixel) return;
-    
-        // set the pixel color
+    if (pos.y < 0 || pos.y > gui.canvas->image->h)
+        return false;
 
-        // recursive flood fill
+    if (compareColor(fill, pixel))
+        return false;
+
+    if (!compareColor(getSurfacePixel(read, pos.x, pos.y), pixel))
+        return false;
+
+    setSurfacePixel(write, fill, pos.x, pos.y);
+
+    int stackSize = sizeof(fillStack) / sizeof(SDL_MyPosition);
+
+    realloc(fillStack, (stackSize + 4)*sizeof(SDL_MyPosition));
     
-    }
+    fillStack[stackSize + 0] = SDL_MyPosition({pos.x + 1, pos.y});
+    fillStack[stackSize + 1] = SDL_MyPosition({pos.x, pos.y + 1});
+    fillStack[stackSize + 2] = SDL_MyPosition({pos.x - 1, pos.y});
+    fillStack[stackSize + 3] = SDL_MyPosition({pos.x, pos.y - 1});
+
+    return true;
+}
 
 void drawOnCanvas()
 {
-    if (mY <= 64) return;
-    if ((mY > 80 && mY < 80 + 280) && (mX > 16 && mX < 16 + 64)) return;
-    int cX, cY;
+    if (mY <= 64)
+        return;
+    if ((mY > 80 && mY < 80 + 280) && (mX > 16 && mX < 16 + 64))
+        return;
+    int cX, cY, i;
     int drawSize = drawSizeFac * gui.thickSlider->value;
-
+    bool l = true;
     // map from draw shape to image
     // cX = ((mX - rX) / rW) * iW
     // cY = ((mY - rY) / rH) * iH
 
-    cX = ((mX - gui.canvas->rect->x) / (float) gui.canvas->rect->w) * gui.canvas->image->w - (drawSize);
-    cY = ((mY - gui.canvas->rect->y) / (float) gui.canvas->rect->h) * gui.canvas->image->h - (drawSize);
+    cX = ((mX - gui.canvas->rect->x) / (float)gui.canvas->rect->w) * gui.canvas->image->w - (drawSize);
+    cY = ((mY - gui.canvas->rect->y) / (float)gui.canvas->rect->h) * gui.canvas->image->h - (drawSize);
 
     SDL_Surface *output = SDL_CreateRGBSurface(0, gui.canvas->image->w, gui.canvas->image->h, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
     SDL_BlitSurface(gui.canvas->image, NULL, output, NULL);
     SDL_BlitSurface(gui.canvas->overlay, NULL, output, NULL);
+
+    SDL_Color *pixel;
 
     switch (editMode)
     {
@@ -436,7 +471,29 @@ void drawOnCanvas()
         break;
 
     case Mode::FILL:
-        floodFill(output, mX, mY, activeColor, getPixel(mX, mY));
+        if (cX < 0 || cX > gui.canvas->image->w)
+            break;
+        if (cY < 0 || cY > gui.canvas->image->h)
+            break;
+
+        pixel = getSurfacePixel(output, cX, cY);
+
+        fillStack[0] = SDL_MyPosition({cX, cY});
+
+        i = 0;
+
+        while (i < sizeof(fillStack) / sizeof(SDL_MyPosition))
+        {
+            if (floodFill(fillStack[i], output, gui.canvas->overlay, activeColor, pixel))
+            {
+                draw();
+            };
+
+            i++;
+        }
+
+        delete[] fillStack;
+
         break;
 
     case Mode::SHAPE_LINE:
@@ -445,27 +502,31 @@ void drawOnCanvas()
         break;
     case Mode::SHAPE_SQUARE:
         break;
-
     default:
         break;
     }
     SDL_FreeSurface(output);
 }
 
-void clearImage() {
+void clearImage()
+{
     SDL_Surface *empty = SDL_CreateRGBSurface(0, gui.canvas->image->w, gui.canvas->image->h, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
     SDL_FillRect(empty, NULL, SDL_MapRGBA(empty->format, 255, 255, 255, 0));
     gui.canvas->overlay = empty;
 }
 
-void saveImage() {
+void saveImage()
+{
     SDL_Surface *output = SDL_CreateRGBSurface(0, gui.canvas->image->w, gui.canvas->image->h, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
     SDL_BlitSurface(gui.canvas->image, NULL, output, NULL);
     SDL_BlitSurface(gui.canvas->overlay, NULL, output, NULL);
 
-    if (writeFilePath != NULL) {
+    if (writeFilePath != NULL)
+    {
         IMG_SavePNG(output, writeFilePath);
-    } else {
+    }
+    else
+    {
         IMG_SavePNG(output, "./output.png");
     }
 
@@ -474,9 +535,7 @@ void saveImage() {
     SDL_FreeSurface(output);
 }
 
-
-//BRESENHAM LINE ALGOIRTHM (SEE PRESENTATION)
-
+// BRESENHAM LINE ALGOIRTHM (SEE PRESENTATION)
 
 // end
 

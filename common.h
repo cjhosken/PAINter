@@ -5,6 +5,9 @@
 #include <SDL2/SDL_image.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
 
 SDL_Window *window;
 SDL_Renderer *renderer;
@@ -24,6 +27,10 @@ enum Mode
     SHAPE_SQUARE,
     PICKER
 };
+
+bool compareColor(SDL_Color* a, SDL_Color* b) {
+    return (a->r == b->r) && (a->g == b->g) && (a->b == b->b);
+}
 
 Mode editMode = Mode::DRAW;
 SDL_Color *activeColor = new SDL_Color({0, 0, 0, 255});
@@ -62,29 +69,55 @@ SDL_Surface *circle(int radius, SDL_Color *color, int tX, int tY)
     return surface;
 }
 
-SDL_Color* getPixel(int x, int y) {
-    SDL_Color pixelColor = {0, 0, 0, 255};
+SDL_Color *getPixel(SDL_Surface* surface, int x, int y)
+{
+
+    SDL_Color* pixelColor = new SDL_Color({0, 0, 0, 255});
+
     Uint32 pixels[10];
 
-    SDL_Rect pickerRect;
-    pickerRect.x = x;
-    pickerRect.y = y;
-    pickerRect.w = 1;
-    pickerRect.h = 1;
+        SDL_Rect pickerRect;
+        pickerRect.x = x;
+        pickerRect.y = y;
+        pickerRect.w = 1;
+        pickerRect.h = 1;
 
-    SDL_Surface *s = SDL_CreateRGBSurface(0, 5, 5, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
-    SDL_Surface *ns = SDL_ConvertSurfaceFormat(s, SDL_PIXELFORMAT_ARGB8888, 0);
+        SDL_Surface *s = SDL_CreateRGBSurface(0, 5, 5, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
+        SDL_Surface *ns = SDL_ConvertSurfaceFormat(s, SDL_PIXELFORMAT_ARGB8888, 0);
 
-    if (!SDL_RenderReadPixels(renderer, &pickerRect, SDL_PIXELFORMAT_ARGB8888, pixels, 5))
-    {
-        SDL_GetRGB(pixels[0], ns->format, &(pixelColor.r), &(pixelColor.g), &(pixelColor.b));
-        // printf("Pixel color at (%d, %d): R=%d, G=%d, B=%d, A=%d\n", mX, mY, pixelColor.r, pixelColor.g, pixelColor.b, 255);
-    }
+        if (!SDL_RenderReadPixels(renderer, &pickerRect, SDL_PIXELFORMAT_ARGB8888, pixels, 5))
+        {
+            SDL_GetRGB(pixels[0], ns->format, &(pixelColor->r), &(pixelColor->g), &(pixelColor->b));
+            // printf("Pixel color at (%d, %d): R=%d, G=%d, B=%d, A=%d\n", mX, mY, pixelColor.r, pixelColor.g, pixelColor.b, 255);
+        }
 
-    SDL_FreeSurface(s);
-    SDL_FreeSurface(ns);
-
-    return new SDL_Color({pixelColor.r, pixelColor.g, pixelColor.b, 255});
+        SDL_FreeSurface(s);
+        SDL_FreeSurface(ns);
+    return pixelColor;
 }
+
+
+SDL_Color* getSurfacePixel(SDL_Surface* s, int x, int y) {
+    SDL_Color* pixelColor = new SDL_Color({0, 0, 0, 255});
+    Uint32 *pixels = (Uint32*)s->pixels;
+    SDL_GetRGB(pixels[x+y*s->w], s->format, &(pixelColor->r), &(pixelColor->g), &(pixelColor->b));
+
+    return pixelColor;
+}
+
+void setSurfacePixel(SDL_Surface* s, SDL_Color *color, int x, int y)
+{
+    Uint32 *pixels = (Uint32*)s->pixels;
+    Uint32 pixel = SDL_MapRGB(s->format, color->r, color->g, color->b);
+    pixels[x+y*s->w] = pixel;
+
+}
+//https://stackoverflow.com/questions/20070155/how-to-set-a-pixel-in-a-sdl-surface
+
+typedef struct SDL_MyPosition {
+    int x; 
+    int y;
+} SDL_MyPosition;
+
 
 #endif
