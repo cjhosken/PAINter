@@ -1,5 +1,6 @@
 #include "common.h"
 #include "src/gui/gui.h"
+#include <vector>
 
 const int width = 1280, height = 720;
 SDL_MouseButtonEvent *mouseEvent;
@@ -8,13 +9,16 @@ SDL_Gui gui;
 bool running;
 SDL_MySlider *sliderActive = nullptr;
 int drawSizeFac = 64;
+int stackMaxSize = 4096;
 
 int rX, rY;
 
 char *readFilePath = NULL;
 char *writeFilePath = NULL;
 
-SDL_MyPosition *fillStack = new SDL_MyPosition[1];
+vector<vector<bool>> visit_array = {};
+
+vector<SDL_MyPosition> fillStack;
 
 int run();
 void dispose();
@@ -410,32 +414,36 @@ void openColorWheel()
     gui.dialog->invoke();
 }
 
-bool floodFill(SDL_MyPosition pos, SDL_Surface *read, SDL_Surface *write, SDL_Color *fill, SDL_Color *pixel)
+bool isValid(int x, int y, SDL_Surface *read, SDL_Color *fill, SDL_Color *pixel)
 {
-    if (pos.x < 0 || pos.x > gui.canvas->image->w)
-        return false;
+    return (x >= 0 && x < gui.canvas->image->w) && (y >= 0 && y < gui.canvas->image->h) && !visit_array[x][y] && !compareColor(fill, pixel) && compareColor(getSurfacePixel(read, x, y), pixel);
+}
 
-    if (pos.y < 0 || pos.y > gui.canvas->image->h)
-        return false;
-
-    if (compareColor(fill, pixel))
-        return false;
-
-    if (!compareColor(getSurfacePixel(read, pos.x, pos.y), pixel))
-        return false;
-
+void floodFill(SDL_MyPosition pos, SDL_Surface *read, SDL_Surface *write, SDL_Color *fill, SDL_Color *pixel)
+{
+    if (!isValid(pos.x, pos.y, read, fill, pixel))
+        return;
     setSurfacePixel(write, fill, pos.x, pos.y);
+    draw();
 
-    int stackSize = sizeof(fillStack) / sizeof(SDL_MyPosition);
+    if (isValid(pos.x + 1, pos.y, read, fill, pixel))
+    {
+        fillStack.push_back(SDL_MyPosition({pos.x + 1, pos.y}));
+    }
+    if (isValid(pos.x - 1, pos.y, read, fill, pixel))
+    {
+        fillStack.push_back(SDL_MyPosition({pos.x - 1, pos.y}));
+    }
+    if (isValid(pos.x, pos.y + 1, read, fill, pixel))
+    {
+        fillStack.push_back(SDL_MyPosition({pos.x, pos.y + 1}));
+    }
+    if (isValid(pos.x, pos.y - 1, read, fill, pixel))
+    {
+        fillStack.push_back(SDL_MyPosition({pos.x, pos.y - 1}));
+    }
 
-    realloc(fillStack, (stackSize + 4)*sizeof(SDL_MyPosition));
-    
-    fillStack[stackSize + 0] = SDL_MyPosition({pos.x + 1, pos.y});
-    fillStack[stackSize + 1] = SDL_MyPosition({pos.x, pos.y + 1});
-    fillStack[stackSize + 2] = SDL_MyPosition({pos.x - 1, pos.y});
-    fillStack[stackSize + 3] = SDL_MyPosition({pos.x, pos.y - 1});
-
-    return true;
+    visit_array[pos.x][pos.y] = true;
 }
 
 void drawOnCanvas()
@@ -446,7 +454,8 @@ void drawOnCanvas()
         return;
     int cX, cY, i;
     int drawSize = drawSizeFac * gui.thickSlider->value;
-    bool l = true;
+    bool l;
+
     // map from draw shape to image
     // cX = ((mX - rX) / rW) * iW
     // cY = ((mY - rY) / rH) * iH
@@ -477,22 +486,27 @@ void drawOnCanvas()
             break;
 
         pixel = getSurfacePixel(output, cX, cY);
+        fillStack.clear();
+        fillStack.push_back(SDL_MyPosition({cX, cY}));
 
-        fillStack[0] = SDL_MyPosition({cX, cY});
-
-        i = 0;
-
-        while (i < sizeof(fillStack) / sizeof(SDL_MyPosition))
+        visit_array.resize(gui.canvas->image->w, std::vector<bool>(gui.canvas->image->h, false));
+        while (fillStack.size() > 0)
         {
-            if (floodFill(fillStack[i], output, gui.canvas->overlay, activeColor, pixel))
-            {
-                draw();
-            };
+            SDL_MyPosition currentPos = fillStack.back();
 
-            i++;
+            if (fillStack.size() > stackMaxSize)
+            {
+                fillStack.clear();
+                //printf("%d", fillStack.size());
+                //fflush(stdout);
+            } else {
+                fillStack.pop_back();
+                
+            }
+            floodFill(currentPos, output, gui.canvas->overlay, activeColor, pixel);
         }
 
-        delete[] fillStack;
+        fillStack.clear();
 
         break;
 
