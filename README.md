@@ -5,12 +5,17 @@
 On new linux machines, run `sudo apt install libsdl2-dev`
 
 
-using SDL2_image and https://github.com/btzy/nativefiledialog-extended
+## TODO
+seperate .h and .c files 
+make panel gui class
+split main.cpp into more files
+
+
+using SDL2_image
 
 ### USED LINKS
 https://stackoverflow.com/questions/21890627/drawing-a-rectangle-with-sdl2
 https://stackoverflow.com/questions/39133873/how-to-set-a-gui-button-in-the-win32-window-using-sdl-c
-
 
 ### Useful Links
 Recommended reading:
@@ -18,9 +23,3 @@ Recommended reading:
 • https://wiki.libsdl.org/CategoryMouse
 • https://researchportal.bath.ac.uk/en/publications/a-paint-program-for-the-graphic-arts-in-printing
 • http://alvyray.com/Memos/CG/Microsoft/14_paint.pdf
-
-
-
-
-
-sudo apt-get install libcanberra-gtk-module
