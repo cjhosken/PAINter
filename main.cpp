@@ -9,8 +9,6 @@ SDL_Gui gui;
 bool running;
 SDL_MySlider *sliderActive = nullptr;
 int drawSizeFac = 64;
-int stackMaxSize = 1024;
-int stackSize = 0;
 
 int rX, rY;
 
@@ -20,6 +18,11 @@ char *writeFilePath = NULL;
 vector<vector<bool>> visit_array = {};
 
 vector<SDL_MyPosition> fillStack;
+
+SDL_MyPosition shapeStart;
+
+bool hold = false;
+bool down = false;
 
 int run();
 void dispose();
@@ -103,17 +106,17 @@ void draw()
 
     gui.draw(renderer);
     SDL_RenderPresent(renderer);
+    SDL_FillRect(gui.canvas->ghosting, NULL, SDL_MapRGBA(gui.canvas->ghosting->format, 255, 255, 255, 0));
 }
 
 int run()
 {
     running = true;
 
-    bool hold = false;
     bool buttonPressed = false;
-    bool down = false;
     int lX, lY, uX, uY;
     SDL_Surface *cursorSurface;
+    int drawSize;
 
     while (running)
     {
@@ -133,6 +136,9 @@ int run()
                 {
                 case SDL_BUTTON_LEFT:
                     down = true;
+                    drawSizeFac *gui.thickSlider->value;
+                    shapeStart.x = (int)(((mX - gui.canvas->rect->x) / (float)gui.canvas->rect->w) * gui.canvas->image->w);
+                    shapeStart.y = (int)(((mY - gui.canvas->rect->y) / (float)gui.canvas->rect->h) * gui.canvas->image->h);
                     if (editMode == Mode::PICKER)
                     {
                         pickColor();
@@ -257,9 +263,13 @@ int run()
 
             case SDL_MOUSEBUTTONUP:
                 down = false;
-                hold = false;
                 buttonPressed = false;
                 sliderActive = nullptr;
+                                if (editMode == Mode::SHAPE_CIRCLE || editMode == Mode::SHAPE_LINE || editMode == Mode::SHAPE_SQUARE)
+                {
+                    drawOnCanvas();
+                }
+                                hold = false;
                 break;
 
             case SDL_QUIT:
@@ -315,6 +325,7 @@ int run()
                 hold = false;
                 buttonPressed = false;
                 sliderActive = nullptr;
+
                 break;
             }
         }
@@ -427,34 +438,53 @@ void floodFill(SDL_MyPosition pos, SDL_Surface *read, SDL_Surface *write, SDL_Co
     setSurfacePixel(write, fill, pos.x, pos.y);
 
     visit_array[pos.x][pos.y] = true;
-    if (isValid(pos.x + 1, pos.y, read, fill, pixel) && !visit_array[pos.x + 1][pos.y] )
+    if (isValid(pos.x + 1, pos.y, read, fill, pixel) && !visit_array[pos.x + 1][pos.y])
     {
         fillStack.push_back(SDL_MyPosition({pos.x + 1, pos.y}));
         visit_array[pos.x + 1][pos.y] = true;
-        stackSize++;
     }
-    if (isValid(pos.x - 1, pos.y, read, fill, pixel) && !visit_array[pos.x - 1][pos.y] )
+    if (isValid(pos.x - 1, pos.y, read, fill, pixel) && !visit_array[pos.x - 1][pos.y])
     {
         fillStack.push_back(SDL_MyPosition({pos.x - 1, pos.y}));
         visit_array[pos.x - 1][pos.y] = true;
-        stackSize++;
     }
-    if (isValid(pos.x, pos.y + 1, read, fill, pixel) && !visit_array[pos.x][pos.y + 1] )
+    if (isValid(pos.x, pos.y + 1, read, fill, pixel) && !visit_array[pos.x][pos.y + 1])
     {
         fillStack.push_back(SDL_MyPosition({pos.x, pos.y + 1}));
         visit_array[pos.x][pos.y + 1] = true;
-        stackSize++;
     }
-    if (isValid(pos.x, pos.y - 1, read, fill, pixel) && !visit_array[pos.x][pos.y - 1] )
+    if (isValid(pos.x, pos.y - 1, read, fill, pixel) && !visit_array[pos.x][pos.y - 1])
     {
         fillStack.push_back(SDL_MyPosition({pos.x, pos.y - 1}));
         visit_array[pos.x][pos.y - 1] = true;
-        stackSize++;
     }
-
-
-    stackSize--;
 }
+
+void line(SDL_Surface *surface, int wdth, int hght, int x0, int y0, int xn, int yn)
+{
+    int dx = abs(xn - x0), sx = x0 < xn ? 1 : -1;
+    int dy = abs(yn - y0), sy = y0 < yn ? 1 : -1;
+    int error = (dx > dy ? dx : -dy) / 2, e2;
+    while (1)
+    {
+        /* draw point only if coordinate is valid */
+        if (x0 >= 0 && x0 < wdth && y0 >= 0 && y0 < hght)
+            setSurfacePixel(surface, activeColor, x0, y0);
+        if (x0 == xn && y0 == yn)
+            break;
+        e2 = error;
+        if (e2 > -dx)
+        {
+            error -= dy;
+            x0 += sx;
+        }
+        if (e2 < dy)
+        {
+            error += dx;
+            y0 += sy;
+        }
+    }
+} // https://brightspace.bournemouth.ac.uk/d2l/le/lessons/345037/topics/1968571
 
 void drawOnCanvas()
 {
@@ -501,7 +531,7 @@ void drawOnCanvas()
         fillStack.push_back(SDL_MyPosition({cX, cY}));
 
         visit_array.resize(gui.canvas->image->w, std::vector<bool>(gui.canvas->image->h, false));
-        while (!fillStack.empty() && fillStack.size() < stackMaxSize)
+        while (!fillStack.empty())
         {
             currentPos = fillStack.front();
             fillStack.erase(fillStack.begin());
@@ -516,7 +546,14 @@ void drawOnCanvas()
         break;
 
     case Mode::SHAPE_LINE:
-        break;
+    if (!hold) {
+            if (!down) {
+        line(gui.canvas->overlay, gui.canvas->image->w, gui.canvas->image->h, shapeStart.x, shapeStart.y, cX+drawSize, cY+drawSize);
+    } else {
+        line(gui.canvas->ghosting, gui.canvas->image->w, gui.canvas->image->h, shapeStart.x, shapeStart.y, cX+drawSize, cY+drawSize);
+    }
+    }
+    break;
     case Mode::SHAPE_CIRCLE:
         break;
     case Mode::SHAPE_SQUARE:
