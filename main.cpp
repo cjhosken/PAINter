@@ -529,6 +529,18 @@ void circle(SDL_Surface *surface, int width, int height, int x0, int y0, int rad
     }
 }
 
+void square(SDL_Surface *surface, int width, int height, int x0, int y0, int length)
+{
+    SDL_MyPosition p1 = {x0 - length / 2, y0 - length / 2};
+    SDL_MyPosition p2 = {x0 - length / 2, y0 + length / 2};
+    SDL_MyPosition p3 = {x0 + length / 2, y0 + length / 2};
+    SDL_MyPosition p4 = {x0 + length / 2, y0 - length / 2};
+    line(surface, width, height, p1.x, p1.y, p2.x, p2.y);
+    line(surface, width, height, p2.x, p2.y, p3.x, p3.y);
+    line(surface, width, height, p3.x, p3.y, p4.x, p4.y);
+    line(surface, width, height, p4.x, p4.y, p1.x, p1.y);
+}
+
 void drawOnCanvas()
 {
     if (mY <= 64)
@@ -604,7 +616,7 @@ void drawOnCanvas()
         }
         break;
     case Mode::SHAPE_CIRCLE:
-    if (!hold)
+        if (!hold)
         {
             if (!down)
             {
@@ -617,6 +629,17 @@ void drawOnCanvas()
         }
         break;
     case Mode::SHAPE_SQUARE:
+        if (!hold)
+        {
+            if (!down)
+            {
+                square(gui.canvas->overlay, gui.canvas->image->w, gui.canvas->image->h, shapeStart.x, shapeStart.y, shapeSize);
+            }
+            else
+            {
+                square(gui.canvas->ghosting, gui.canvas->image->w, gui.canvas->image->h, shapeStart.x, shapeStart.y, shapeSize);
+            }
+        }
         break;
     default:
         break;
