@@ -265,11 +265,11 @@ int run()
                 down = false;
                 buttonPressed = false;
                 sliderActive = nullptr;
-                                if (editMode == Mode::SHAPE_CIRCLE || editMode == Mode::SHAPE_LINE || editMode == Mode::SHAPE_SQUARE)
+                if (editMode == Mode::SHAPE_CIRCLE || editMode == Mode::SHAPE_LINE || editMode == Mode::SHAPE_SQUARE)
                 {
                     drawOnCanvas();
                 }
-                                hold = false;
+                hold = false;
                 break;
 
             case SDL_QUIT:
@@ -486,6 +486,49 @@ void line(SDL_Surface *surface, int wdth, int hght, int x0, int y0, int xn, int 
     }
 } // https://brightspace.bournemouth.ac.uk/d2l/le/lessons/345037/topics/1968571
 
+void circle(SDL_Surface *surface, int width, int height, int x0, int y0, int radius)
+{
+    int x = radius, y = 0, error = 1 - radius;
+    while (x >= y)
+    { /* 1 draw call for each octant - ensure coordinates are valid before drawing */
+        if ((x + x0) >= 0 && (x + x0) < width && (y + y0) >= 0 && (y + y0) < height)
+            setSurfacePixel(surface, activeColor, x + x0, y + y0);
+        /* draw point in octant 1 if coordinate is valid */
+        if ((y + x0) >= 0 && (y + x0) < width && (x + y0) >= 0 && (x + y0) < height)
+            setSurfacePixel(surface, activeColor, y + x0, x + y0);
+        /* draw point in octant 2 if coordinate is valid */
+        if ((-x + x0) >= 0 && (-x + x0) < width && (y + y0) >= 0 && (y + y0) < height)
+            setSurfacePixel(surface, activeColor, -x + x0, y + y0);
+        /* draw point in octant 3 if coordinate is valid */
+        if ((-y + x0) >= 0 && (-y + x0) < width && (x + y0) >= 0 && (x + y0) < height)
+            setSurfacePixel(surface, activeColor, -y + x0, x + y0);
+        /* draw point in octant 4 if coordinate is valid */
+        if ((-x + x0) >= 0 && (-x + x0) < width && (-y + y0) >= 0 && (-y + y0) < height)
+            setSurfacePixel(surface, activeColor, -x + x0, -y + y0);
+        /* draw point in octant 5 if coordinate is valid */
+        if ((-y + x0) >= 0 && (-y + x0) < width && (-x + y0) >= 0 && (-x + y0) < height)
+            setSurfacePixel(surface, activeColor, -y + x0, -x + y0);
+        /* draw point in octant 6 if coordinate is valid */
+        if ((x + x0) >= 0 && (x + x0) < width && (-y + y0) >= 0 && (-y + y0) < height)
+            setSurfacePixel(surface, activeColor, x + x0, -y + y0);
+        /* draw point in octant 7 if coordinate is valid */
+        if ((y + x0) >= 0 && (y + x0) < width && (-x + y0) >= 0 && (-x + y0) < height)
+            setSurfacePixel(surface, activeColor, y + x0, -x + y0);
+
+        /* draw point in octant 8 if coordinate is valid */
+        y++; /* increment y coordinate */
+        if (error < 0)
+        {
+            error += 2 * y + 1;
+        }
+        else
+        {
+            x--;
+            error += 2 * (y - x) + 1;
+        }
+    }
+}
+
 void drawOnCanvas()
 {
     if (mY <= 64)
@@ -503,6 +546,8 @@ void drawOnCanvas()
 
     cX = ((mX - gui.canvas->rect->x) / (float)gui.canvas->rect->w) * gui.canvas->image->w - (drawSize);
     cY = ((mY - gui.canvas->rect->y) / (float)gui.canvas->rect->h) * gui.canvas->image->h - (drawSize);
+
+    int shapeSize = sqrt(pow(shapeStart.x - cX, 2) + pow(shapeStart.y - cY, 2));
 
     SDL_Surface *output = SDL_CreateRGBSurface(0, gui.canvas->image->w, gui.canvas->image->h, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
     SDL_BlitSurface(gui.canvas->image, NULL, output, NULL);
@@ -546,15 +591,30 @@ void drawOnCanvas()
         break;
 
     case Mode::SHAPE_LINE:
-    if (!hold) {
-            if (!down) {
-        line(gui.canvas->overlay, gui.canvas->image->w, gui.canvas->image->h, shapeStart.x, shapeStart.y, cX+drawSize, cY+drawSize);
-    } else {
-        line(gui.canvas->ghosting, gui.canvas->image->w, gui.canvas->image->h, shapeStart.x, shapeStart.y, cX+drawSize, cY+drawSize);
-    }
-    }
-    break;
+        if (!hold)
+        {
+            if (!down)
+            {
+                line(gui.canvas->overlay, gui.canvas->image->w, gui.canvas->image->h, shapeStart.x, shapeStart.y, cX + drawSize, cY + drawSize);
+            }
+            else
+            {
+                line(gui.canvas->ghosting, gui.canvas->image->w, gui.canvas->image->h, shapeStart.x, shapeStart.y, cX + drawSize, cY + drawSize);
+            }
+        }
+        break;
     case Mode::SHAPE_CIRCLE:
+    if (!hold)
+        {
+            if (!down)
+            {
+                circle(gui.canvas->overlay, gui.canvas->image->w, gui.canvas->image->h, shapeStart.x, shapeStart.y, shapeSize);
+            }
+            else
+            {
+                circle(gui.canvas->ghosting, gui.canvas->image->w, gui.canvas->image->h, shapeStart.x, shapeStart.y, shapeSize);
+            }
+        }
         break;
     case Mode::SHAPE_SQUARE:
         break;
