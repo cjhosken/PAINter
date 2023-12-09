@@ -1,25 +1,23 @@
 #include "common.h"
 #include "src/gui/gui.h"
-#include <vector>
 
 const int width = 1280, height = 720;
 SDL_MouseButtonEvent *mouseEvent;
 SDL_Surface *icon;
-SDL_Gui gui;
 bool running;
-SDL_MySlider *sliderActive = nullptr;
+PNTR_Slider *sliderActive = nullptr;
 int drawSizeFac = 64;
+
+PNTR_Gui gui;
 
 int rX, rY;
 
-char *readFilePath = NULL;
-char *writeFilePath = NULL;
 
 vector<vector<bool>> visit_array = {};
 
-vector<SDL_MyPosition> fillStack;
+vector<PNTR_Vector2D> fillStack;
 
-SDL_MyPosition shapeStart;
+PNTR_Vector2D shapeStart;
 
 bool hold = false;
 bool down = false;
@@ -114,7 +112,7 @@ int run()
     running = true;
 
     bool buttonPressed = false;
-    int lX, lY, uX, uY;
+    PNTR_Vector2D lastPos; 
     SDL_Surface *cursorSurface;
     int drawSize;
 
@@ -137,18 +135,17 @@ int run()
                 case SDL_BUTTON_LEFT:
                     down = true;
                     drawSizeFac *gui.thickSlider->value;
-                    shapeStart.x = (int)(((mX - gui.canvas->rect->x) / (float)gui.canvas->rect->w) * gui.canvas->image->w);
-                    shapeStart.y = (int)(((mY - gui.canvas->rect->y) / (float)gui.canvas->rect->h) * gui.canvas->image->h);
-                    if (editMode == Mode::PICKER)
+                    shapeStart = PNTR_Vector2D((int)(((mousePos.x - gui.canvas->rect->x) / (float)gui.canvas->rect->w) * gui.canvas->image->w), (int)(((mousePos.y - gui.canvas->rect->y) / (float)gui.canvas->rect->h) * gui.canvas->image->h));
+                    
+                    if (paintMode == PNTR_PaintMode::PICKER)
                     {
                         pickColor();
-                        editMode = Mode::DRAW;
-
+                        paintMode = PNTR_PaintMode::DRAW;
                         break;
                     }
 
                     buttonPressed = false;
-                    for (SDL_MyButton *b : gui.buttons)
+                    for (PNTR_Button *b : gui.buttons)
                     {
                         if (b->pressEvent())
                         {
@@ -161,8 +158,7 @@ int run()
                     {
                         hold = true;
                         sliderActive = gui.thickSlider;
-                        lX = mX;
-                        lY = mY;
+                        lastPos = mousePos;
                         break;
                     }
 
@@ -173,12 +169,11 @@ int run()
                     break;
 
                 case SDL_BUTTON_MIDDLE:
-                    if (mY < 64)
+                    if (mousePos.y < 64)
                         break;
                     rX = gui.canvas->rect->x;
                     rY = gui.canvas->rect->y;
-                    lX = mX;
-                    lY = mY;
+                    lastPos = mousePos;
                     hold = true;
                     break;
                 }
@@ -188,28 +183,27 @@ int run()
                 switch (event.wheel.type)
                 {
                 case SDL_MOUSEWHEEL:
-                    if (mY < 64)
+                    if (mousePos.y < 64)
                         break;
-                    float s = 75;
-                    float ar = (float)gui.canvas->rect->h / gui.canvas->rect->w;
+                    float scalar = 75;
+                    float aspect = (float)gui.canvas->rect->h / gui.canvas->rect->w;
 
-                    float sX = s * (gui.canvas->rect->x - mX) / (float)gui.canvas->rect->w;
-                    float sY = s * (gui.canvas->rect->y - mY) / (float)gui.canvas->rect->h;
+                    PNTR_Vector2D scale =  PNTR_Vector2D(scalar * (gui.canvas->rect->x - mousePos.x) / (float)gui.canvas->rect->w,scalar * (gui.canvas->rect->y - mousePos.y) / (float)gui.canvas->rect->h);
 
                     if (event.wheel.y > 0)
                     {
-                        gui.canvas->rect->x += sX;
-                        gui.canvas->rect->y += sY;
-                        gui.canvas->rect->w += s;
-                        gui.canvas->rect->h += s * ar;
+                        gui.canvas->rect->x += scale.x;
+                        gui.canvas->rect->y += scale.y;
+                        gui.canvas->rect->w += scalar;
+                        gui.canvas->rect->h += scalar * aspect;
                     }
 
                     if (event.wheel.y < 0 && gui.canvas->rect->h > 75)
                     {
-                        gui.canvas->rect->x -= sX;
-                        gui.canvas->rect->y -= sY;
-                        gui.canvas->rect->w -= s;
-                        gui.canvas->rect->h -= s * ar;
+                        gui.canvas->rect->x -= scale.x;
+                        gui.canvas->rect->y -= scale.y;
+                        gui.canvas->rect->w -= scalar;
+                        gui.canvas->rect->h -= scalar * aspect;
                     }
                     break;
                 }
@@ -225,27 +219,27 @@ int run()
                     break;
 
                 case SDLK_b:
-                    editMode = Mode::DRAW;
+                    paintMode = PNTR_PaintMode::DRAW;
                     break;
 
                 case SDLK_e:
-                    editMode = Mode::ERASE;
+                    paintMode = PNTR_PaintMode::ERASE;
                     break;
 
                 case SDLK_f:
-                    editMode = Mode::FILL;
+                    paintMode = PNTR_PaintMode::FILL;
                     break;
                 case SDLK_l:
-                    editMode = Mode::SHAPE_LINE;
+                    paintMode = PNTR_PaintMode::SHAPE_LINE;
                     break;
                 case SDLK_c:
-                    editMode = Mode::SHAPE_CIRCLE;
+                    paintMode = PNTR_PaintMode::SHAPE_CIRCLE;
                     break;
                 case SDLK_s:
-                    editMode = Mode::SHAPE_SQUARE;
+                    paintMode = PNTR_PaintMode::SHAPE_SQUARE;
                     break;
                 case SDLK_p:
-                    editMode = Mode::PICKER;
+                    paintMode = PNTR_PaintMode::PICKER;
                     break;
                 default:
                     break;
@@ -253,8 +247,7 @@ int run()
                 break;
 
             case SDL_MOUSEMOTION:
-                mX = event.motion.x;
-                mY = event.motion.y;
+                mousePos = PNTR_Vector2D(event.motion.x, event.motion.y);
                 if (down && !hold)
                 {
                     drawOnCanvas();
@@ -265,7 +258,7 @@ int run()
                 down = false;
                 buttonPressed = false;
                 sliderActive = nullptr;
-                if (editMode == Mode::SHAPE_CIRCLE || editMode == Mode::SHAPE_LINE || editMode == Mode::SHAPE_SQUARE)
+                if (paintMode == PNTR_PaintMode::SHAPE_CIRCLE || paintMode == PNTR_PaintMode::SHAPE_LINE || paintMode == PNTR_PaintMode::SHAPE_SQUARE)
                 {
                     drawOnCanvas();
                 }
@@ -295,8 +288,7 @@ int run()
             switch (event.type)
             {
             case SDL_MOUSEMOTION:
-                mX = event.motion.x;
-                mY = event.motion.y;
+                mousePos = PNTR_Vector2D(event.motion.x, event.motion.y);
                 break;
 
             case SDL_MOUSEBUTTONDOWN:
@@ -305,14 +297,13 @@ int run()
 
                 case SDL_BUTTON_LEFT:
                     buttonPressed = false;
-                    for (SDL_MySlider *s : gui.dialog->sliders)
+                    for (PNTR_Slider *s : gui.dialog->sliders)
                     {
                         if (s->pressEvent())
                         {
                             hold = true;
                             sliderActive = s;
-                            lX = mX;
-                            lY = mY;
+                            lastPos = mousePos;
                             break;
                         }
                     }
@@ -334,22 +325,22 @@ int run()
         {
             if (sliderActive != nullptr)
             {
-                sliderActive->setValue((mX - sliderActive->rect->x) / (float)sliderActive->rect->w);
+                sliderActive->setValue((mousePos.x - sliderActive->rect->x) / (float)sliderActive->rect->w);
             }
             else
             {
-                gui.canvas->rect->x = rX + mX - lX;
-                gui.canvas->rect->y = rY + mY - lY;
+                gui.canvas->rect->x = rX + mousePos.x - lastPos.x;
+                gui.canvas->rect->y = rY + mousePos.y - lastPos.y;
             }
         }
 
         else
         {
-            for (SDL_MyButton *b : gui.buttons)
+            for (PNTR_Button *b : gui.buttons)
             {
                 b->setActive(false);
             }
-            switch (editMode)
+            switch (paintMode)
             {
             case DRAW:
                 gui.brushButton->setActive(true);
@@ -381,7 +372,7 @@ int run()
             }
         }
 
-        int drawSize = drawSizeFac * gui.thickSlider->value * (float)(gui.canvas->rect->w / 1280.0f) * 2;
+        int drawSize = drawSizeFac * gui.thickSlider->value * (float)(gui.canvas->rect->w / 1280.0f) * 4;
         SDL_Surface *scaledSurface = SDL_CreateRGBSurface(0, drawSize, drawSize, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
         SDL_FillRect(scaledSurface, NULL, SDL_MapRGBA(scaledSurface->format, 0, 0, 0, 0));
         SDL_BlitScaled(cursorSurface, NULL, scaledSurface, new SDL_Rect({0, 0, drawSize, drawSize}));
@@ -416,7 +407,7 @@ void minimize()
 
 void pickColor()
 {
-    activeColor = getPixel(NULL, mX, mY);
+    activeColor = getPixel(mousePos);
 
     // FROM PRESENTATION
 }
@@ -428,10 +419,10 @@ void openColorWheel()
 
 bool isValid(int x, int y, SDL_Surface *read, SDL_Color *fill, SDL_Color *pixel)
 {
-    return (x >= 0 && x < gui.canvas->image->w) && (y >= 0 && y < gui.canvas->image->h) && !compareColor(fill, pixel) && compareColor(getSurfacePixel(read, x, y), pixel);
+    return (x >= 0 && x < gui.canvas->image->w) && (y >= 0 && y < gui.canvas->image->h) && !compare(fill, pixel) && compare(getSurfacePixel(read, x, y), pixel);
 }
 
-void floodFill(SDL_MyPosition pos, SDL_Surface *read, SDL_Surface *write, SDL_Color *fill, SDL_Color *pixel)
+void floodFill(PNTR_Vector2D pos, SDL_Surface *read, SDL_Surface *write, SDL_Color *fill, SDL_Color *pixel)
 {
     if (!isValid(pos.x, pos.y, read, fill, pixel))
         return;
@@ -440,22 +431,22 @@ void floodFill(SDL_MyPosition pos, SDL_Surface *read, SDL_Surface *write, SDL_Co
     visit_array[pos.x][pos.y] = true;
     if (isValid(pos.x + 1, pos.y, read, fill, pixel) && !visit_array[pos.x + 1][pos.y])
     {
-        fillStack.push_back(SDL_MyPosition({pos.x + 1, pos.y}));
+        fillStack.push_back(PNTR_Vector2D(pos.x + 1, pos.y));
         visit_array[pos.x + 1][pos.y] = true;
     }
     if (isValid(pos.x - 1, pos.y, read, fill, pixel) && !visit_array[pos.x - 1][pos.y])
     {
-        fillStack.push_back(SDL_MyPosition({pos.x - 1, pos.y}));
+        fillStack.push_back(PNTR_Vector2D(pos.x - 1, pos.y));
         visit_array[pos.x - 1][pos.y] = true;
     }
     if (isValid(pos.x, pos.y + 1, read, fill, pixel) && !visit_array[pos.x][pos.y + 1])
     {
-        fillStack.push_back(SDL_MyPosition({pos.x, pos.y + 1}));
+        fillStack.push_back(PNTR_Vector2D(pos.x, pos.y + 1));
         visit_array[pos.x][pos.y + 1] = true;
     }
     if (isValid(pos.x, pos.y - 1, read, fill, pixel) && !visit_array[pos.x][pos.y - 1])
     {
-        fillStack.push_back(SDL_MyPosition({pos.x, pos.y - 1}));
+        fillStack.push_back(PNTR_Vector2D(pos.x, pos.y - 1));
         visit_array[pos.x][pos.y - 1] = true;
     }
 }
@@ -531,10 +522,10 @@ void circle(SDL_Surface *surface, int width, int height, int x0, int y0, int rad
 
 void square(SDL_Surface *surface, int width, int height, int x0, int y0, int length)
 {
-    SDL_MyPosition p1 = {x0 - length / 2, y0 - length / 2};
-    SDL_MyPosition p2 = {x0 - length / 2, y0 + length / 2};
-    SDL_MyPosition p3 = {x0 + length / 2, y0 + length / 2};
-    SDL_MyPosition p4 = {x0 + length / 2, y0 - length / 2};
+    PNTR_Vector2D p1 = {x0 - length / 2, y0 - length / 2};
+    PNTR_Vector2D p2 = {x0 - length / 2, y0 + length / 2};
+    PNTR_Vector2D p3 = {x0 + length / 2, y0 + length / 2};
+    PNTR_Vector2D p4 = {x0 + length / 2, y0 - length / 2};
     line(surface, width, height, p1.x, p1.y, p2.x, p2.y);
     line(surface, width, height, p2.x, p2.y, p3.x, p3.y);
     line(surface, width, height, p3.x, p3.y, p4.x, p4.y);
@@ -543,21 +534,21 @@ void square(SDL_Surface *surface, int width, int height, int x0, int y0, int len
 
 void drawOnCanvas()
 {
-    if (mY <= 64)
+    if (mousePos.x <= 64)
         return;
-    if ((mY > 80 && mY < 80 + 280) && (mX > 16 && mX < 16 + 64))
+    if ((mousePos.x > 80 && mousePos.y < 80 + 280) && (mousePos.x > 16 && mousePos.x < 16 + 64))
         return;
     int cX, cY, i;
     int drawSize = drawSizeFac * gui.thickSlider->value;
     bool l;
-    SDL_MyPosition currentPos;
+    PNTR_Vector2D currentPos;
 
     // map from draw shape to image
     // cX = ((mX - rX) / rW) * iW
     // cY = ((mY - rY) / rH) * iH
 
-    cX = ((mX - gui.canvas->rect->x) / (float)gui.canvas->rect->w) * gui.canvas->image->w - (drawSize);
-    cY = ((mY - gui.canvas->rect->y) / (float)gui.canvas->rect->h) * gui.canvas->image->h - (drawSize);
+    cX = ((mousePos.x - gui.canvas->rect->x) / (float)gui.canvas->rect->w) * gui.canvas->image->w;
+    cY = ((mousePos.y - gui.canvas->rect->y) / (float)gui.canvas->rect->h) * gui.canvas->image->h;;
 
     int shapeSize = sqrt(pow(shapeStart.x - cX, 2) + pow(shapeStart.y - cY, 2));
 
@@ -567,17 +558,17 @@ void drawOnCanvas()
 
     SDL_Color *pixel;
 
-    switch (editMode)
+    switch (paintMode)
     {
-    case Mode::DRAW:
-        SDL_BlitSurface(circle(drawSize, activeColor, 0, 0), NULL, gui.canvas->overlay, new SDL_Rect({cX, cY, drawSize, drawSize}));
+    case PNTR_PaintMode::DRAW:
+        SDL_BlitSurface(circleToSurface(drawSize, activeColor, PNTR_Vector2D()), NULL, gui.canvas->overlay, new SDL_Rect({cX - drawSize, cY - drawSize, drawSize, drawSize}));
         break;
 
-    case Mode::ERASE:
-        SDL_BlitSurface(circle(drawSize, new SDL_Color({255, 255, 255, 255}), 0, 0), NULL, gui.canvas->overlay, new SDL_Rect({cX, cY, drawSize, drawSize}));
+    case PNTR_PaintMode::ERASE:
+        SDL_BlitSurface(circleToSurface(drawSize, new SDL_Color({255, 255, 255, 255}), PNTR_Vector2D()), NULL, gui.canvas->overlay, new SDL_Rect({cX - drawSize, cY - drawSize, drawSize, drawSize}));
         break;
 
-    case Mode::FILL:
+    case PNTR_PaintMode::FILL:
         if (cX < 0 || cX > gui.canvas->image->w)
             break;
         if (cY < 0 || cY > gui.canvas->image->h)
@@ -585,7 +576,7 @@ void drawOnCanvas()
 
         pixel = getSurfacePixel(output, cX, cY);
         fillStack.clear();
-        fillStack.push_back(SDL_MyPosition({cX, cY}));
+        fillStack.push_back(PNTR_Vector2D({cX, cY}));
 
         visit_array.resize(gui.canvas->image->w, std::vector<bool>(gui.canvas->image->h, false));
         while (!fillStack.empty())
@@ -602,7 +593,7 @@ void drawOnCanvas()
         visit_array.resize(gui.canvas->image->w, std::vector<bool>(gui.canvas->image->h, false));
         break;
 
-    case Mode::SHAPE_LINE:
+    case PNTR_PaintMode::SHAPE_LINE:
         if (!hold)
         {
             if (!down)
@@ -615,7 +606,7 @@ void drawOnCanvas()
             }
         }
         break;
-    case Mode::SHAPE_CIRCLE:
+    case PNTR_PaintMode::SHAPE_CIRCLE:
         if (!hold)
         {
             if (!down)
@@ -628,7 +619,7 @@ void drawOnCanvas()
             }
         }
         break;
-    case Mode::SHAPE_SQUARE:
+    case PNTR_PaintMode::SHAPE_SQUARE:
         if (!hold)
         {
             if (!down)
@@ -646,6 +637,7 @@ void drawOnCanvas()
     }
     SDL_FreeSurface(output);
 }
+
 
 void clearImage()
 {

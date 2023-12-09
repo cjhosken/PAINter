@@ -6,13 +6,13 @@
 #include "rect.h"
 
 typedef struct SDL_MyColorDialog {
-    SDL_MySlider* rSlider = new SDL_MySlider();
-    SDL_MySlider* gSlider = new SDL_MySlider();
-    SDL_MySlider* bSlider = new SDL_MySlider();
+    PNTR_Slider* rSlider = new PNTR_Slider();
+    PNTR_Slider* gSlider = new PNTR_Slider();
+    PNTR_Slider* bSlider = new PNTR_Slider();
 
     SDL_Window* dialog = SDL_CreateWindow("PAINter Color", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 300, 200, SDL_WINDOW_HIDDEN);
 
-    SDL_MySlider *sliders[3];
+    PNTR_Slider *sliders[3];
     SDL_Renderer* renderer = SDL_CreateRenderer(dialog, -1, SDL_RENDERER_ACCELERATED);
 
     bool invoked;
@@ -44,9 +44,9 @@ typedef struct SDL_MyColorDialog {
         SDL_SetRenderDrawColor(renderer, 240, 240, 240, 255);
         SDL_RenderClear(renderer);
         
-        drawRect(renderer, activeColor, new SDL_Rect({50, 10, 200, 75}), 5);
+        renderRect(renderer, activeColor, new SDL_Rect({50, 10, 200, 75}), 5);
         
-        for (SDL_MySlider* s : sliders) {
+        for (PNTR_Slider* s : sliders) {
             s->draw(renderer);
         }
 

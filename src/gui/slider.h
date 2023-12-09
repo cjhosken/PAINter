@@ -5,19 +5,17 @@
 #include "circle.h"
 #include "rect.h"
 
-typedef struct SDL_MySlider {
+typedef struct PNTR_Slider {
     float value = 0.5f;
     SDL_Rect* rect = new SDL_Rect();
-    SDL_MyCircle* circle = new SDL_MyCircle();
+    PNTR_Circle* circle = new PNTR_Circle(PNTR_Vector2D(), 8, new SDL_Color({0, 0, 0, 255}));
     SDL_Color* color = new SDL_Color({0, 0, 0, 255});
 
     void setRect(SDL_Rect* r) {
         rect = r;
-        circle->setRadius(8);
-        circle->setColor(new SDL_Color({0, 0, 0, 255}));
     }
 
-    void setCircle(SDL_MyCircle* c) {
+    void setCircle(PNTR_Circle* c) {
         circle = c;
     }
 
@@ -30,13 +28,13 @@ typedef struct SDL_MySlider {
     }
 
     void draw(SDL_Renderer *renderer) {
-        drawRect(renderer, color, rect);
-        circle->setPosition(rect->x + (value * rect->w), rect->y);
-        circle->draw(renderer, 0, 0);
+        renderRect(renderer, color, rect, 0);
+        circle->setPosition(PNTR_Vector2D(rect->x + (value * rect->w), rect->y));
+        circle->draw(renderer, PNTR_Vector2D(0, 0));
     }
 
     int pressEvent() {
-        if (circle->isMouseOver(mX, mY)) {
+        if (circle->isMouseOver(mousePos)) {
             return 1;
         }
 
@@ -44,10 +42,10 @@ typedef struct SDL_MySlider {
     }
 
     void dragEvent() {
-        value = mX;
+        value = mousePos.x;
     }
 
-} SDL_MySlider;
+} PNTR_Slider;
 
 
 #endif

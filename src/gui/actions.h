@@ -11,37 +11,37 @@ void openWebPage() {
 
 void setModeDraw()
 {
-    editMode = Mode::DRAW;
+    paintMode = PNTR_PaintMode::DRAW;
 }
 
 void setModeErase()
 {
-    editMode = Mode::ERASE;
+    paintMode = PNTR_PaintMode::ERASE;
 }
 
 void setModeFill()
 {
-    editMode = Mode::FILL;
+    paintMode = PNTR_PaintMode::FILL;
 }
 
 void setModeShapeLine()
 {
-    editMode = Mode::SHAPE_LINE;
+    paintMode = PNTR_PaintMode::SHAPE_LINE;
 }
 
 void setModeShapeCircle()
 {
-    editMode = Mode::SHAPE_CIRCLE;
+    paintMode = PNTR_PaintMode::SHAPE_CIRCLE;
 }
 
 void setModeShapeSquare()
 {
-    editMode = Mode::SHAPE_SQUARE;
+    paintMode = PNTR_PaintMode::SHAPE_SQUARE;
 }
 
 void setModePicker()
 {
-    editMode = Mode::PICKER;
+    paintMode = PNTR_PaintMode::PICKER;
 }
 
 #endif

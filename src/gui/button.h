@@ -4,7 +4,7 @@
 #include "../../common.h"
 #include "rect.h"
 
-typedef struct SDL_MyButton
+typedef struct PNTR_Button
 {
     SDL_Rect *rect = new SDL_Rect();
     SDL_Color *color = new SDL_Color({255, 255, 255, 0});
@@ -23,17 +23,17 @@ typedef struct SDL_MyButton
     {
         SDL_Texture *imageTexture = SDL_CreateTextureFromSurface(renderer, icon);
 
-        if (mouseOver(mX, mY) && SDL_GetWindowID(window) == event.window.windowID)
+        if (mouseOver(mousePos) && SDL_GetWindowID(window) == event.window.windowID)
         {
-            drawRect(renderer, new SDL_Color({0, 0, 0, 75}), rect, 5);
+            renderRect(renderer, new SDL_Color({0, 0, 0, 75}), rect, 5);
         }
         else if (active)
         {
-            drawRect(renderer, new SDL_Color({255, 255, 255, 255}), rect, 5);
+            renderRect(renderer, new SDL_Color({255, 255, 255, 255}), rect, 5);
         }
         else
         {
-            drawRect(renderer, color, rect);
+            renderRect(renderer, color, rect, 0);
         }
 
         // Render the image texture onto the rectangle
@@ -60,21 +60,22 @@ typedef struct SDL_MyButton
         active = f;
     }
 
-    bool mouseOver(int mouseX, int mouseY)
+    bool mouseOver(PNTR_Vector2D position)
     {
         return (
-            mouseX >= rect->x && mouseX <= rect->x + rect->w &&
-            mouseY >= rect->y && mouseY <= rect->y + rect->h);
+            position.x >= rect->x && position.x <= rect->x + rect->w &&
+            position.y >= rect->y && position.y <= rect->y + rect->h
+        );
     }
 
     int pressEvent() {
-        if (mouseOver(mX, mY)) {
+        if (mouseOver(mousePos)) {
             action();
             return 1;
         }
         return 0;
     }
 
-} SDL_MyButton;
+} PNTR_Button;
 
 #endif

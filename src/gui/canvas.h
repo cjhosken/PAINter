@@ -5,7 +5,7 @@
 
 // THE CANVAS SHOULD BE DRAWN OVER THE IMAGE, NOT INTO THE IMAGE
 
-typedef struct SDL_MyCanvas {
+typedef struct PNTR_Canvas {
     SDL_Rect* rect = new SDL_Rect();
     SDL_Surface* image = new SDL_Surface();
     SDL_Surface* overlay = new SDL_Surface();
@@ -39,7 +39,7 @@ typedef struct SDL_MyCanvas {
         SDL_FillRect(ghosting, NULL, SDL_MapRGBA(overlay->format, 255, 255, 255, 0));
     } 
 
-} SDL_MyCanvas;
+} PNTR_Canvas;
 
 
 
