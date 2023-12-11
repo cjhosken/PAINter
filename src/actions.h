@@ -1,9 +1,7 @@
 #ifndef ACTIONS_H
 #define ACTIONS_H
 
-#include "../../common.h"
-#include "colordialog.h"
-
+#include "../common.h"
 
 void openWebPage() {
     SDL_OpenURL("https://github.com/cjhosken/PAINter");

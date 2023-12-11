@@ -2,14 +2,18 @@
 
 NAME=PAINter
 AUTHOR=Christopher Hosken
-VERSION=v1
-DATE=09.12.2023
+VERSION=v2
+DATE=11.12.2023
 
 CC=g++
 LINKER_FLAGS = -lSDL2 -lSDL2_image
 
+SRCS = main.cpp src/pntr_vector2i.cpp src/gui/pntr_button.cpp src/gui/pntr_canvas.cpp src/gui/pntr_circle.cpp src/gui/pntr_colordialog.cpp src/gui/pntr_gui.cpp src/gui/pntr_panel.cpp src/gui/pntr_slider.cpp src/gui/pntr_widget.cpp 
+
+
+
 painter:
-	$(CC) main.cpp $(LINKER_FLAGS) -o $(NAME)
+	$(CC) ${SRCS} $(LINKER_FLAGS) -o $(NAME)
 	echo "PAINter has been compiled!"
 
 

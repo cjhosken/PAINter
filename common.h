@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <vector>
+#include "src/pntr_vector2i.h"
 
 using namespace std;
 
@@ -16,15 +17,6 @@ SDL_Event event;
 
 char *readFilePath = NULL;
 char *writeFilePath = NULL;
-
-typedef struct PNTR_Vector2D {
-    int x; 
-    int y;
-
-    PNTR_Vector2D() {x=0;y=0;};
-    PNTR_Vector2D(int x0, int y0) {x=x0;y=y0;};
-
-} PNTR_Vector2D;
 
 enum PNTR_PaintMode
 {
@@ -37,7 +29,7 @@ enum PNTR_PaintMode
     PICKER
 };
 
-PNTR_Vector2D mousePos;
+PNTR_Vector2I* mousePos;
 
 PNTR_PaintMode paintMode = PNTR_PaintMode::DRAW;
 
@@ -47,7 +39,7 @@ bool compare(SDL_Color* a, SDL_Color* b) {
     return (a->r == b->r) && (a->g == b->g) && (a->b == b->b);
 }
 
-SDL_Color *getPixel(PNTR_Vector2D position)
+SDL_Color *getPixel(PNTR_Vector2I position)
 {
     SDL_Color* pixelColor = new SDL_Color({0, 0, 0, 255});
 

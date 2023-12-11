@@ -7,7 +7,6 @@ On new linux machines, run `sudo apt install libsdl2-dev`
 
 ## TODO
 seperate .h and .c files 
-make panel gui class
 split main.cpp into more files
 
 
