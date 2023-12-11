@@ -1,6 +1,7 @@
 #include "common.h"
+#include "src/actions.h"
 #include "src/pntr_vector2i.h"
-#include "src/gui/pntr_gui.h"
+#include "src/pntr_gui.h"
 
 const int width = 1280, height = 720;
 SDL_MouseButtonEvent *mouseEvent;
@@ -12,7 +13,6 @@ int drawSizeFac = 64;
 PNTR_Gui gui;
 
 int rX, rY;
-
 
 vector<vector<bool>> visit_array = {};
 
@@ -26,12 +26,6 @@ bool down = false;
 int run();
 void dispose();
 void minimize();
-
-void setModeDraw();
-void setModeErase();
-void setModeFill();
-void setModeShape();
-void setPickerMode();
 void pickColor();
 void openColorWheel();
 void drawOnCanvas();
@@ -113,7 +107,6 @@ int run()
     bool buttonPressed = false;
     PNTR_Vector2I lastPos; 
     SDL_Surface *cursorSurface;
-    int drawSize;
 
     while (running)
     {
@@ -133,7 +126,6 @@ int run()
                 {
                 case SDL_BUTTON_LEFT:
                     down = true;
-                    drawSizeFac *gui.thickSlider->getValue();
                     shapeStart = PNTR_Vector2I((int)(((mousePos->x - gui.canvas->getBBox()->x) / (float)gui.canvas->getBBox()->w) * gui.canvas->getImageLayer()->w), (int)(((mousePos->y - gui.canvas->getBBox()->y) / (float)gui.canvas->getBBox()->h) * gui.canvas->getImageLayer()->h));
                     
                     if (paintMode == PNTR_PaintMode::PICKER)
@@ -277,7 +269,7 @@ int run()
             switch (event.window.event)
             {
             case SDL_WINDOWEVENT_CLOSE:
-                gui.dialog->close();
+                //gui.dialog->dispose();
                 break;
 
             default:
@@ -296,6 +288,7 @@ int run()
 
                 case SDL_BUTTON_LEFT:
                     buttonPressed = false;
+                    /*
                     for (PNTR_Slider *s : gui.dialog->sliders)
                     {
                         if (s->pressEvent())
@@ -306,6 +299,7 @@ int run()
                             break;
                         }
                     }
+                    */
                     break;
                 }
                 break;
@@ -413,37 +407,37 @@ void pickColor()
 
 void openColorWheel()
 {
-    gui.dialog->invoke();
+    //gui.dialog->invoke();
 }
 
-bool isValid(int x, int y, SDL_Surface *read, SDL_Color *fill, SDL_Color *pixel)
+bool isValid(PNTR_Vector2I position, SDL_Surface *read, SDL_Color *fill, SDL_Color *pixel)
 {
-    return (x >= 0 && x < gui.canvas->getImageLayer()->w) && (y >= 0 && y < gui.canvas->getImageLayer()->h) && !compare(fill, pixel) && compare(getSurfacePixel(read, x, y), pixel);
+    return (position.x >= 0 && position.x < gui.canvas->getImageLayer()->w) && (position.y >= 0 && position.y < gui.canvas->getImageLayer()->h) && !compare(fill, pixel) && compare(getSurfacePixel(read, position), pixel);
 }
 
 void floodFill(PNTR_Vector2I pos, SDL_Surface *read, SDL_Surface *write, SDL_Color *fill, SDL_Color *pixel)
 {
-    if (!isValid(pos.x, pos.y, read, fill, pixel))
+    if (!isValid(pos, read, fill, pixel))
         return;
-    setSurfacePixel(write, fill, pos.x, pos.y);
+    setSurfacePixel(write, fill, pos);
 
     visit_array[pos.x][pos.y] = true;
-    if (isValid(pos.x + 1, pos.y, read, fill, pixel) && !visit_array[pos.x + 1][pos.y])
+    if (isValid(PNTR_Vector2I(pos.x + 1, pos.y), read, fill, pixel) && !visit_array[pos.x + 1][pos.y])
     {
         fillStack.push_back(PNTR_Vector2I(pos.x + 1, pos.y));
         visit_array[pos.x + 1][pos.y] = true;
     }
-    if (isValid(pos.x - 1, pos.y, read, fill, pixel) && !visit_array[pos.x - 1][pos.y])
+    if (isValid(PNTR_Vector2I(pos.x - 1, pos.y), read, fill, pixel) && !visit_array[pos.x - 1][pos.y])
     {
         fillStack.push_back(PNTR_Vector2I(pos.x - 1, pos.y));
         visit_array[pos.x - 1][pos.y] = true;
     }
-    if (isValid(pos.x, pos.y + 1, read, fill, pixel) && !visit_array[pos.x][pos.y + 1])
+    if (isValid(PNTR_Vector2I(pos.x, pos.y + 1), read, fill, pixel) && !visit_array[pos.x][pos.y + 1])
     {
         fillStack.push_back(PNTR_Vector2I(pos.x, pos.y + 1));
         visit_array[pos.x][pos.y + 1] = true;
     }
-    if (isValid(pos.x, pos.y - 1, read, fill, pixel) && !visit_array[pos.x][pos.y - 1])
+    if (isValid(PNTR_Vector2I(pos.x, pos.y - 1), read, fill, pixel) && !visit_array[pos.x][pos.y - 1])
     {
         fillStack.push_back(PNTR_Vector2I(pos.x, pos.y - 1));
         visit_array[pos.x][pos.y - 1] = true;
@@ -459,7 +453,7 @@ void line(SDL_Surface *surface, int wdth, int hght, int x0, int y0, int xn, int 
     {
         /* draw point only if coordinate is valid */
         if (x0 >= 0 && x0 < wdth && y0 >= 0 && y0 < hght)
-            setSurfacePixel(surface, activeColor, x0, y0);
+            setSurfacePixel(surface, activeColor, PNTR_Vector2I(x0, y0));
         if (x0 == xn && y0 == yn)
             break;
         e2 = error;
@@ -492,9 +486,8 @@ void drawOnCanvas()
 {
     if (gui.navBar->isMouseOver(mousePos) || gui.sideBar->isMouseOver(mousePos)) return;
 
-    int cX, cY, i;
+    int cX, cY;
     int drawSize = drawSizeFac * gui.thickSlider->getValue();
-    bool l;
     PNTR_Vector2I currentPos;
 
     // map from draw shape to getImageLayer()
@@ -533,7 +526,7 @@ void drawOnCanvas()
         if (cY < 0 || cY > gui.canvas->getImageLayer()->h)
             break;
 
-        pixel = getSurfacePixel(output, cX, cY);
+        pixel = getSurfacePixel(output, PNTR_Vector2I(cX, cY));
         fillStack.clear();
         fillStack.push_back(PNTR_Vector2I({cX, cY}));
 

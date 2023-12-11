@@ -1,7 +1,7 @@
 #ifndef PNTR_BUTTON_H
 #define PNTR_BUTTON_H
 
-#include "../../common.h"
+#include "../common.h"
 #include "pntr_panel.h"
 
 class PNTR_Button : public PNTR_Panel

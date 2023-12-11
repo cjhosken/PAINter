@@ -1,4 +1,6 @@
 #include "pntr_gui.h"
+#include "../common.h"
+#include "actions.h"
 
 PNTR_Gui::PNTR_Gui() {
         canvas = new PNTR_Canvas();
@@ -44,7 +46,7 @@ PNTR_Gui::PNTR_Gui() {
         buttons[9] = shapeButtonSquare;
         buttons[10] = clearImageButton;
 
-        dialog = new PNTR_ColorDialog(activeColor);
+        //dialog = new PNTR_ColorDialog(activeColor);
 }
 
 void PNTR_Gui::draw(SDL_Renderer* renderer) {
@@ -73,7 +75,7 @@ void PNTR_Gui::draw(SDL_Renderer* renderer) {
     
     // BUILD SIDE BAR
     
-   sideBar->draw(renderer);
+    sideBar->draw(renderer);
     
     brushButton->draw(renderer);
     eraserButton->draw(renderer);
@@ -81,9 +83,9 @@ void PNTR_Gui::draw(SDL_Renderer* renderer) {
     shapeButtonLine->draw(renderer);
     shapeButtonCircle->draw(renderer);
     shapeButtonSquare->draw(renderer);
-    
+    /*
     if (dialog->isInvoked()) {
         dialog->update();
         dialog->draw();
-    }
+    }*/
 };

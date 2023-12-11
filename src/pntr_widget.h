@@ -1,8 +1,8 @@
 #ifndef PNTR_WIDGET_H
 #define PNTR_WIDGET_H
 
-#include "../../common.h"
-#include "../pntr_vector2i.h"
+#include "../common.h"
+#include "pntr_vector2i.h"
 
 class PNTR_Widget {
     protected:

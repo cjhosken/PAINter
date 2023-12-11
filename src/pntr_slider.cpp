@@ -1,7 +1,8 @@
 #include "pntr_slider.h"
 #include "pntr_panel.h"
 #include "pntr_circle.h"
-#include "../pntr_vector2i.h"
+#include "pntr_vector2i.h"
+#include "../common.h"
 
 PNTR_Slider::PNTR_Slider() : PNTR_Widget()
 {

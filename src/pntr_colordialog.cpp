@@ -1,6 +1,7 @@
 #include "pntr_colordialog.h"
 #include "pntr_slider.h"
 #include "pntr_panel.h"
+#include "../common.h"
 
 PNTR_ColorDialog::PNTR_ColorDialog()
 {
@@ -59,7 +60,7 @@ void PNTR_ColorDialog::update()
 }
 
 
-void PNTR_ColorDialog::close() {
+void PNTR_ColorDialog::dispose() {
     invoked = false;
     SDL_HideWindow(dialog);
 }

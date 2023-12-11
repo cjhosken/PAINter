@@ -1,0 +1,25 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "C++ Debug",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/PAINter", // Path to your executable
+            "args": [], // Arguments to pass to the program (if any)
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [], // Environment variables (if needed)
+            "externalConsole": false,
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "build", // Task to run before launching the debugger (as specified in tasks.json)
+            "launchCompleteCommand": "exec-run" // Command to execute after launching the program
+        }
+    ]
+}

@@ -1,5 +1,6 @@
 #include "pntr_panel.h"
 #include "pntr_circle.h"
+#include "../common.h"
 
 PNTR_Panel::PNTR_Panel() : PNTR_Widget() {};
 PNTR_Panel::PNTR_Panel(SDL_Rect* bb) : PNTR_Widget(bb), radius(0) {};

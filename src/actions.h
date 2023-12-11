@@ -3,41 +3,41 @@
 
 #include "../common.h"
 
-void openWebPage() {
+inline void openWebPage() {
     SDL_OpenURL("https://github.com/cjhosken/PAINter");
 }
 
-void setModeDraw()
+inline void setModeDraw()
 {
     paintMode = PNTR_PaintMode::DRAW;
 }
 
-void setModeErase()
+inline void setModeErase()
 {
     paintMode = PNTR_PaintMode::ERASE;
 }
 
-void setModeFill()
+inline void setModeFill()
 {
     paintMode = PNTR_PaintMode::FILL;
 }
 
-void setModeShapeLine()
+inline void setModeShapeLine()
 {
     paintMode = PNTR_PaintMode::SHAPE_LINE;
 }
 
-void setModeShapeCircle()
+inline void setModeShapeCircle()
 {
     paintMode = PNTR_PaintMode::SHAPE_CIRCLE;
 }
 
-void setModeShapeSquare()
+inline void setModeShapeSquare()
 {
     paintMode = PNTR_PaintMode::SHAPE_SQUARE;
 }
 
-void setModePicker()
+inline void setModePicker()
 {
     paintMode = PNTR_PaintMode::PICKER;
 }

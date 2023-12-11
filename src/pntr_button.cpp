@@ -1,5 +1,6 @@
 #include "pntr_button.h"
 #include "pntr_panel.h"
+#include "../common.h"
 
 PNTR_Button::PNTR_Button() : PNTR_Panel(){};
 PNTR_Button::PNTR_Button(SDL_Rect *bb) : PNTR_Panel(bb)

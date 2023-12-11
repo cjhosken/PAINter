@@ -1,4 +1,5 @@
 #include "pntr_circle.h"
+#include "../common.h"
 
 PNTR_Circle::PNTR_Circle() : PNTR_Panel()
 {
@@ -74,28 +75,28 @@ void PNTR_Circle::circleOnSurface(SDL_Surface *surface, SDL_Rect bbox, PNTR_Vect
     while (x >= y)
     { /* 1 draw call for each octant - ensure coordinates are valid before drawing */
         if ((x + position.x) >= 0 && (x + position.x) < bbox.w && (y + position.y) >= 0 && (y + position.y) < bbox.h)
-            setSurfacePixel(surface, &color, x + position.x, y + position.y);
+            setSurfacePixel(surface, &color, PNTR_Vector2I(x + position.x, y + position.y));
         /* draw point in octant 1 if coordinate is valid */
         if ((y + position.x) >= 0 && (y + position.x) < bbox.w && (x + position.y) >= 0 && (x + position.y) < bbox.h)
-            setSurfacePixel(surface, &color, y + position.x, x + position.y);
+            setSurfacePixel(surface, &color, PNTR_Vector2I(y + position.x, x + position.y));
         /* draw point in octant 2 if coordinate is valid */
         if ((-x + position.x) >= 0 && (-x + position.x) < bbox.w && (y + position.y) >= 0 && (y + position.y) < bbox.h)
-            setSurfacePixel(surface, &color, -x + position.x, y + position.y);
+            setSurfacePixel(surface, &color, PNTR_Vector2I(-x + position.x, y + position.y));
         /* draw point in octant 3 if coordinate is valid */
         if ((-y + position.x) >= 0 && (-y + position.x) < bbox.w && (x + position.y) >= 0 && (x + position.y) < bbox.h)
-            setSurfacePixel(surface, &color, -y + position.x, x + position.y);
+            setSurfacePixel(surface, &color, PNTR_Vector2I(-y + position.x, x + position.y));
         /* draw point in octant 4 if coordinate is valid */
         if ((-x + position.x) >= 0 && (-x + position.x) < bbox.w && (-y + position.y) >= 0 && (-y + position.y) < bbox.h)
-            setSurfacePixel(surface, &color, -x + position.x, -y + position.y);
+            setSurfacePixel(surface, &color, PNTR_Vector2I(-x + position.x, -y + position.y));
         /* draw point in octant 5 if coordinate is valid */
         if ((-y + position.x) >= 0 && (-y + position.x) < bbox.w && (-x + position.y) >= 0 && (-x + position.y) < bbox.h)
-            setSurfacePixel(surface, &color, -y + position.x, -x + position.y);
+            setSurfacePixel(surface, &color, PNTR_Vector2I(-y + position.x, -x + position.y));
         /* draw point in octant 6 if coordinate is valid */
         if ((x + position.x) >= 0 && (x + position.x) < bbox.w && (-y + position.y) >= 0 && (-y + position.y) < bbox.h)
-            setSurfacePixel(surface, &color, x + position.x, -y + position.y);
+            setSurfacePixel(surface, &color, PNTR_Vector2I(x + position.x, -y + position.y));
         /* draw point in octant 7 if coordinate is valid */
         if ((y + position.x) >= 0 && (y + position.x) < bbox.w && (-x + position.y) >= 0 && (-x + position.y) < bbox.h)
-            setSurfacePixel(surface, &color, y + position.x, -x + position.y);
+            setSurfacePixel(surface, &color, PNTR_Vector2I(y + position.x, -x + position.y));
 
         /* draw point in octant 8 if coordinate is valid */
         y++; /* increment y coordinate */

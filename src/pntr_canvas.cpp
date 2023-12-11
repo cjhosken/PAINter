@@ -1,4 +1,5 @@
 #include "pntr_canvas.h"
+#include "../common.h"
 
 PNTR_Canvas::PNTR_Canvas() : PNTR_Widget() {
     sourceSize = new SDL_Rect();

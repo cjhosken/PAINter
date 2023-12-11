@@ -1,21 +1,33 @@
 # inspired by MakeFileTutorial from https://makefiletutorial.com/
 
-NAME=PAINter
+TARGET=PAINter
 AUTHOR=Christopher Hosken
 VERSION=v2
 DATE=11.12.2023
 
-CC=g++
+CC = g++
+SRCDIR = src
+CFLAGS = -std=c++11 -Wall
 LINKER_FLAGS = -lSDL2 -lSDL2_image
+BUILDDIR = build
+INCDIR = src
 
-SRCS = main.cpp src/pntr_vector2i.cpp src/gui/pntr_button.cpp src/gui/pntr_canvas.cpp src/gui/pntr_circle.cpp src/gui/pntr_colordialog.cpp src/gui/pntr_gui.cpp src/gui/pntr_panel.cpp src/gui/pntr_slider.cpp src/gui/pntr_widget.cpp 
+SRCS = main.cpp $(SRCDIR)/*.cpp
+OBJS = $(patsubst $(SRCDIR)/%.cpp,$(BUILDDIR)/%.o,$(SRCS))
 
+CFLAGS += -I$(INCDIR)
 
-
-painter:
-	$(CC) ${SRCS} $(LINKER_FLAGS) -o $(NAME)
+$(TARGET): $(OBJS)
+	$(CC) ${CFLAGS} $(OBJS) $(LINKER_FLAGS) -o $(TARGET)
 	echo "PAINter has been compiled!"
 
+$(BUILDDIR)/%.o: $(SRCDIR)/%.cpp
+	$(CC) $(CFLAGS) -c $< -o $@
+
+.PHONY: clean
+
+clean:
+	rm -f $(BUILDDIR)/*.o $(TARGET)
 
 # Copyright © 2023 Christopher Hosken
 

@@ -11,12 +11,12 @@
 
 using namespace std;
 
-SDL_Window *window;
-SDL_Renderer *renderer;
-SDL_Event event;
+extern SDL_Window *window;
+extern SDL_Renderer *renderer;
+extern SDL_Event event;
 
-char *readFilePath = NULL;
-char *writeFilePath = NULL;
+extern char *readFilePath;
+extern char *writeFilePath;
 
 enum PNTR_PaintMode
 {
@@ -29,17 +29,17 @@ enum PNTR_PaintMode
     PICKER
 };
 
-PNTR_Vector2I* mousePos;
+extern PNTR_Vector2I* mousePos;
 
-PNTR_PaintMode paintMode = PNTR_PaintMode::DRAW;
+extern PNTR_PaintMode paintMode;
 
-SDL_Color *activeColor = new SDL_Color({0, 0, 0, 255});
+extern SDL_Color *activeColor;
 
-bool compare(SDL_Color* a, SDL_Color* b) {
+inline bool compare(SDL_Color* a, SDL_Color* b) {
     return (a->r == b->r) && (a->g == b->g) && (a->b == b->b);
 }
 
-SDL_Color *getPixel(PNTR_Vector2I position)
+inline SDL_Color* getPixel(PNTR_Vector2I position)
 {
     SDL_Color* pixelColor = new SDL_Color({0, 0, 0, 255});
 
@@ -61,22 +61,20 @@ SDL_Color *getPixel(PNTR_Vector2I position)
 }
 
 
-SDL_Color* getSurfacePixel(SDL_Surface* surface, int x, int y) {
+inline SDL_Color* getSurfacePixel(SDL_Surface* surface, PNTR_Vector2I position) {
     SDL_Color* pixelColor = new SDL_Color({0, 0, 0, 255});
     Uint32 *pixels = (Uint32*)surface->pixels;
-    SDL_GetRGB(pixels[x+y*surface->w], surface->format, &(pixelColor->r), &(pixelColor->g), &(pixelColor->b));
+    SDL_GetRGB(pixels[position.x+position.y*surface->w], surface->format, &(pixelColor->r), &(pixelColor->g), &(pixelColor->b));
 
     return pixelColor;
 }
 
-void setSurfacePixel(SDL_Surface* surface, SDL_Color *color, int x, int y)
+inline void setSurfacePixel(SDL_Surface* surface, SDL_Color *color, PNTR_Vector2I position)
 {
     Uint32 *pixels = (Uint32*)surface->pixels;
     Uint32 pixel = SDL_MapRGB(surface->format, color->r, color->g, color->b);
-    pixels[x+y*surface->w] = pixel;
+    pixels[position.x+position.y*surface->w] = pixel;
 
 }
-//https://stackoverflow.com/questions/20070155/how-to-set-a-pixel-in-a-sdl-surface
-
 
 #endif

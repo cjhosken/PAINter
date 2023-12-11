@@ -1,7 +1,7 @@
 #ifndef PNTR_COLORDIALOG_H
 #define PNTR_COLORDIALOG_H
 
-#include "../../common.h"
+#include "../common.h"
 #include "pntr_slider.h"
 #include "pntr_panel.h"
 
@@ -33,7 +33,7 @@ class PNTR_ColorDialog {
         bool isInvoked();
         void update();
 
-        void close();
+        void dispose();
 };
 
 

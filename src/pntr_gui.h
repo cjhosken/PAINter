@@ -1,8 +1,8 @@
 #ifndef PNTR_GUI_H
 #define PNTR_GUI_H
 
-#include "../../common.h"
-#include "../actions.h"
+#include "../common.h"
+#include "actions.h"
 #include "pntr_button.h"
 #include "pntr_slider.h" 
 #include "pntr_canvas.h"
@@ -37,7 +37,7 @@ class PNTR_Gui {
 
         PNTR_Button *buttons[11];
 
-        PNTR_ColorDialog* dialog;
+        //PNTR_ColorDialog* dialog;
 
     public:
         PNTR_Gui();

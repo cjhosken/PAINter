@@ -1,7 +1,7 @@
 #ifndef PNTR_CANVAS_H
 #define PNTR_CANVAS_H
 
-#include "../../common.h"
+#include "../common.h"
 #include "pntr_widget.h"
 
 class PNTR_Canvas : public PNTR_Widget{

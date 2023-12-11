@@ -1,5 +1,6 @@
 #include "pntr_widget.h"
 #include "pntr_panel.h"
+#include "../common.h"
 
 
 PNTR_Widget::PNTR_Widget() {bbox=new SDL_Rect();color=new SDL_Color();}

@@ -1,9 +1,9 @@
 #ifndef PNTR_CIRCLE_H
 #define PNTR_CIRCLE_H
 
-#include "../../common.h"
+#include "../common.h"
 #include "pntr_panel.h"
-#include "../pntr_vector2i.h"
+#include "pntr_vector2i.h"
 
 class PNTR_Circle : public PNTR_Panel {
     private:
