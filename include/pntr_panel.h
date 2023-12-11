@@ -1,7 +1,7 @@
 #ifndef PNTR_PANEL_H
 #define PNTR_PANEL_H
 
-#include "../common.h"
+#include "common.h"
 #include "pntr_widget.h"
 
 class PNTR_Panel : public PNTR_Widget {
@@ -25,3 +25,5 @@ class PNTR_Panel : public PNTR_Widget {
 
 
 #endif
+
+// Copyright © 2024 Christopher Hosken

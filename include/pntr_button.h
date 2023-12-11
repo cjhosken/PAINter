@@ -1,7 +1,7 @@
 #ifndef PNTR_BUTTON_H
 #define PNTR_BUTTON_H
 
-#include "../common.h"
+#include "common.h"
 #include "pntr_panel.h"
 
 class PNTR_Button : public PNTR_Panel
@@ -20,13 +20,17 @@ class PNTR_Button : public PNTR_Panel
         void setAction(void (*func)(void));
         void executeAction();
 
-        void draw(SDL_Renderer *renderer) override;
+        void draw(SDL_Renderer *renderer, SDL_Event* event, SDL_Window* window);
 
         void setIcon(SDL_Surface *s);
 
         void setActive(bool a);
 
         bool isActive();
+
+        void onPressEvent() override;
 };
 
 #endif
+
+// Copyright © 2024 Christopher Hosken

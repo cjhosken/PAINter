@@ -1,6 +1,6 @@
 #include "pntr_panel.h"
-#include "pntr_circle.h"
-#include "../common.h"
+#include "include/pntr_circle.h"
+#include "include/common.h"
 
 PNTR_Panel::PNTR_Panel() : PNTR_Widget() {};
 PNTR_Panel::PNTR_Panel(SDL_Rect* bb) : PNTR_Widget(bb), radius(0) {};
@@ -17,16 +17,44 @@ void PNTR_Panel::renderPanel(SDL_Renderer *renderer, SDL_Rect rect, SDL_Color co
 {
     if (radius)
     {
-        //vertical
-        PNTR_Panel::renderPanel(renderer, {rect.x + radius, rect.y, rect.w - radius * 2, radius}, color, 0);
-        PNTR_Panel::renderPanel(renderer, {rect.x, rect.y + radius, rect.w, rect.h - radius * 2}, color, 0);
-        PNTR_Panel::renderPanel(renderer, {rect.x + radius, rect.y + rect.h - radius, rect.w - radius * 2, radius}, color, 0);
+    SDL_Rect r1 = {rect.x, rect.y+radius, rect.w, rect.h-radius*2};
+    SDL_Rect r2 = {rect.x+radius, rect.y, rect.w-radius*2, radius};
+    SDL_Rect r3 = {rect.x+radius, rect.y+rect.h-radius, rect.w-radius*2, radius};
 
-        //cw from tl
-        PNTR_Circle::renderCircle(renderer, {0, 0, -radius, -radius}, PNTR_Vector2I(rect.x, rect.y), color, radius);
-        PNTR_Circle::renderCircle(renderer, {0, 0, radius, -radius}, PNTR_Vector2I(rect.x + rect.w, rect.y), color, radius);
-        PNTR_Circle::renderCircle(renderer, {0, 0, radius, radius}, PNTR_Vector2I(rect.x + rect.w, rect.y + rect.h), color, radius);
-        PNTR_Circle::renderCircle(renderer, {0, 0, -radius, radius}, PNTR_Vector2I(rect.x, rect.y + rect.h), color, radius);
+    renderPanel(renderer, r1, color, 0);
+    renderPanel(renderer, r2, color, 0);
+    renderPanel(renderer, r3, color, 0);
+
+    PNTR_Circle* ctl = new PNTR_Circle();
+    ctl->setPosition(new PNTR_Vector2I(rect.x, rect.y));
+    ctl->setRadius(radius);
+    ctl->setColor(&color);
+    
+    PNTR_Circle* ctr = new PNTR_Circle();
+    ctr->setPosition(new PNTR_Vector2I(rect.x+rect.w, rect.y));
+    ctr->setRadius(radius);
+    ctr->setColor(&color);
+
+    PNTR_Circle* cbr = new PNTR_Circle();
+    cbr->setPosition(new PNTR_Vector2I(rect.x+rect.w, rect.y+rect.h));
+    cbr->setRadius(radius);
+    cbr->setColor(&color);
+
+    PNTR_Circle* cbl = new PNTR_Circle();
+    cbl->setPosition(new PNTR_Vector2I(rect.x, rect.y+rect.h));
+    cbl->setRadius(radius);
+    cbl->setColor(&color);
+    /*
+    ctl->draw(renderer, -radius, -radius);
+    ctr->draw(renderer, radius, -radius);
+    cbr->draw(renderer, radius, radius);
+    cbl->draw(renderer, -radius, radius);
+    */
+
+    ctl->draw(renderer, true);
+    ctr->draw(renderer, true);
+    cbr->draw(renderer, true);
+    cbl->draw(renderer, true);
 
     } else {
         SDL_Surface *surface = SDL_CreateRGBSurfaceWithFormat(0, rect.w, rect.h, 32, SDL_PIXELFORMAT_RGBA8888);
@@ -40,3 +68,5 @@ void PNTR_Panel::renderPanel(SDL_Renderer *renderer, SDL_Rect rect, SDL_Color co
         SDL_DestroyTexture(texture);
     }
 }
+
+// Copyright © 2024 Christopher Hosken

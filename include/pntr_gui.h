@@ -1,12 +1,10 @@
 #ifndef PNTR_GUI_H
 #define PNTR_GUI_H
 
-#include "../common.h"
-#include "actions.h"
+#include "common.h"
 #include "pntr_button.h"
 #include "pntr_slider.h" 
 #include "pntr_canvas.h"
-#include "pntr_colordialog.h"
 #include "pntr_panel.h"
 
 class PNTR_Gui {
@@ -37,14 +35,16 @@ class PNTR_Gui {
 
         PNTR_Button *buttons[11];
 
-        //PNTR_ColorDialog* dialog;
-
     public:
         PNTR_Gui();
 
-    void draw(SDL_Renderer* renderer);
+        void draw(SDL_Renderer* renderer, SDL_Event* event, SDL_Window* window);
 
 };
 
 
+
+
 #endif
+
+// Copyright © 2024 Christopher Hosken

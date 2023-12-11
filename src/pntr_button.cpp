@@ -1,6 +1,6 @@
 #include "pntr_button.h"
-#include "pntr_panel.h"
-#include "../common.h"
+#include "include/pntr_panel.h"
+#include "include/common.h"
 
 PNTR_Button::PNTR_Button() : PNTR_Panel(){};
 PNTR_Button::PNTR_Button(SDL_Rect *bb) : PNTR_Panel(bb)
@@ -29,9 +29,9 @@ void PNTR_Button::executeAction()
     action();
 }
 
-void PNTR_Button::draw(SDL_Renderer *renderer)
+void PNTR_Button::draw(SDL_Renderer *renderer, SDL_Event* event, SDL_Window* window)
 {
-    if (isMouseOver(mousePos) && SDL_GetWindowID(window) == event.window.windowID)
+    if (isMouseOver(mousePos) && SDL_GetWindowID(window) == event->window.windowID)
     {
         PNTR_Panel::renderPanel(renderer, *bbox, SDL_Color({0, 0, 0, 75}), radius);
     }
@@ -69,3 +69,10 @@ bool PNTR_Button::isActive()
 {
     return active;
 }
+
+void PNTR_Button::onPressEvent() {
+    executeAction();
+    setActive(true);
+};
+
+// Copyright © 2024 Christopher Hosken

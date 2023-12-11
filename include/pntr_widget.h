@@ -1,7 +1,7 @@
 #ifndef PNTR_WIDGET_H
 #define PNTR_WIDGET_H
 
-#include "../common.h"
+#include "common.h"
 #include "pntr_vector2i.h"
 
 class PNTR_Widget {
@@ -31,3 +31,5 @@ class PNTR_Widget {
 };
 
 #endif
+
+// Copyright © 2024 Christopher Hosken

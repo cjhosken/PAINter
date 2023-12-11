@@ -7,9 +7,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <vector>
-#include "src/pntr_vector2i.h"
+#include "pntr_vector2i.h"
 
 using namespace std;
+
+#define APP_WIDTH 1280
+#define APP_HEIGHT 720
 
 extern SDL_Window *window;
 extern SDL_Renderer *renderer;
@@ -39,7 +42,7 @@ inline bool compare(SDL_Color* a, SDL_Color* b) {
     return (a->r == b->r) && (a->g == b->g) && (a->b == b->b);
 }
 
-inline SDL_Color* getPixel(PNTR_Vector2I position)
+inline SDL_Color* getPixel(SDL_Renderer* renderer, PNTR_Vector2I position)
 {
     SDL_Color* pixelColor = new SDL_Color({0, 0, 0, 255});
 

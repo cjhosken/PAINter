@@ -11,3 +11,5 @@ class PNTR_Vector2I {
 };
 
 #endif
+
+// Copyright © 2024 Christopher Hosken

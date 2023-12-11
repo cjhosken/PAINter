@@ -1,8 +1,8 @@
 #include "pntr_slider.h"
-#include "pntr_panel.h"
-#include "pntr_circle.h"
-#include "pntr_vector2i.h"
-#include "../common.h"
+#include "include/pntr_panel.h"
+#include "include/pntr_circle.h"
+#include "include/pntr_vector2i.h"
+#include "include/common.h"
 
 PNTR_Slider::PNTR_Slider() : PNTR_Widget()
 {
@@ -71,3 +71,5 @@ void PNTR_Slider::onDragEvent()
 {
     setValue(mousePos->x);
 }
+
+// Copyright © 2024 Christopher Hosken

@@ -1,7 +1,7 @@
 #ifndef PNTR_SLIDER_H
 #define PNTR_SLIDER_H
 
-#include "../common.h"
+#include "common.h"
 #include "pntr_circle.h"
 #include "pntr_widget.h"
 
@@ -35,3 +35,5 @@ class PNTR_Slider : public PNTR_Widget {
 
 
 #endif
+
+// Copyright © 2024 Christopher Hosken

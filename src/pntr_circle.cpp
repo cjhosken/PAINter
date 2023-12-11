@@ -1,5 +1,5 @@
 #include "pntr_circle.h"
-#include "../common.h"
+#include "include/common.h"
 
 PNTR_Circle::PNTR_Circle() : PNTR_Panel()
 {
@@ -51,11 +51,14 @@ void PNTR_Circle::setPosition(PNTR_Vector2I *p)
     position = p;
 }
 
-void PNTR_Circle::draw(SDL_Renderer *renderer)
+void PNTR_Circle::draw(SDL_Renderer *renderer, bool fill)
 {
     SDL_Surface *surface = SDL_CreateRGBSurfaceWithFormat(0, radius * 2, radius * 2, 32, SDL_PIXELFORMAT_RGBA8888);
-
-    PNTR_Circle::circleOnSurface(surface, *bbox, *position, *color, radius);
+    if (fill) {
+        surface= PNTR_Circle::fillCircle(radius, color, PNTR_Vector2I());
+    } else {
+        PNTR_Circle::circleOnSurface(surface, *bbox, *position, *color, radius, true);
+    }
 
     SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
     SDL_FreeSurface(surface);
@@ -69,8 +72,42 @@ bool PNTR_Circle::isMouseOver(PNTR_Vector2I *mouse)
     return SDL_sqrt(SDL_pow(position->x - mouse->x, 2.0) + SDL_pow(position->y - mouse->y, 2.0)) <= radius;
 }
 
-void PNTR_Circle::circleOnSurface(SDL_Surface *surface, SDL_Rect bbox, PNTR_Vector2I position, SDL_Color color, int radius)
-{
+SDL_Surface* PNTR_Circle::fillCircle(int radius, SDL_Color* color, PNTR_Vector2I trim) {
+    SDL_Surface *surface = SDL_CreateRGBSurfaceWithFormat(0, radius * 2, radius * 2, 32, SDL_PIXELFORMAT_RGBA8888);
+
+    int i;
+    int j;
+
+    for (i = -radius; i <= radius; ++i)
+    {
+        for (j = -radius; j <= radius; ++j)
+        {
+            if (j * j + i * i <= radius * radius)
+            {
+                int dX = radius + j - trim.x;
+                int dY = radius + i - trim.y;
+                if (dX >= 0 && dX < surface->w && dY >= 0 && dY < surface->h)
+                {
+                    // Calculate the pixel offset
+
+                    Uint32 *pixels = (Uint32 *)surface->pixels;
+                    int pixelIndex = dY * (surface->pitch / sizeof(Uint32)) + dX;
+
+                    // Create the pixel value combining RGBA components
+                    Uint32 pixelValue = SDL_MapRGBA(surface->format, color->r, color->g, color->b, color->a);
+
+                    // Set the pixel value
+                    pixels[pixelIndex] = pixelValue;
+                }
+            }
+        }
+    }
+    return surface;
+}
+
+void PNTR_Circle::circleOnSurface(SDL_Surface *surface, SDL_Rect bbox, PNTR_Vector2I position, SDL_Color color, int radius, bool fill)
+{   
+    if (!fill) {
     int x = radius, y = 0, error = 1 - radius;
     while (x >= y)
     { /* 1 draw call for each octant - ensure coordinates are valid before drawing */
@@ -110,13 +147,17 @@ void PNTR_Circle::circleOnSurface(SDL_Surface *surface, SDL_Rect bbox, PNTR_Vect
             error += 2 * (y - x) + 1;
         }
     }
+    }
+    else {
+        surface = PNTR_Circle::fillCircle(radius, &color, PNTR_Vector2I(0,0));
+    }
 }
 
 void PNTR_Circle::renderCircle(SDL_Renderer *renderer, SDL_Rect bbox, PNTR_Vector2I position, SDL_Color color, int radius) 
 {
     SDL_Surface *surface = SDL_CreateRGBSurfaceWithFormat(0, bbox.w, bbox.h, 32, SDL_PIXELFORMAT_RGBA8888);
 
-    PNTR_Circle::circleOnSurface(surface, bbox, position, color, radius);
+    PNTR_Circle::circleOnSurface(surface, bbox, position, color, radius, true);
 
     SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
     SDL_FreeSurface(surface);
@@ -124,3 +165,5 @@ void PNTR_Circle::renderCircle(SDL_Renderer *renderer, SDL_Rect bbox, PNTR_Vecto
     SDL_RenderCopy(renderer, texture, NULL, &bbox);
     SDL_DestroyTexture(texture);
 }
+
+// Copyright © 2024 Christopher Hosken

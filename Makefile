@@ -7,15 +7,12 @@ DATE=11.12.2023
 
 CC = g++
 SRCDIR = src
-CFLAGS = -std=c++11 -Wall
+CFLAGS = -std=c++11 -Wall -Iinclude
 LINKER_FLAGS = -lSDL2 -lSDL2_image
 BUILDDIR = build
-INCDIR = src
 
-SRCS = main.cpp $(SRCDIR)/*.cpp
+SRCS = $(wildcard $(SRCDIR)/*.cpp) main.cpp
 OBJS = $(patsubst $(SRCDIR)/%.cpp,$(BUILDDIR)/%.o,$(SRCS))
-
-CFLAGS += -I$(INCDIR)
 
 $(TARGET): $(OBJS)
 	$(CC) ${CFLAGS} $(OBJS) $(LINKER_FLAGS) -o $(TARGET)
