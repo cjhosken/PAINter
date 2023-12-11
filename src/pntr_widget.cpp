@@ -30,6 +30,7 @@ bool PNTR_Widget::pressEvent() {
     if (o) onPressEvent();
     return o;
     };
+    
 void PNTR_Widget::onPressEvent() {};
 void PNTR_Widget::onDragEvent() {};
 

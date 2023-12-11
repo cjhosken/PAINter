@@ -69,8 +69,12 @@ void PNTR_Window::processEvents()
 
                 for (PNTR_Button *b : gui->buttons)
                 {
-                    if (b->pressEvent())
+                    printf("TEST\n");
+                    if (b->isMouseOver(mousePos))
                     {
+                        printf("WOOO\n");
+                        b->executeAction();
+                        b->setActive(true);
                         buttonPressed = true;
                     }
                     break;
