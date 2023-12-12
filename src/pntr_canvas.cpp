@@ -268,42 +268,49 @@ void PNTR_Canvas::floodFill(PNTR_Vector2I pos, SDL_Surface *read, SDL_Surface *w
 
 void PNTR_Canvas::drawLine(SDL_Surface *surface, SDL_Rect bounds, PNTR_Vector2I p1, PNTR_Vector2I p2, int thickness, SDL_Color *color)
 {
-        PNTR_Vector2I change = PNTR_Vector2I(abs(p2.x - p1.x), abs(p2.y - p1.y));
-    PNTR_Vector2I scale = PNTR_Vector2I(p1.x < p2.x ? 1 : -1, p1.y < p2.y ? 1 : -1);
-    int error = (change.x > change.y ? change.x : -change.y) / 2, e2;
-    while (true)
+    for (int r = -thickness / 2; r < thickness / 2; r++)
     {
-        /* draw point only if coordinate is valid */
-        if (p1.x >= 0 && p1.x < bounds.w && p1.y >= 0 && p1.y < bounds.h)
-            setSurfacePixel(surface, color, p1);
-        if (p1.x == p2.x && p1.y == p2.y)
-            break;
-        e2 = error;
-        if (e2 > -change.x)
+        PNTR_Vector2I tmp1 = PNTR_Vector2I(p1.x + r, p1.y + r);
+        PNTR_Vector2I tmp2 = PNTR_Vector2I(p2.x - r, p2.y - r);
+
+        PNTR_Vector2I change = PNTR_Vector2I(abs(tmp2.x - tmp1.x), abs(tmp2.y - tmp1.y));
+
+        PNTR_Vector2I scale = PNTR_Vector2I(tmp1.x < tmp2.x ? 1 : -1, tmp1.y < tmp2.y ? 1 : -1);
+
+        int error = (change.x > change.y ? change.x : -change.y) / 2, e2;
+
+        while (true)
         {
-            error -= change.y;
-            p1.x += scale.x;
-        }
-        if (e2 < change.y)
-        {
-            error += change.x;
-            p1.y += scale.y;
+            /* draw point only if coordinate is valid */
+            if (tmp1.x >= 0 && tmp1.x < bounds.w && tmp1.y >= 0 && tmp1.y < bounds.h)
+                setSurfacePixel(surface, color, tmp1);
+            if (tmp1.x == tmp2.x && tmp1.y == tmp2.y)
+                break;
+            e2 = error;
+            if (e2 > -change.x)
+            {
+                error -= change.y;
+                tmp1.x += scale.x;
+            }
+            if (e2 < change.y)
+            {
+                error += change.x;
+                tmp1.y += scale.y;
+            }
         }
     }
 } // https://brightspace.bournemouth.ac.uk/d2l/le/lessons/345037/topics/1968571
 
-void PNTR_Canvas::drawSquare(SDL_Surface *surface, SDL_Rect bounds, PNTR_Vector2I tl, PNTR_Vector2I br, int radius, SDL_Color *color)
+void PNTR_Canvas::drawSquare(SDL_Surface *surface, SDL_Rect bounds, PNTR_Vector2I tl, PNTR_Vector2I br, int thickness, SDL_Color *color)
 {
     PNTR_Vector2I p1 = PNTR_Vector2I(tl.x, tl.y);
     PNTR_Vector2I p2 = PNTR_Vector2I(br.x, tl.y);
     PNTR_Vector2I p3 = PNTR_Vector2I(br.x, br.y);
     PNTR_Vector2I p4 = PNTR_Vector2I(tl.x, br.y);
-    for (int j = -radius/2; j < radius/2; j++) {
-        PNTR_Canvas::drawLine(surface, bounds, PNTR_Vector2I(p1.x - j, p1.y - j), PNTR_Vector2I(p2.x + j, p2.y - j), radius, color);
-        PNTR_Canvas::drawLine(surface, bounds, PNTR_Vector2I(p2.x + j, p2.y - j), PNTR_Vector2I(p3.x + j, p3.y + j), radius, color);
-        PNTR_Canvas::drawLine(surface, bounds, PNTR_Vector2I(p3.x + j, p3.y + j), PNTR_Vector2I(p4.x - j, p4.y + j), radius, color);
-        PNTR_Canvas::drawLine(surface, bounds, PNTR_Vector2I(p4.x - j, p4.y + j), PNTR_Vector2I(p1.x - j, p1.y - j), radius, color);
-    }
+    PNTR_Canvas::drawLine(surface, bounds, p1, p2, thickness, color);
+    PNTR_Canvas::drawLine(surface, bounds, p2, p3, thickness, color);
+    PNTR_Canvas::drawLine(surface, bounds, p3, p4, thickness, color);
+    PNTR_Canvas::drawLine(surface, bounds, p4, p1, thickness, color);
 }
 
 void PNTR_Canvas::drawCircle(SDL_Surface *surface, SDL_Rect bounds, PNTR_Vector2I *center, SDL_Color *color, int radius, int thickness)
