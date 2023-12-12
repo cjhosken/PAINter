@@ -120,19 +120,19 @@ void PNTR_Canvas::drawOnPaintLayer(bool* leftMouseDown, bool* middleMouseDown, i
     SDL_Surface *output = combineLayers();
 
     SDL_Color *pixel;
-    SDL_Rect* circleBrushRect = new SDL_Rect({-drawSize, -drawSize, drawSize, drawSize});
-    SDL_Surface* circleSurface = SDL_CreateRGBSurfaceWithFormat(0, circleBrushRect->w, circleBrushRect->h, 32, SDL_PIXELFORMAT_RGBA8888);;
+    SDL_Rect* circleBrushRect = new SDL_Rect({0, 0, drawSize, drawSize});
+    SDL_Surface* circleSurface = SDL_CreateRGBSurfaceWithFormat(0, circleBrushRect->w, circleBrushRect->h, 32, SDL_PIXELFORMAT_RGBA8888);
 
     switch (paintMode)
     {
     case PNTR_PaintMode::DRAW:
-        PNTR_Circle::circleOnSurface(circleSurface, circleBrushRect, new PNTR_Vector2I(), activeColor, drawSize, true);
-        SDL_BlitSurface(circleSurface, NULL, paintLayer, new SDL_Rect({mouseOnCanvas.x, mouseOnCanvas.y, drawSize, drawSize}));
+        circleSurface = PNTR_Circle::circleToSurface(new PNTR_Vector2I(), activeColor, drawSize/2);
+        SDL_BlitSurface(circleSurface, NULL, paintLayer, new SDL_Rect({mouseOnCanvas.x-drawSize/2, mouseOnCanvas.y-drawSize/2, drawSize, drawSize}));
         break;
 
     case PNTR_PaintMode::ERASE:
-        PNTR_Circle::circleOnSurface(circleSurface, circleBrushRect, new PNTR_Vector2I(), new SDL_Color({255, 255, 255, 0}), drawSize, true);
-        SDL_BlitSurface(circleSurface, NULL, paintLayer, new SDL_Rect({mouseOnCanvas.x, mouseOnCanvas.y, drawSize, drawSize}));
+        circleSurface = PNTR_Circle::circleToSurface(new PNTR_Vector2I(), new SDL_Color({255, 255, 255, 255}), drawSize/2);
+        SDL_BlitSurface(circleSurface, NULL, paintLayer, new SDL_Rect({mouseOnCanvas.x-drawSize/2, mouseOnCanvas.y-drawSize/2, drawSize, drawSize}));
         break;
 
     case PNTR_PaintMode::FILL:
@@ -201,6 +201,7 @@ void PNTR_Canvas::drawOnPaintLayer(bool* leftMouseDown, bool* middleMouseDown, i
         break;
     }
     SDL_FreeSurface(output);
+    SDL_FreeSurface(circleSurface);
 }
 
 // FILL FUNCTIONS

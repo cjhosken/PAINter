@@ -25,8 +25,6 @@ class PNTR_Window {
         PNTR_Vector2I* lastPos;
         PNTR_Vector2I* shapeStart;
 
-        int drawSize;
-
     public:
         PNTR_Window();
 

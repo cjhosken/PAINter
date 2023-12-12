@@ -14,6 +14,8 @@ using namespace std;
 #define APP_WIDTH 1280
 #define APP_HEIGHT 720
 
+#define DRAW_SIZE 64
+
 extern SDL_Window *window;
 extern SDL_Renderer *renderer;
 extern SDL_Event event;

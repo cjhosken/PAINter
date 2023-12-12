@@ -93,7 +93,7 @@ PNTR_Gui::PNTR_Gui() {
         }
         else
         {
-            canvas = new PNTR_Canvas(new SDL_Rect({0, 0, 512, 512}), new SDL_Color({255, 0, 0, 255}));
+            canvas = new PNTR_Canvas(new SDL_Rect({0, 0, 512, 512}), new SDL_Color({255, 255, 255, 255}));
         }
 
         //dialog = new PNTR_ColorDialog(activeColor);
@@ -120,7 +120,7 @@ void PNTR_Gui::draw(SDL_Renderer* renderer, SDL_Event* event, SDL_Window* window
     
     sideBar->draw(renderer);
     
-    for (int bdx = 0; bdx<buttons->size(); bdx++) {
+    for (int bdx = 0; bdx<(int)buttons->size(); bdx++) {
         buttons->at(bdx)->draw(renderer, event, window);
     }
 

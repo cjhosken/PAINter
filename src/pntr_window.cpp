@@ -27,8 +27,7 @@ PNTR_Window::PNTR_Window()
     gui->saveImageButton->setAction(saveFunc);
     gui->clearImageButton->setAction(clearFunc);
 
-    activeSlider = gui->thickSlider;
-    activeSlider->setValue(0.25f);
+    gui->thickSlider->setValue(0.25f);
 
     processEvents();
     draw();
@@ -87,7 +86,7 @@ void PNTR_Window::processEvents()
 
             buttonPressed = false;
 
-            for (int bdx = 0; bdx < gui->buttons->size(); bdx++)
+            for (int bdx = 0; bdx < (int) gui->buttons->size(); bdx++)
             {
                 if (gui->buttons->at(bdx)->isMouseOver(mousePos))
                 {
@@ -107,13 +106,16 @@ void PNTR_Window::processEvents()
 
             if (!buttonPressed)
             {
-                gui->canvas->drawOnPaintLayer(&leftMouseDown, &middleMouseDown, drawSize, shapeStart);
+                if (!gui->navBar->isMouseOver(mousePos) && !gui->sideBar->isMouseOver(mousePos))
+                {
+                    gui->canvas->drawOnPaintLayer(&leftMouseDown, &middleMouseDown, DRAW_SIZE * gui->thickSlider->getValue(), shapeStart);
+                }
             }
 
             break;
 
         case SDL_BUTTON_MIDDLE:
-            if (!gui->navBar->isMouseOver(mousePos))
+            if (!gui->navBar->isMouseOver(mousePos) && !gui->sideBar->isMouseOver(mousePos))
             {
                 lastCanvasPos = new PNTR_Vector2I(gui->canvas->getBBox()->x, gui->canvas->getBBox()->y);
                 lastPos = mousePos;
@@ -123,7 +125,7 @@ void PNTR_Window::processEvents()
         break;
 
     case SDL_MOUSEWHEEL:
-        if (!gui->navBar->isMouseOver(mousePos))
+        if (!gui->navBar->isMouseOver(mousePos) && !gui->sideBar->isMouseOver(mousePos))
         {
             float scalar = 75;
             float aspect = (float)gui->canvas->getBBox()->h / gui->canvas->getBBox()->w;
@@ -188,7 +190,10 @@ void PNTR_Window::processEvents()
         mousePos = new PNTR_Vector2I(event->motion.x, event->motion.y);
         if (leftMouseDown && !middleMouseDown)
         {
-            gui->canvas->drawOnPaintLayer(&leftMouseDown, &middleMouseDown, drawSize, shapeStart);
+            if (!gui->navBar->isMouseOver(mousePos) && !gui->sideBar->isMouseOver(mousePos))
+            {
+                gui->canvas->drawOnPaintLayer(&leftMouseDown, &middleMouseDown, DRAW_SIZE * gui->thickSlider->getValue(), shapeStart);
+            }
         }
         break;
 
@@ -198,7 +203,10 @@ void PNTR_Window::processEvents()
         activeSlider = nullptr;
         if (paintMode == PNTR_PaintMode::SHAPE_CIRCLE || paintMode == PNTR_PaintMode::SHAPE_LINE || paintMode == PNTR_PaintMode::SHAPE_SQUARE)
         {
-            gui->canvas->drawOnPaintLayer(&leftMouseDown, &middleMouseDown, drawSize, shapeStart);
+            if (!gui->navBar->isMouseOver(mousePos) && !gui->sideBar->isMouseOver(mousePos))
+            {
+                gui->canvas->drawOnPaintLayer(&leftMouseDown, &middleMouseDown, DRAW_SIZE * gui->thickSlider->getValue(), shapeStart);
+            }
         }
         middleMouseDown = false;
         break;
@@ -211,69 +219,69 @@ void PNTR_Window::processEvents()
         break;
     }
 
-    if (middleMouseDown)
+    if (leftMouseDown)
     {
+
         if (activeSlider != nullptr)
         {
             activeSlider->setValue((mousePos->x - activeSlider->getBBox()->x) / (float)activeSlider->getBBox()->w);
         }
-        else
-        {
-            gui->canvas->getBBox()->x = lastCanvasPos->x + mousePos->x - lastPos->x;
-            gui->canvas->getBBox()->y = lastCanvasPos->y + mousePos->y - lastPos->y;
-        }
+    }
+
+    else if (middleMouseDown)
+    {
+        gui->canvas->getBBox()->x = lastCanvasPos->x + mousePos->x - lastPos->x;
+        gui->canvas->getBBox()->y = lastCanvasPos->y + mousePos->y - lastPos->y;
     }
 
     else
     {
-        for (int bdx = 0; bdx < gui->buttons->size(); bdx++)
+        for (int bdx = 0; bdx < (int) gui->buttons->size(); bdx++)
         {
 
             gui->buttons->at(bdx)->setActive(false);
         }
     }
     switch (paintMode)
-            {
-            case DRAW:
-                gui->brushButton->setActive(true);
-                cursorSurface = IMG_Load("assets/icons/circle_48.png");
-                break;
-            case ERASE:
-                gui->eraserButton->setActive(true);
-                cursorSurface = IMG_Load("assets/icons/circle_48.png");
-                break;
-            case FILL:
-                gui->fillButton->setActive(true);
-                cursorSurface = IMG_Load("assets/icons/fill_48.png");
-                break;
-            case SHAPE_LINE:
-                gui->shapeButtonLine->setActive(true);
-                cursorSurface = IMG_Load("assets/icons/circle_48.png");
-                break;
-            case SHAPE_CIRCLE:
-                gui->shapeButtonCircle->setActive(true);
-                cursorSurface = IMG_Load("assets/icons/circle_48.png");
-                break;
-            case SHAPE_SQUARE:
-                gui->shapeButtonSquare->setActive(true);
-                cursorSurface = IMG_Load("assets/icons/circle_48.png");
-                break;
-            case PICKER:
-                gui->pickerButton->setActive(true);
-                cursorSurface = IMG_Load("assets/icons/picker_48.png");
-            }
+    {
+    case DRAW:
+        gui->brushButton->setActive(true);
+        cursorSurface = IMG_Load("assets/icons/circle_48.png");
+        break;
+    case ERASE:
+        gui->eraserButton->setActive(true);
+        cursorSurface = IMG_Load("assets/icons/circle_48.png");
+        break;
+    case FILL:
+        gui->fillButton->setActive(true);
+        cursorSurface = IMG_Load("assets/icons/fill_48.png");
+        break;
+    case SHAPE_LINE:
+        gui->shapeButtonLine->setActive(true);
+        cursorSurface = IMG_Load("assets/icons/circle_48.png");
+        break;
+    case SHAPE_CIRCLE:
+        gui->shapeButtonCircle->setActive(true);
+        cursorSurface = IMG_Load("assets/icons/circle_48.png");
+        break;
+    case SHAPE_SQUARE:
+        gui->shapeButtonSquare->setActive(true);
+        cursorSurface = IMG_Load("assets/icons/circle_48.png");
+        break;
+    case PICKER:
+        gui->pickerButton->setActive(true);
+        cursorSurface = IMG_Load("assets/icons/picker_48.png");
+    }
 
-        int drawSizeFac = 64;
-        drawSize = drawSizeFac * gui->thickSlider->getValue() * (float)(gui->canvas->getBBox()->w / 1280.0f) * 4;
-        SDL_Surface *scaledSurface = SDL_CreateRGBSurface(0, drawSize, drawSize, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
-        SDL_FillRect(scaledSurface, NULL, SDL_MapRGBA(scaledSurface->format, 0, 0, 0, 0));
-        SDL_BlitScaled(cursorSurface, NULL, scaledSurface, new SDL_Rect({0, 0, drawSize, drawSize}));
+    float cursorSize = DRAW_SIZE * gui->thickSlider->getValue() * ((float)(gui->canvas->getBBox()->w / (float) gui->canvas->getSourceSize().w));
+    SDL_Surface *scaledSurface = SDL_CreateRGBSurface(0, cursorSize, cursorSize, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
+    SDL_FillRect(scaledSurface, NULL, SDL_MapRGBA(scaledSurface->format, 0, 0, 0, 0));
+    SDL_BlitScaled(cursorSurface, NULL, scaledSurface, new SDL_Rect({0, 0, (int)cursorSize, (int)cursorSize}));
 
-        SDL_Cursor *cursor = SDL_CreateColorCursor(scaledSurface, drawSize / 2, drawSize / 2);
-        SDL_SetCursor(cursor);
+    SDL_Cursor *cursor = SDL_CreateColorCursor(scaledSurface, cursorSize/2, cursorSize/2);
+    SDL_SetCursor(cursor);
 
-        SDL_FreeSurface(scaledSurface);
-        SDL_FreeSurface(cursorSurface);
+    SDL_FreeSurface(scaledSurface);
 }
 
 void PNTR_Window::dispose()

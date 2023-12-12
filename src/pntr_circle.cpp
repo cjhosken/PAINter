@@ -1,5 +1,6 @@
 #include "pntr_circle.h"
 #include "../include/common.h"
+#include "../include/pntr_vector2i.h"
 
 PNTR_Circle::PNTR_Circle() : PNTR_Panel()
 {
@@ -79,24 +80,22 @@ bool PNTR_Circle::isMouseOver(PNTR_Vector2I *mouse)
 SDL_Surface *PNTR_Circle::fillCircle(int radius, SDL_Color *color, PNTR_Vector2I *trim)
 {
     SDL_Surface *surface = SDL_CreateRGBSurfaceWithFormat(0, radius * 2, radius * 2, 32, SDL_PIXELFORMAT_RGBA8888);
+    
+    PNTR_Vector2I index = PNTR_Vector2I();
 
-    int i;
-    int j;
-
-    for (i = -radius; i <= radius; ++i)
+    for (index.y = -radius; index.y <= radius; ++index.y)
     {
-        for (j = -radius; j <= radius; ++j)
+        for (index.x = -radius; index.x <= radius; ++index.x)
         {
-            if (j * j + i * i <= radius * radius)
+            if (index.x * index.x + index.y * index.y <= radius * radius)
             {
-                int dX = radius + j - trim->x;
-                int dY = radius + i - trim->y;
-                if (dX >= 0 && dX < surface->w && dY >= 0 && dY < surface->h)
+                PNTR_Vector2I change = PNTR_Vector2I(radius + index.x - trim->x, radius + index.y - trim->y);
+                if (change.x >= 0 && change.x < surface->w && change.y >= 0 && change.y < surface->h)
                 {
                     // Calculate the pixel offset
 
                     Uint32 *pixels = (Uint32 *)surface->pixels;
-                    int pixelIndex = dY * (surface->pitch / sizeof(Uint32)) + dX;
+                    int pixelIndex = change.y * (surface->pitch / sizeof(Uint32)) + change.x;
 
                     // Create the pixel value combining RGBA components
                     Uint32 pixelValue = SDL_MapRGBA(surface->format, color->r, color->g, color->b, color->a);
@@ -183,6 +182,39 @@ void PNTR_Circle::renderCircle(SDL_Renderer *renderer, PNTR_Vector2I *position, 
 
     SDL_RenderCopy(renderer, texture, NULL, &dstRect);
     SDL_DestroyTexture(texture);
+}
+
+SDL_Surface* PNTR_Circle::circleToSurface(PNTR_Vector2I* position, SDL_Color* color, int radius) {
+    SDL_Surface *surface = SDL_CreateRGBSurfaceWithFormat(0, radius * 2, radius * 2, 32, SDL_PIXELFORMAT_RGBA8888);
+
+    int i;
+    int j;
+
+    for (i = -radius; i <= radius; ++i)
+    {
+        for (j = -radius; j <= radius; ++j)
+        {
+            if (j * j + i * i <= radius * radius)
+            {
+                int dX = radius + j;
+                int dY = radius + i;
+                if (dX >= 0 && dX < surface->w && dY >= 0 && dY < surface->h)
+                {
+                    // Calculate the pixel offset
+
+                    Uint32 *pixels = (Uint32 *)surface->pixels;
+                    int pixelIndex = dY * (surface->pitch / sizeof(Uint32)) + dX;
+
+                    // Create the pixel value combining RGBA components
+                    Uint32 pixelValue = SDL_MapRGBA(surface->format, color->r, color->g, color->b, color->a);
+
+                    // Set the pixel value
+                    pixels[pixelIndex] = pixelValue;
+                }
+            }
+        }
+    }
+    return surface;
 }
 
 PNTR_Vector2I *PNTR_Circle::getPosition() { return position; };
