@@ -7,7 +7,7 @@
 #include <vector>
 
 class PNTR_ColorDialog {
-    private:
+    public:
         PNTR_Slider* rSlider;
         PNTR_Slider* gSlider;
         PNTR_Slider* bSlider;
@@ -27,7 +27,6 @@ class PNTR_ColorDialog {
         bool isInvoked();
         void show();
         void draw();
-        void processEvents(PNTR_Slider* activeSlider);
         void hide();
 };
 

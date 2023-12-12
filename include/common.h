@@ -39,6 +39,7 @@ enum PNTR_PaintMode
 };
 
 extern PNTR_Vector2I* mousePos;
+extern PNTR_Vector2I* lastPos;
 
 extern PNTR_PaintMode paintMode;
 

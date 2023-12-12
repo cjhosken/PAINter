@@ -19,7 +19,6 @@ class PNTR_Window {
         PNTR_Gui* gui = nullptr;
         PNTR_Slider* activeSlider = nullptr;
 
-        PNTR_Vector2I* lastPos;
         PNTR_Vector2I* shapeStart;
 
         PNTR_ColorDialog* dialog;

@@ -68,5 +68,5 @@ bool PNTR_Slider::isMouseOver(PNTR_Vector2I* mouse) {
 
 void PNTR_Slider::pressEvent()
 {
-    setValue(mousePos->x);
+    setValue((float(mousePos->x) - float(getBBox()->x)) / float(getBBox()->w));
 }

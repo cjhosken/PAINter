@@ -51,68 +51,6 @@ void PNTR_ColorDialog::draw()
 
 bool PNTR_ColorDialog::isInvoked() { return invoked; }
 
-void PNTR_ColorDialog::processEvents(PNTR_Slider* activeSlider)
-{
-    if (!invoked)
-    {
-        return SDL_HideWindow(dialog);
-    }
-
-    if (SDL_GetWindowID(dialog) == event->window.windowID)
-    {
-        switch (event->window.event)
-            {
-                case SDL_WINDOWEVENT_CLOSE:
-                    hide();
-                    break;
-
-                default:
-                    break;
-            }
-
-        switch (event->type)
-        {
-            case SDL_MOUSEMOTION:
-                mousePos = new PNTR_Vector2I(event->motion.x, event->motion.y);
-                break;
-
-        case SDL_MOUSEBUTTONDOWN:
-            switch (event->button.button)
-            {
-
-            case SDL_BUTTON_LEFT:
-                
-                buttonPressed = false;
-                for (int sdx=0; sdx<(int)sliders.size();sdx++)
-                {
-                    if (sliders.at(sdx)->isMouseOver(mousePos))
-                    {
-                        sliders.at(sdx)->pressEvent();
-                        leftMouseDown = true;
-                        activeSlider = sliders.at(sdx);
-                        break;
-                    }
-                }
-                break;
-            }
-            break;
-
-        case SDL_MOUSEBUTTONUP:
-
-            activeSlider = nullptr;
-
-            break;
-        }
-    }
-
-    // HSV TO RGB CONVERSION HERE
-    // SET GLOBAL COLOR TO THAT
-    activeColor->a = 255;
-    activeColor->r = (int)(255 * rSlider->getValue());
-    activeColor->g = (int)(255 * gSlider->getValue());
-    activeColor->b = (int)(255 * bSlider->getValue());
-}
-
 void PNTR_ColorDialog::hide()
 {
     invoked = false;

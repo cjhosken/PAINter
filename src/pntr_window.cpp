@@ -235,10 +235,62 @@ void PNTR_Window::processEvents()
             break;
         }
     }
-
-    if (dialog->isInvoked())
+    else
     {
-        dialog->processEvents(activeSlider);
+        switch (event->window.event)
+        {
+        case SDL_WINDOWEVENT_CLOSE:
+            dialog->hide();
+            break;
+
+        default:
+            break;
+        }
+
+        switch (event->type)
+        {
+        case SDL_MOUSEMOTION:
+            mousePos = new PNTR_Vector2I(event->motion.x, event->motion.y);
+            break;
+
+        case SDL_MOUSEBUTTONDOWN:
+            switch (event->button.button)
+            {
+
+            case SDL_BUTTON_LEFT:
+                leftMouseDown = true;
+
+                buttonPressed = false;
+                for (int sdx = 0; sdx < (int)dialog->sliders.size(); sdx++)
+                {
+                    if (dialog->sliders.at(sdx)->isMouseOver(mousePos))
+                    {
+                        dialog->sliders.at(sdx)->pressEvent();
+                        activeSlider = dialog->sliders.at(sdx);
+                        middleMouseDown = true;
+                        lastPos = mousePos;
+
+                        break;
+                    }
+                }
+                break;
+            }
+            break;
+
+        case SDL_MOUSEBUTTONUP:
+            leftMouseDown = false;
+            middleMouseDown = false;
+            buttonPressed = false;
+            activeSlider = nullptr;
+
+            break;
+        }
+
+
+            activeColor->a = 255;
+        activeColor->r = (int)(255 * dialog->rSlider->getValue());
+        activeColor->g = (int)(255 * dialog->gSlider->getValue());
+        activeColor->b = (int)(255 * dialog->bSlider->getValue());
     }
 
     if (leftMouseDown)
@@ -246,10 +298,6 @@ void PNTR_Window::processEvents()
         if (activeSlider != nullptr)
         {
             activeSlider->setValue((float(mousePos->x) - float(activeSlider->getBBox()->x)) / float(activeSlider->getBBox()->w));
-            printf("SLIDER VAL: %f\n", activeSlider->getValue());
-            printf("MOUSE: %d %d\n", mousePos->x, mousePos->y);
-            printf("BBOX: %d %d %d %d\n", activeSlider->getBBox()->x, activeSlider->getBBox()->y, activeSlider->getBBox()->w, activeSlider->getBBox()->h);
-            fflush(stdout);
         }
     }
 
