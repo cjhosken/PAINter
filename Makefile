@@ -7,7 +7,7 @@ DATE=11.12.2023
 
 CC = g++
 SRCDIR = src
-CFLAGS = -std=c++11 -Wall -Iinclude
+CFLAGS = -Iinclude
 LINKER_FLAGS = -lSDL2 -lSDL2_image
 BUILDDIR = build
 

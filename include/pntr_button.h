@@ -3,21 +3,22 @@
 
 #include "common.h"
 #include "pntr_panel.h"
+#include <functional>
 
 class PNTR_Button : public PNTR_Panel
 {
     private:
         SDL_Surface *icon;
         bool active;
-        void (*action)(void);
+        std::function<void()> action;
 
     public:
         PNTR_Button();
         PNTR_Button(SDL_Rect* bb);
         PNTR_Button(SDL_Rect* bb, SDL_Surface* i);
-        PNTR_Button(SDL_Rect* bb, SDL_Surface* i, void (*func)(void));
+        PNTR_Button(SDL_Rect* bb, SDL_Surface* i, std::function<void()> func);
 
-        void setAction(void (*func)(void));
+        void setAction(std::function<void()> func);
         void executeAction();
 
         void draw(SDL_Renderer *renderer, SDL_Event* event, SDL_Window* window);
@@ -28,7 +29,7 @@ class PNTR_Button : public PNTR_Panel
 
         bool isActive();
 
-        void onPressEvent() override;
+        void pressEvent() override;
 };
 
 #endif

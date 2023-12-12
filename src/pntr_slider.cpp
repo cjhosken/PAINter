@@ -1,8 +1,8 @@
 #include "pntr_slider.h"
-#include "include/pntr_panel.h"
-#include "include/pntr_circle.h"
-#include "include/pntr_vector2i.h"
-#include "include/common.h"
+#include "../include/pntr_panel.h"
+#include "../include/pntr_circle.h"
+#include "../include/pntr_vector2i.h"
+#include "../include/common.h"
 
 PNTR_Slider::PNTR_Slider() : PNTR_Widget()
 {
@@ -13,24 +13,24 @@ PNTR_Slider::PNTR_Slider() : PNTR_Widget()
 PNTR_Slider::PNTR_Slider(SDL_Rect *bb) : PNTR_Widget(bb)
 {
     value = 0.0f;
-    knob = new PNTR_Circle(new PNTR_Vector2I(), 8, new SDL_Color({0, 0, 0, 255}));
+    knob = new PNTR_Circle(new PNTR_Vector2I(bbox->x, bbox->y), 8, new SDL_Color({0, 0, 0, 255}));
 };
 
 PNTR_Slider::PNTR_Slider(SDL_Rect *bb, float v) : PNTR_Widget(bb)
 {
     value = v;
-    knob = new PNTR_Circle(new PNTR_Vector2I(), 8, new SDL_Color({0, 0, 0, 255}));
+    knob = new PNTR_Circle(new PNTR_Vector2I(bbox->x, bbox->y), 8, new SDL_Color({0, 0, 0, 255}));
 };
 
 PNTR_Slider::PNTR_Slider(SDL_Rect *bb, SDL_Color *c) : PNTR_Widget(bb, c)
 {
-    knob = new PNTR_Circle(new PNTR_Vector2I(), 8, new SDL_Color({0, 0, 0, 255}));
+    knob = new PNTR_Circle(new PNTR_Vector2I(bbox->x, bbox->y), 8, new SDL_Color({0, 0, 0, 255}));
 };
 
 PNTR_Slider::PNTR_Slider(SDL_Rect *bb, SDL_Color *c, float v) : PNTR_Widget(bb, c)
 {
     value = v;
-    knob = new PNTR_Circle(new PNTR_Vector2I(), 8, new SDL_Color({0, 0, 0, 255}));
+    knob = new PNTR_Circle(new PNTR_Vector2I(bbox->x, bbox->y), 8, new SDL_Color({0, 0, 0, 255}));
 };
 
 PNTR_Slider::PNTR_Slider(SDL_Rect *bb, SDL_Color *c, PNTR_Circle *k) : PNTR_Widget(bb, c)
@@ -58,16 +58,15 @@ PNTR_Circle* PNTR_Slider::getKnob() {
 void PNTR_Slider::draw(SDL_Renderer *renderer)
 {
     PNTR_Panel::renderPanel(renderer, *bbox, *color, 0);
-    knob->setPosition(new PNTR_Vector2I(bbox->x + (value * bbox->w), bbox->y));
-    knob->draw(renderer);
+    knob->setPosition(new PNTR_Vector2I(bbox->x + (value * bbox->w), bbox->y - knob->getRadius()));;
+    knob->draw(renderer, true);
 }
 
-bool PNTR_Slider::pressEvent()
-{
-    return knob->isMouseOver(mousePos);
+bool PNTR_Slider::isMouseOver(PNTR_Vector2I* mouse) {
+    return knob->isMouseOver(mouse);
 }
 
-void PNTR_Slider::onDragEvent()
+void PNTR_Slider::pressEvent()
 {
     setValue(mousePos->x);
 }

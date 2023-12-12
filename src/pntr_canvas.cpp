@@ -1,34 +1,36 @@
 #include "pntr_canvas.h"
-#include "include/common.h"
-#include "include/pntr_circle.h"
-#include "include/pntr_vector2i.h"
+#include "../include/common.h"
+#include "../include/pntr_circle.h"
+#include "../include/pntr_vector2i.h"
 #include <vector>
 
 PNTR_Canvas::PNTR_Canvas() : PNTR_Widget() {
-    sourceSize = new SDL_Rect();
+    sourceSize = SDL_Rect({0, 0, 0, 0});
     imageLayer = new SDL_Surface();
     paintLayer = new SDL_Surface();
     ghostLayer = new SDL_Surface();
 }
 
-PNTR_Canvas::PNTR_Canvas(SDL_Rect* bb, SDL_Surface* image) : PNTR_Widget(bb) {
+PNTR_Canvas::PNTR_Canvas(SDL_Surface* image) : PNTR_Widget() {
     setImageLayer(image);
-    sourceSize = new SDL_Rect({0, 0, imageLayer->w, imageLayer->h});
+    sourceSize = SDL_Rect({0, 0, imageLayer->w, imageLayer->h});
+    bbox->w = sourceSize.w;
+    bbox->h = sourceSize.h;
 
-    paintLayer = SDL_CreateRGBSurface(0, sourceSize->w, sourceSize->h, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
-    ghostLayer = SDL_CreateRGBSurface(0, sourceSize->w, sourceSize->h, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
+    paintLayer = SDL_CreateRGBSurface(0, sourceSize.w, sourceSize.h, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
+    ghostLayer = SDL_CreateRGBSurface(0, sourceSize.w, sourceSize.h, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
     clearPaintLayer();
     clearGhostLayer();
 }
 
-PNTR_Canvas::PNTR_Canvas(SDL_Rect* bb, PNTR_Vector2I size, SDL_Color* c) : PNTR_Widget(bb, c) {
+PNTR_Canvas::PNTR_Canvas(SDL_Rect* bbox, SDL_Color* c) : PNTR_Widget(bbox, c) {
     
-    imageLayer = SDL_CreateRGBSurface(0, 512, 512, 32, 0x00ff0000, 0x0000ff00, 0x00000ff, 0xff000000);
+    imageLayer = SDL_CreateRGBSurface(0, bbox->w, bbox->h, 32, 0x00ff0000, 0x0000ff00, 0x00000ff, 0xff000000);
     SDL_FillRect(imageLayer, NULL, SDL_MapRGBA(imageLayer->format, color->r, color->g, color->b, color->a));
-    sourceSize = new SDL_Rect({0, 0, imageLayer->w, imageLayer->h});
+    sourceSize = SDL_Rect({0, 0, imageLayer->w, imageLayer->h});
 
-    paintLayer = SDL_CreateRGBSurface(0, sourceSize->w, sourceSize->h, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
-    ghostLayer = SDL_CreateRGBSurface(0, sourceSize->w, sourceSize->h, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
+    paintLayer = SDL_CreateRGBSurface(0, sourceSize.w, sourceSize.h, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
+    ghostLayer = SDL_CreateRGBSurface(0, sourceSize.w, sourceSize.h, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
     clearPaintLayer();
     clearGhostLayer();
 }
@@ -37,32 +39,39 @@ SDL_Surface* PNTR_Canvas::getImageLayer() {return imageLayer;};
 SDL_Surface* PNTR_Canvas::getPaintLayer() {return paintLayer;}; 
 SDL_Surface* PNTR_Canvas::getGhostLayer() {return ghostLayer;}; 
 
-SDL_Rect* PNTR_Canvas::getSourceSize() {
+SDL_Rect PNTR_Canvas::getSourceSize() {
     return sourceSize;
 }
 
 void PNTR_Canvas::draw(SDL_Renderer *renderer)
 {
     texture = SDL_CreateTextureFromSurface(renderer, imageLayer);
-    SDL_RenderCopy(renderer, texture, sourceSize, bbox);
+    SDL_RenderCopy(renderer, texture, &sourceSize, bbox);
 
-    texture = SDL_CreateTextureFromSurface(renderer, paintLayer);
-    SDL_RenderCopy(renderer, texture, sourceSize, bbox);
+    SDL_Texture* paintLayerTexture = SDL_CreateTextureFromSurface(renderer, paintLayer);
+    SDL_RenderCopy(renderer, paintLayerTexture, &sourceSize, bbox);
 
-    texture = SDL_CreateTextureFromSurface(renderer, ghostLayer);
-    SDL_RenderCopy(renderer, texture, sourceSize, bbox);
+    SDL_Texture* ghostLayerTexture = SDL_CreateTextureFromSurface(renderer, ghostLayer);
+    SDL_RenderCopy(renderer, ghostLayerTexture, &sourceSize, bbox);
+
+    SDL_DestroyTexture(paintLayerTexture);
+    SDL_DestroyTexture(ghostLayerTexture);
 }
 
 void PNTR_Canvas::setImageLayer(SDL_Surface* s) {
     imageLayer = s;
+    sourceSize.w = s->w;
+    sourceSize.h = s->h;
+    bbox->w = sourceSize.w;
+    bbox->h = sourceSize.h;
 }
 
 void PNTR_Canvas::resetPaintLayer() {
-    paintLayer = SDL_CreateRGBSurface(0, sourceSize->w, sourceSize->h, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
+    paintLayer = SDL_CreateRGBSurface(0, sourceSize.w, sourceSize.h, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
     clearPaintLayer();
 };
 void PNTR_Canvas::resetGhostLayer() {
-    ghostLayer = SDL_CreateRGBSurface(0, sourceSize->w, sourceSize->h, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
+    ghostLayer = SDL_CreateRGBSurface(0, sourceSize.w, sourceSize.h, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
     clearGhostLayer();
 };
 
@@ -70,7 +79,7 @@ void PNTR_Canvas::clearPaintLayer() {SDL_FillRect(paintLayer, NULL, SDL_MapRGBA(
 void PNTR_Canvas::clearGhostLayer() {SDL_FillRect(ghostLayer, NULL, SDL_MapRGBA(ghostLayer->format, 255, 255, 255, 0));};
 
 SDL_Surface* PNTR_Canvas::combineLayers() {
-    SDL_Surface *output = SDL_CreateRGBSurface(0, sourceSize->w, sourceSize->h, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
+    SDL_Surface *output = SDL_CreateRGBSurface(0, sourceSize.w, sourceSize.h, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
     SDL_BlitSurface(imageLayer, NULL, output, NULL);
     SDL_BlitSurface(paintLayer, NULL, output, NULL);
     return output;
@@ -94,7 +103,7 @@ void PNTR_Canvas::saveImage() {
 }
 
 
-void PNTR_Canvas::drawOnPaintLayer(bool* leftMouseDown, bool* middleMouseDown, int drawSize, PNTR_Vector2I shapeStart) {
+void PNTR_Canvas::drawOnPaintLayer(bool* leftMouseDown, bool* middleMouseDown, int drawSize, PNTR_Vector2I* shapeStart) {
     PNTR_Vector2I currentPos;
 
     // map from draw shape to getImageLayer()
@@ -102,32 +111,32 @@ void PNTR_Canvas::drawOnPaintLayer(bool* leftMouseDown, bool* middleMouseDown, i
     // mouseOnCanvas.y = ((mY - rY) / rH) * iH
 
     PNTR_Vector2I mouseOnCanvas = PNTR_Vector2I(
-        ((mousePos->x - getBBox()->x) / (float)getBBox()->w) * getImageLayer()->w,
-        ((mousePos->y - getBBox()->y) / (float)getBBox()->h) * getImageLayer()->h 
+        ((mousePos->x - getBBox()->x) / (float)getBBox()->w) * getSourceSize().w,
+        ((mousePos->y - getBBox()->y) / (float)getBBox()->h) * getSourceSize().h 
     );
 
-    int shapeSize = sqrt(pow(shapeStart.x - mouseOnCanvas.x, 2) + pow(shapeStart.y - mouseOnCanvas.y, 2));
+    int shapeSize = sqrt(pow(shapeStart->x - mouseOnCanvas.x, 2) + pow(shapeStart->y - mouseOnCanvas.y, 2));
 
     SDL_Surface *output = combineLayers();
 
     SDL_Color *pixel;
-    SDL_Rect circleBrushRect = {0, 0, drawSize * 2, drawSize * 2};
-    SDL_Surface* circleSurface = SDL_CreateRGBSurfaceWithFormat(0, circleBrushRect.w, circleBrushRect.h, 32, SDL_PIXELFORMAT_RGBA8888);;
+    SDL_Rect* circleBrushRect = new SDL_Rect({-drawSize, -drawSize, drawSize, drawSize});
+    SDL_Surface* circleSurface = SDL_CreateRGBSurfaceWithFormat(0, circleBrushRect->w, circleBrushRect->h, 32, SDL_PIXELFORMAT_RGBA8888);;
 
     switch (paintMode)
     {
     case PNTR_PaintMode::DRAW:
-        PNTR_Circle::circleOnSurface(circleSurface, circleBrushRect, PNTR_Vector2I(), *activeColor, drawSize, true);
-        SDL_BlitSurface(circleSurface, NULL, getPaintLayer(), new SDL_Rect({mouseOnCanvas.x - drawSize, mouseOnCanvas.y - drawSize, drawSize, drawSize}));
+        PNTR_Circle::circleOnSurface(circleSurface, circleBrushRect, new PNTR_Vector2I(), activeColor, drawSize, true);
+        SDL_BlitSurface(circleSurface, NULL, paintLayer, new SDL_Rect({mouseOnCanvas.x, mouseOnCanvas.y, drawSize, drawSize}));
         break;
 
     case PNTR_PaintMode::ERASE:
-        PNTR_Circle::circleOnSurface(circleSurface, circleBrushRect, PNTR_Vector2I(), SDL_Color({255, 255, 255, 0}), drawSize, true);
-        SDL_BlitSurface(circleSurface, NULL, getPaintLayer(), new SDL_Rect({mouseOnCanvas.x - drawSize, mouseOnCanvas.y - drawSize, drawSize, drawSize}));
+        PNTR_Circle::circleOnSurface(circleSurface, circleBrushRect, new PNTR_Vector2I(), new SDL_Color({255, 255, 255, 0}), drawSize, true);
+        SDL_BlitSurface(circleSurface, NULL, paintLayer, new SDL_Rect({mouseOnCanvas.x, mouseOnCanvas.y, drawSize, drawSize}));
         break;
 
     case PNTR_PaintMode::FILL:
-        if ((mouseOnCanvas.x < 0 || mouseOnCanvas.x > getImageLayer()->w) || (mouseOnCanvas.y < 0 || mouseOnCanvas.y > getImageLayer()->h))
+        if ((mouseOnCanvas.x < 0 || mouseOnCanvas.x > getSourceSize().w) || (mouseOnCanvas.y < 0 || mouseOnCanvas.y > getSourceSize().h))
             break;
 
         pixel = getSurfacePixel(output, PNTR_Vector2I(mouseOnCanvas.x, mouseOnCanvas.y));
@@ -154,11 +163,11 @@ void PNTR_Canvas::drawOnPaintLayer(bool* leftMouseDown, bool* middleMouseDown, i
         {
             if (!leftMouseDown)
             {
-                PNTR_Canvas::drawLine(getPaintLayer(), getImageLayer()->w, getImageLayer()->h, shapeStart.x, shapeStart.y, mouseOnCanvas.x, mouseOnCanvas.y);
+                PNTR_Canvas::drawLine(paintLayer, sourceSize, *shapeStart, mouseOnCanvas);
             }
             else
             {
-                PNTR_Canvas::drawLine(getGhostLayer(), getImageLayer()->w, getImageLayer()->h, shapeStart.x, shapeStart.y, mouseOnCanvas.x, mouseOnCanvas.y);
+                PNTR_Canvas::drawLine(ghostLayer, sourceSize, *shapeStart, mouseOnCanvas);
             }
         }
         break;
@@ -167,11 +176,11 @@ void PNTR_Canvas::drawOnPaintLayer(bool* leftMouseDown, bool* middleMouseDown, i
         {
             if (!leftMouseDown)
             {
-                PNTR_Circle::circleOnSurface(getPaintLayer(), *(getSourceSize()), shapeStart, *activeColor, shapeSize, false);
+                PNTR_Circle::circleOnSurface(paintLayer, &sourceSize, shapeStart, activeColor, shapeSize, false);
             }
             else
             {
-                PNTR_Circle::circleOnSurface(getGhostLayer(), *(getSourceSize()), shapeStart, *activeColor, shapeSize, false);
+                PNTR_Circle::circleOnSurface(ghostLayer, &sourceSize, shapeStart, activeColor, shapeSize, false);
             }
         }
         break;
@@ -180,11 +189,11 @@ void PNTR_Canvas::drawOnPaintLayer(bool* leftMouseDown, bool* middleMouseDown, i
         {
             if (!leftMouseDown)
             {
-                PNTR_Canvas::drawSquare(getPaintLayer(), getImageLayer()->w, getImageLayer()->h, shapeStart.x, shapeStart.y, shapeSize);
+                PNTR_Canvas::drawSquare(paintLayer, sourceSize, *shapeStart, shapeSize);
             }
             else
             {
-                PNTR_Canvas::drawSquare(getGhostLayer(), getImageLayer()->w, getImageLayer()->h, shapeStart.x, shapeStart.y, shapeSize);
+                PNTR_Canvas::drawSquare(ghostLayer, sourceSize, *shapeStart, shapeSize);
             }
         }
         break;
@@ -198,7 +207,7 @@ void PNTR_Canvas::drawOnPaintLayer(bool* leftMouseDown, bool* middleMouseDown, i
 
 bool PNTR_Canvas::isValid(PNTR_Vector2I position, SDL_Surface *read, SDL_Color *fill, SDL_Color *pixel)
 {
-    return (position.x >= 0 && position.x < getImageLayer()->w) && (position.y >= 0 && position.y < getImageLayer()->h) && !compare(fill, pixel) && compare(getSurfacePixel(read, position), pixel);
+    return (position.x >= 0 && position.x < getSourceSize().w) && (position.y >= 0 && position.y < getSourceSize().h) && !compare(fill, pixel) && compare(getSurfacePixel(read, position), pixel);
 }
 
 void PNTR_Canvas::floodFill(PNTR_Vector2I pos, SDL_Surface *read, SDL_Surface *write, SDL_Color *fill, SDL_Color *pixel)
@@ -232,42 +241,42 @@ void PNTR_Canvas::floodFill(PNTR_Vector2I pos, SDL_Surface *read, SDL_Surface *w
 
 // STATIC FUNCTIONS
 
-void PNTR_Canvas::drawLine(SDL_Surface *surface, int wdth, int hght, int x0, int y0, int xn, int yn)
+void PNTR_Canvas::drawLine(SDL_Surface *surface, SDL_Rect bounds, PNTR_Vector2I p1, PNTR_Vector2I p2)
 {
-    int dx = abs(xn - x0), sx = x0 < xn ? 1 : -1;
-    int dy = abs(yn - y0), sy = y0 < yn ? 1 : -1;
-    int error = (dx > dy ? dx : -dy) / 2, e2;
-    while (1)
+    PNTR_Vector2I change = PNTR_Vector2I(abs(p2.x - p1.x), abs(p2.y - p1.y));
+    PNTR_Vector2I scale = PNTR_Vector2I(p1.x < p2.x ? 1 : -1, p1.y < p2.y ? 1 : -1);
+    int error = (change.x > change.y ? change.x : -change.y) / 2, e2;
+    while (true)
     {
         /* draw point only if coordinate is valid */
-        if (x0 >= 0 && x0 < wdth && y0 >= 0 && y0 < hght)
-            setSurfacePixel(surface, activeColor, PNTR_Vector2I(x0, y0));
-        if (x0 == xn && y0 == yn)
+        if (p1.x >= 0 && p1.x < bounds.w && p1.y >= 0 && p1.y < bounds.h)
+            setSurfacePixel(surface, activeColor, p1);
+        if (p1.x == p2.x && p1.y == p2.y)
             break;
         e2 = error;
-        if (e2 > -dx)
+        if (e2 > -change.x)
         {
-            error -= dy;
-            x0 += sx;
+            error -= change.y;
+            p1.x += scale.x;
         }
-        if (e2 < dy)
+        if (e2 < change.y)
         {
-            error += dx;
-            y0 += sy;
+            error += change.x;
+            p1.y += scale.y;
         }
     }
 } // https://brightspace.bournemouth.ac.uk/d2l/le/lessons/345037/topics/1968571
 
-void PNTR_Canvas::drawSquare(SDL_Surface *surface, int width, int height, int x0, int y0, int length)
+void PNTR_Canvas::drawSquare(SDL_Surface *surface, SDL_Rect bounds, PNTR_Vector2I center, int length)
 {
-    PNTR_Vector2I p1 = {x0 - length / 2, y0 - length / 2};
-    PNTR_Vector2I p2 = {x0 - length / 2, y0 + length / 2};
-    PNTR_Vector2I p3 = {x0 + length / 2, y0 + length / 2};
-    PNTR_Vector2I p4 = {x0 + length / 2, y0 - length / 2};
-    PNTR_Canvas::drawLine(surface, width, height, p1.x, p1.y, p2.x, p2.y);
-    PNTR_Canvas::drawLine(surface, width, height, p2.x, p2.y, p3.x, p3.y);
-    PNTR_Canvas::drawLine(surface, width, height, p3.x, p3.y, p4.x, p4.y);
-    PNTR_Canvas::drawLine(surface, width, height, p4.x, p4.y, p1.x, p1.y);
+    PNTR_Vector2I p1 = PNTR_Vector2I(center.x - length / 2, center.y - length / 2);
+    PNTR_Vector2I p2 = PNTR_Vector2I(center.x - length / 2, center.y + length / 2);
+    PNTR_Vector2I p3 = PNTR_Vector2I(center.x + length / 2, center.y + length / 2);
+    PNTR_Vector2I p4 = PNTR_Vector2I(center.x + length / 2, center.y - length / 2);
+    PNTR_Canvas::drawLine(surface, bounds, p1, p2);
+    PNTR_Canvas::drawLine(surface, bounds, p2, p3);
+    PNTR_Canvas::drawLine(surface, bounds, p3, p4);
+    PNTR_Canvas::drawLine(surface, bounds, p4, p1);
 }
 
 

@@ -33,7 +33,7 @@ class PNTR_Gui {
 
         PNTR_Slider* thickSlider;
 
-        PNTR_Button *buttons[11];
+        vector<PNTR_Button*> buttons[11];
 
     public:
         PNTR_Gui();

@@ -28,9 +28,9 @@ class PNTR_Slider : public PNTR_Widget {
 
         void draw(SDL_Renderer *renderer) override;
 
-        bool pressEvent() override;
+        bool isMouseOver(PNTR_Vector2I* mouse) override;
 
-        void onDragEvent() override; 
+        void pressEvent() override;
 };
 
 

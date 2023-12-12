@@ -10,7 +10,7 @@ class PNTR_Window {
     private:
         SDL_Window* window;
         SDL_Renderer* renderer;
-        SDL_Event event;
+        SDL_Event* event;
         SDL_Surface* icon;
         PNTR_Vector2I size = PNTR_Vector2I(1280, 720);
         PNTR_Vector2I* lastCanvasPos;

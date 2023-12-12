@@ -15,7 +15,7 @@ class PNTR_Canvas : public PNTR_Widget{
         SDL_Surface* ghostLayer;
         SDL_Texture* texture;
 
-        SDL_Rect* sourceSize;
+        SDL_Rect sourceSize;
 
         vector<vector<bool>> visit_array = {};
         vector<PNTR_Vector2I> fillStack;
@@ -24,8 +24,8 @@ class PNTR_Canvas : public PNTR_Widget{
 
     public:
         PNTR_Canvas();
-        PNTR_Canvas(SDL_Rect* bb, PNTR_Vector2I size, SDL_Color* c);
-        PNTR_Canvas(SDL_Rect* bb, SDL_Surface* surface);
+        PNTR_Canvas(SDL_Rect* bbox, SDL_Color* c);
+        PNTR_Canvas(SDL_Surface* surface);
 
         void draw(SDL_Renderer* renderer) override;
 
@@ -35,7 +35,7 @@ class PNTR_Canvas : public PNTR_Widget{
 
         SDL_Surface* getGhostLayer();
 
-        SDL_Rect* getSourceSize();
+        SDL_Rect getSourceSize();
         
         void setImageLayer(SDL_Surface* s);
         
@@ -45,7 +45,7 @@ class PNTR_Canvas : public PNTR_Widget{
         void clearPaintLayer();
         void clearGhostLayer();
 
-        void drawOnPaintLayer(bool* leftMouseDown, bool* middleMouseDown, int drawSize, PNTR_Vector2I shapeStart);
+        void drawOnPaintLayer(bool* leftMouseDown, bool* middleMouseDown, int drawSize, PNTR_Vector2I* shapeStart);
 
         SDL_Surface* combineLayers();
         void saveImage();
@@ -53,8 +53,8 @@ class PNTR_Canvas : public PNTR_Widget{
         bool isValid(PNTR_Vector2I position, SDL_Surface *read, SDL_Color *fill, SDL_Color *pixel);
         void floodFill(PNTR_Vector2I pos, SDL_Surface *read, SDL_Surface *write, SDL_Color *fill, SDL_Color *pixel);
 
-        static void drawSquare(SDL_Surface *surface, int width, int height, int x0, int y0, int length);
-        static void drawLine(SDL_Surface *surface, int wdth, int hght, int x0, int y0, int xn, int yn);
+        static void drawSquare(SDL_Surface *surface, SDL_Rect bounds, PNTR_Vector2I center, int length);
+        static void drawLine(SDL_Surface *surface, SDL_Rect bounds, PNTR_Vector2I p1, PNTR_Vector2I p2);
 
 };
 

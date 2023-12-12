@@ -1,5 +1,5 @@
-#ifndef PNTR_VECTOR2I
-#define PNTR_VECTOR2I
+#ifndef PNTR_VECTOR2I_H
+#define PNTR_VECTOR2I_H
 
 class PNTR_Vector2I {
     public:

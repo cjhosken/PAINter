@@ -1,10 +1,10 @@
 #include "pntr_gui.h"
-#include "include/common.h"
-#include "include/pntr_panel.h"
-#include "include/pntr_button.h"
-#include "include/pntr_slider.h"
-#include "include/pntr_canvas.h"
-#include "include/pntr_vector2i.h"
+#include "../include/common.h"
+#include "../include/pntr_panel.h"
+#include "../include/pntr_button.h"
+#include "../include/pntr_slider.h"
+#include "../include/pntr_canvas.h"
+#include "../include/pntr_vector2i.h"
 
 void openWebPage() {
     SDL_OpenURL("https://github.com/cjhosken/PAINter");
@@ -12,8 +12,6 @@ void openWebPage() {
 
 void setModeDraw()
 {
-    printf("DRAW\n");
-    fflush(stdout);
     paintMode = PNTR_PaintMode::DRAW;
 }
 
@@ -77,25 +75,25 @@ PNTR_Gui::PNTR_Gui() {
 
         colorView = new PNTR_Panel(new SDL_Rect({1160, 20, 24, 24}), activeColor);
 
-        buttons[0] = iconButton;
-        buttons[1] = saveImageButton;
-        buttons[2] = colorsButton;
-        buttons[3] = pickerButton;
-        buttons[4] = brushButton;
-        buttons[5] = eraserButton;
-        buttons[6] = fillButton;
-        buttons[7] = shapeButtonLine;
-        buttons[8] = shapeButtonCircle;
-        buttons[9] = shapeButtonSquare;
-        buttons[10] = clearImageButton;
+        buttons->push_back(iconButton);
+        buttons->push_back(saveImageButton);
+        buttons->push_back(colorsButton);
+        buttons->push_back(pickerButton);
+        buttons->push_back(brushButton);
+        buttons->push_back(eraserButton);
+        buttons->push_back(fillButton);
+        buttons->push_back(shapeButtonLine);
+        buttons->push_back(shapeButtonCircle);
+        buttons->push_back(shapeButtonSquare);
+        buttons->push_back(clearImageButton);
 
         if (readFilePath != NULL)
         {
-            canvas = new PNTR_Canvas(new SDL_Rect({0, 0, APP_WIDTH, APP_HEIGHT}), IMG_Load(readFilePath));
+            canvas = new PNTR_Canvas(IMG_Load(readFilePath));
         }
         else
         {
-            canvas = new PNTR_Canvas(new SDL_Rect({0, 0, APP_WIDTH, APP_HEIGHT}), PNTR_Vector2I(512, 512), new SDL_Color({255, 255, 255, 255}));
+            canvas = new PNTR_Canvas(new SDL_Rect({0, 0, 512, 512}), new SDL_Color({255, 0, 0, 255}));
         }
 
         //dialog = new PNTR_ColorDialog(activeColor);
@@ -110,10 +108,6 @@ void PNTR_Gui::draw(SDL_Renderer* renderer, SDL_Event* event, SDL_Window* window
 
     // LOAD AND SAVING BUTTONS
     
-    iconButton->draw(renderer, event, window);
-    clearImageButton->draw(renderer, event, window);
-    saveImageButton->draw(renderer, event, window);
-    
     // THICKNESS BUTTONS
     thickSlider->draw(renderer);
 
@@ -122,19 +116,14 @@ void PNTR_Gui::draw(SDL_Renderer* renderer, SDL_Event* event, SDL_Window* window
     colorView->setColor(activeColor);
     colorView->draw(renderer);
     
-    colorsButton->draw(renderer, event, window);
-    pickerButton->draw(renderer, event, window);
-    
     // BUILD SIDE BAR
     
     sideBar->draw(renderer);
     
-    brushButton->draw(renderer, event, window);
-    eraserButton->draw(renderer, event, window);
-    fillButton->draw(renderer, event, window);
-    shapeButtonLine->draw(renderer, event, window);
-    shapeButtonCircle->draw(renderer, event, window);
-    shapeButtonSquare->draw(renderer, event, window);
+    for (int bdx = 0; bdx<buttons->size(); bdx++) {
+        buttons->at(bdx)->draw(renderer, event, window);
+    }
+
     /*
     if (dialog->isInvoked()) {
         dialog->update();

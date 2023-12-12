@@ -1,5 +1,5 @@
 #include "common.h"
-#include "include/pntr_vector2i.h"
+#include "../include/pntr_vector2i.h"
 
 SDL_Window *window = nullptr;
 SDL_Renderer *renderer = nullptr;

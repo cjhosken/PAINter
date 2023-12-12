@@ -25,9 +25,7 @@ class PNTR_Widget {
 
         virtual bool isMouseOver(PNTR_Vector2I* mouse);        
 
-        virtual bool pressEvent();
-        virtual void onPressEvent();
-        virtual void onDragEvent(); 
+        virtual void pressEvent();
 };
 
 #endif

@@ -1,25 +1,28 @@
 #include "pntr_button.h"
-#include "include/pntr_panel.h"
-#include "include/common.h"
+#include "../include/pntr_panel.h"
+#include "../include/common.h"
+#include <functional>
 
-PNTR_Button::PNTR_Button() : PNTR_Panel(){};
+PNTR_Button::PNTR_Button() : PNTR_Panel(){
+    active = false;
+};
 PNTR_Button::PNTR_Button(SDL_Rect *bb) : PNTR_Panel(bb)
 {
-    color = new SDL_Color();
+    active = false;
 };
 PNTR_Button::PNTR_Button(SDL_Rect *bb, SDL_Surface *i) : PNTR_Panel(bb)
 {
-    color = new SDL_Color();
     icon = i;
+    active = false;
 };
-PNTR_Button::PNTR_Button(SDL_Rect *bb, SDL_Surface *i, void (*func)(void)) : PNTR_Panel(bb)
+PNTR_Button::PNTR_Button(SDL_Rect *bb, SDL_Surface *i, function<void()> func) : PNTR_Panel(bb)
 {
-    color = new SDL_Color();
     icon = i;
     action = func;
+    active = false;
 };
 
-void PNTR_Button::setAction(void (*func)(void))
+void PNTR_Button::setAction(function<void()> func)
 {
     action = func;
 }
@@ -70,7 +73,7 @@ bool PNTR_Button::isActive()
     return active;
 }
 
-void PNTR_Button::onPressEvent() {
+void PNTR_Button::pressEvent() {
     executeAction();
     setActive(true);
 };

@@ -1,6 +1,6 @@
 #include "pntr_widget.h"
-#include "include/pntr_panel.h"
-#include "include/common.h"
+#include "../include/pntr_panel.h"
+#include "../include/common.h"
 
 
 PNTR_Widget::PNTR_Widget() {bbox=new SDL_Rect();color=new SDL_Color();}
@@ -25,13 +25,7 @@ bool PNTR_Widget::isMouseOver(PNTR_Vector2I* mouse) {
     );
 }
 
-bool PNTR_Widget::pressEvent() {
-    bool o = isMouseOver(mousePos);
-    if (o) onPressEvent();
-    return o;
-    };
+void PNTR_Widget::pressEvent() {};
     
-void PNTR_Widget::onPressEvent() {};
-void PNTR_Widget::onDragEvent() {};
 
 // Copyright © 2024 Christopher Hosken
