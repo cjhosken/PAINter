@@ -27,7 +27,7 @@ class PNTR_ColorDialog {
         bool isInvoked();
         void show();
         void draw();
-        void processEvents(bool* leftMouseDown, bool* middleMouseDown, bool* buttonPressed, PNTR_Slider* activeSlider, PNTR_Vector2I* lastPos);
+        void processEvents(PNTR_Slider* activeSlider);
         void hide();
 };
 

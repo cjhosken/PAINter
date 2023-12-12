@@ -13,3 +13,8 @@ PNTR_Vector2I* mousePos = new PNTR_Vector2I();
 PNTR_PaintMode paintMode = PNTR_PaintMode::DRAW;
 
 SDL_Color *activeColor = new SDL_Color({0, 0, 0, 255});
+
+
+bool middleMouseDown = false;
+bool leftMouseDown = false;
+bool buttonPressed = false;

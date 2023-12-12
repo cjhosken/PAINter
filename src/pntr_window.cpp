@@ -58,9 +58,9 @@ void PNTR_Window::draw()
     SDL_RenderClear(renderer);
 
     gui->draw(renderer, event, window);
-    
-    if (dialog->isInvoked()) {
-        dialog->processEvents(&leftMouseDown, &middleMouseDown, &buttonPressed, activeSlider, lastPos);
+
+    if (dialog->isInvoked())
+    {
         dialog->draw();
     }
 
@@ -77,7 +77,8 @@ void PNTR_Window::processEvents()
 {
     SDL_Surface *cursorSurface;
     SDL_WaitEvent(event);
-    if (SDL_GetWindowID(window) == event->window.windowID) {
+    if (SDL_GetWindowID(window) == event->window.windowID)
+    {
         if (event->window.event == SDL_WINDOWEVENT_CLOSE)
             running = false;
 
@@ -123,7 +124,7 @@ void PNTR_Window::processEvents()
                 {
                     if (!gui->navBar->isMouseOver(mousePos) && !gui->sideBar->isMouseOver(mousePos))
                     {
-                        gui->canvas->drawOnPaintLayer(leftMouseDown, middleMouseDown, DRAW_SIZE * gui->thickSlider->getValue(), shapeStart, false);
+                        gui->canvas->drawOnPaintLayer(DRAW_SIZE * gui->thickSlider->getValue(), shapeStart, false);
                     }
                 }
 
@@ -207,7 +208,7 @@ void PNTR_Window::processEvents()
             {
                 if (!gui->navBar->isMouseOver(mousePos) && !gui->sideBar->isMouseOver(mousePos))
                 {
-                    gui->canvas->drawOnPaintLayer(leftMouseDown, middleMouseDown, DRAW_SIZE * gui->thickSlider->getValue(), shapeStart, false);
+                    gui->canvas->drawOnPaintLayer(DRAW_SIZE * gui->thickSlider->getValue(), shapeStart, false);
                 }
             }
             break;
@@ -220,7 +221,7 @@ void PNTR_Window::processEvents()
             {
                 if (!gui->navBar->isMouseOver(mousePos) && !gui->sideBar->isMouseOver(mousePos))
                 {
-                    gui->canvas->drawOnPaintLayer(leftMouseDown, middleMouseDown, DRAW_SIZE * gui->thickSlider->getValue(), shapeStart, false);
+                    gui->canvas->drawOnPaintLayer(DRAW_SIZE * gui->thickSlider->getValue(), shapeStart, false);
                 }
             }
             middleMouseDown = false;
@@ -235,12 +236,20 @@ void PNTR_Window::processEvents()
         }
     }
 
+    if (dialog->isInvoked())
+    {
+        dialog->processEvents(activeSlider);
+    }
+
     if (leftMouseDown)
     {
-
         if (activeSlider != nullptr)
         {
-            activeSlider->setValue((mousePos->x - activeSlider->getBBox()->x) / (float)activeSlider->getBBox()->w);
+            activeSlider->setValue((float(mousePos->x) - float(activeSlider->getBBox()->x)) / float(activeSlider->getBBox()->w));
+            printf("SLIDER VAL: %f\n", activeSlider->getValue());
+            printf("MOUSE: %d %d\n", mousePos->x, mousePos->y);
+            printf("BBOX: %d %d %d %d\n", activeSlider->getBBox()->x, activeSlider->getBBox()->y, activeSlider->getBBox()->w, activeSlider->getBBox()->h);
+            fflush(stdout);
         }
     }
 

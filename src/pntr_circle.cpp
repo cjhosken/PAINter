@@ -74,7 +74,7 @@ void PNTR_Circle::draw(SDL_Renderer *renderer, bool fill)
 
 bool PNTR_Circle::isMouseOver(PNTR_Vector2I *mouse)
 {
-    return SDL_sqrt(SDL_pow(position->x - mouse->x, 2.0) + SDL_pow(position->y - mouse->y, 2.0)) <= radius;
+    return SDL_sqrt(SDL_pow(mouse->x - position->x, 2.0) + SDL_pow(mouse->y - position->y, 2.0)) <= radius;
 }
 
 SDL_Surface *PNTR_Circle::fillCircle(int radius, SDL_Color *color, PNTR_Vector2I *trim)

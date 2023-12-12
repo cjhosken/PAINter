@@ -23,6 +23,10 @@ extern SDL_Event event;
 extern char *readFilePath;
 extern char *writeFilePath;
 
+extern bool middleMouseDown; 
+extern bool leftMouseDown; 
+extern bool buttonPressed; 
+
 enum PNTR_PaintMode
 {
     DRAW,

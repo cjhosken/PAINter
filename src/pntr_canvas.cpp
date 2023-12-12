@@ -111,7 +111,7 @@ void PNTR_Canvas::saveImage()
     SDL_FreeSurface(output);
 }
 
-void PNTR_Canvas::drawOnPaintLayer(bool leftMouseDown, bool middleMouseDown, int drawSize, PNTR_Vector2I *shapeStart, bool hold)
+void PNTR_Canvas::drawOnPaintLayer(int drawSize, PNTR_Vector2I *shapeStart, bool hold)
 {
     PNTR_Vector2I currentPos;
 

@@ -7,9 +7,12 @@
 PNTR_ColorDialog::PNTR_ColorDialog(SDL_Event *e)
 {
     event = e;
-    rSlider = new PNTR_Slider(new SDL_Rect({50, 100, 200, 1}), new SDL_Color({255, 0, 0, 255}), activeColor->r / 255.0f);
-    gSlider = new PNTR_Slider(new SDL_Rect({50, 135, 200, 1}), new SDL_Color({0, 255, 0, 255}), activeColor->g / 255.0f);
-    bSlider = new PNTR_Slider(new SDL_Rect({50, 170, 200, 1}), new SDL_Color({0, 0, 255, 255}), activeColor->b / 255.0f);
+    rSlider = new PNTR_Slider(new SDL_Rect({50, 100, 200, 1}), new SDL_Color({255, 0, 0, 255}));
+    gSlider = new PNTR_Slider(new SDL_Rect({50, 135, 200, 1}), new SDL_Color({0, 255, 0, 255}));
+    bSlider = new PNTR_Slider(new SDL_Rect({50, 170, 200, 1}), new SDL_Color({0, 0, 255, 255}));
+    rSlider->setValue(activeColor->r / 255.0f);
+    gSlider->setValue(activeColor->g / 255.0f);
+    bSlider->setValue(activeColor->b / 255.0f);
 
     colorView = new PNTR_Panel(new SDL_Rect({50, 10, 200, 75}), activeColor, 5);
 
@@ -24,6 +27,10 @@ PNTR_ColorDialog::PNTR_ColorDialog(SDL_Event *e)
 
 void PNTR_ColorDialog::show()
 {
+    colorView->setColor(activeColor);
+    rSlider->setValue(activeColor->r / 255.0f);
+    gSlider->setValue(activeColor->g / 255.0f);
+    bSlider->setValue(activeColor->b / 255.0f);
     SDL_ShowWindow(dialog);
     invoked = true;
 }
@@ -34,7 +41,6 @@ void PNTR_ColorDialog::draw()
     SDL_RenderClear(renderer);
 
     colorView->draw(renderer);
-
     for (int sdx = 0; sdx < (int)sliders.size(); sdx++)
     {
         sliders.at(sdx)->draw(renderer);
@@ -45,9 +51,8 @@ void PNTR_ColorDialog::draw()
 
 bool PNTR_ColorDialog::isInvoked() { return invoked; }
 
-void PNTR_ColorDialog::processEvents(bool* leftMouseDown, bool* middleMouseDown, bool* buttonPressed, PNTR_Slider* activeSlider, PNTR_Vector2I* lastPos)
+void PNTR_ColorDialog::processEvents(PNTR_Slider* activeSlider)
 {
-    lastPos = new PNTR_Vector2I();
     if (!invoked)
     {
         return SDL_HideWindow(dialog);
@@ -76,15 +81,15 @@ void PNTR_ColorDialog::processEvents(bool* leftMouseDown, bool* middleMouseDown,
             {
 
             case SDL_BUTTON_LEFT:
-                (*buttonPressed) = false;
+                
+                buttonPressed = false;
                 for (int sdx=0; sdx<(int)sliders.size();sdx++)
                 {
                     if (sliders.at(sdx)->isMouseOver(mousePos))
                     {
                         sliders.at(sdx)->pressEvent();
-                        (*leftMouseDown) = true;
+                        leftMouseDown = true;
                         activeSlider = sliders.at(sdx);
-                        lastPos = mousePos;
                         break;
                     }
                 }
@@ -93,9 +98,7 @@ void PNTR_ColorDialog::processEvents(bool* leftMouseDown, bool* middleMouseDown,
             break;
 
         case SDL_MOUSEBUTTONUP:
-            (*leftMouseDown) = false;
-            (*middleMouseDown) = false;
-            (*buttonPressed) = false;
+
             activeSlider = nullptr;
 
             break;

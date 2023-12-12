@@ -45,7 +45,7 @@ class PNTR_Canvas : public PNTR_Widget{
         void clearPaintLayer();
         void clearGhostLayer();
 
-        void drawOnPaintLayer(bool leftMouseDown, bool middleMouseDown, int drawSize, PNTR_Vector2I* shapeStart, bool hold);
+        void drawOnPaintLayer(int drawSize, PNTR_Vector2I* shapeStart, bool hold);
 
         SDL_Surface* combineLayers();
         void saveImage();

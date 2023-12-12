@@ -19,10 +19,6 @@ class PNTR_Window {
         PNTR_Gui* gui = nullptr;
         PNTR_Slider* activeSlider = nullptr;
 
-        bool middleMouseDown = false;
-        bool leftMouseDown = false;
-        bool buttonPressed = false;
-
         PNTR_Vector2I* lastPos;
         PNTR_Vector2I* shapeStart;
 
