@@ -6,6 +6,7 @@
 #include "pntr_slider.h" 
 #include "pntr_canvas.h"
 #include "pntr_panel.h"
+#include "pntr_colordialog.h"
 
 class PNTR_Gui {
     public:
@@ -33,7 +34,7 @@ class PNTR_Gui {
 
         PNTR_Slider* thickSlider;
 
-        vector<PNTR_Button*> buttons[11];
+        vector<PNTR_Button*> buttons;
 
     public:
         PNTR_Gui();

@@ -5,6 +5,7 @@
 #include "pntr_vector2i.h"
 #include "pntr_gui.h"
 #include "pntr_slider.h"
+#include "../include/pntr_colordialog.h"
 
 class PNTR_Window {
     private:
@@ -25,6 +26,8 @@ class PNTR_Window {
         PNTR_Vector2I* lastPos;
         PNTR_Vector2I* shapeStart;
 
+        PNTR_ColorDialog* dialog;
+
     public:
         PNTR_Window();
 
@@ -40,6 +43,7 @@ class PNTR_Window {
 
         void saveLayersAction();
         void clearPaintLayerAction();
+        void openColorDialog();
 };
 
 #endif

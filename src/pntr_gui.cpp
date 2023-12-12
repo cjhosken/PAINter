@@ -75,17 +75,17 @@ PNTR_Gui::PNTR_Gui() {
 
         colorView = new PNTR_Panel(new SDL_Rect({1160, 20, 24, 24}), activeColor);
 
-        buttons->push_back(iconButton);
-        buttons->push_back(saveImageButton);
-        buttons->push_back(colorsButton);
-        buttons->push_back(pickerButton);
-        buttons->push_back(brushButton);
-        buttons->push_back(eraserButton);
-        buttons->push_back(fillButton);
-        buttons->push_back(shapeButtonLine);
-        buttons->push_back(shapeButtonCircle);
-        buttons->push_back(shapeButtonSquare);
-        buttons->push_back(clearImageButton);
+        buttons.push_back(iconButton);
+        buttons.push_back(saveImageButton);
+        buttons.push_back(colorsButton);
+        buttons.push_back(pickerButton);
+        buttons.push_back(brushButton);
+        buttons.push_back(eraserButton);
+        buttons.push_back(fillButton);
+        buttons.push_back(shapeButtonLine);
+        buttons.push_back(shapeButtonCircle);
+        buttons.push_back(shapeButtonSquare);
+        buttons.push_back(clearImageButton);
 
         if (readFilePath != NULL)
         {
@@ -95,8 +95,6 @@ PNTR_Gui::PNTR_Gui() {
         {
             canvas = new PNTR_Canvas(new SDL_Rect({0, 0, 512, 512}), new SDL_Color({255, 255, 255, 255}));
         }
-
-        //dialog = new PNTR_ColorDialog(activeColor);
 }
 
 void PNTR_Gui::draw(SDL_Renderer* renderer, SDL_Event* event, SDL_Window* window) {
@@ -120,15 +118,9 @@ void PNTR_Gui::draw(SDL_Renderer* renderer, SDL_Event* event, SDL_Window* window
     
     sideBar->draw(renderer);
     
-    for (int bdx = 0; bdx<(int)buttons->size(); bdx++) {
-        buttons->at(bdx)->draw(renderer, event, window);
+    for (int bdx = 0; bdx<(int)buttons.size(); bdx++) {
+        buttons.at(bdx)->draw(renderer, event, window);
     }
-
-    /*
-    if (dialog->isInvoked()) {
-        dialog->update();
-        dialog->draw();
-    }*/
 };
 
 // Copyright © 2024 Christopher Hosken
