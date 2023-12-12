@@ -122,5 +122,3 @@ void PNTR_Gui::draw(SDL_Renderer* renderer, SDL_Event* event, SDL_Window* window
         buttons.at(bdx)->draw(renderer, event, window);
     }
 };
-
-// Copyright © 2024 Christopher Hosken

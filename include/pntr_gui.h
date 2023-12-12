@@ -40,12 +40,7 @@ class PNTR_Gui {
         PNTR_Gui();
 
         void draw(SDL_Renderer* renderer, SDL_Event* event, SDL_Window* window);
-
 };
 
 
-
-
 #endif
-
-// Copyright © 2024 Christopher Hosken

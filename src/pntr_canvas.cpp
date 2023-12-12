@@ -320,5 +320,3 @@ void PNTR_Canvas::drawCircle(SDL_Surface *surface, SDL_Rect bounds, PNTR_Vector2
         PNTR_Circle::circleOnSurface(surface, &bounds, center, activeColor, r, false);
     }
 }
-
-// Copyright © 2024 Christopher Hosken

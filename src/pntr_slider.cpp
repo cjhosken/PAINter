@@ -70,5 +70,3 @@ void PNTR_Slider::pressEvent()
 {
     setValue(mousePos->x);
 }
-
-// Copyright © 2024 Christopher Hosken

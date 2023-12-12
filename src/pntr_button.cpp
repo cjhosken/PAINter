@@ -77,5 +77,3 @@ void PNTR_Button::pressEvent() {
     executeAction();
     setActive(true);
 };
-
-// Copyright © 2024 Christopher Hosken

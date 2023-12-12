@@ -33,5 +33,3 @@ class PNTR_Button : public PNTR_Panel
 };
 
 #endif
-
-// Copyright © 2024 Christopher Hosken

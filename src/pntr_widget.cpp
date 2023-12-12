@@ -26,6 +26,3 @@ bool PNTR_Widget::isMouseOver(PNTR_Vector2I* mouse) {
 }
 
 void PNTR_Widget::pressEvent() {};
-    
-
-// Copyright © 2024 Christopher Hosken

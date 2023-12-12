@@ -35,5 +35,3 @@ class PNTR_Slider : public PNTR_Widget {
 
 
 #endif
-
-// Copyright © 2024 Christopher Hosken

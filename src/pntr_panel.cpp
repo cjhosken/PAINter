@@ -42,5 +42,3 @@ void PNTR_Panel::renderPanel(SDL_Renderer *renderer, SDL_Rect rect, SDL_Color co
         SDL_DestroyTexture(texture);
     }
 }
-
-// Copyright © 2024 Christopher Hosken

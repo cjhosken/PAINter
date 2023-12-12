@@ -218,5 +218,3 @@ SDL_Surface* PNTR_Circle::circleToSurface(PNTR_Vector2I* position, SDL_Color* co
 }
 
 PNTR_Vector2I *PNTR_Circle::getPosition() { return position; };
-
-// Copyright © 2024 Christopher Hosken

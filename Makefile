@@ -1,7 +1,6 @@
 # inspired by MakeFileTutorial from https://makefiletutorial.com/
 
 TARGET=PAINter
-AUTHOR=Christopher Hosken
 VERSION=v2
 DATE=11.12.2023
 

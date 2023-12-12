@@ -29,5 +29,3 @@ class PNTR_Widget {
 };
 
 #endif
-
-// Copyright © 2024 Christopher Hosken
