@@ -108,7 +108,7 @@ void PNTR_Window::processEvents()
             {
                 if (!gui->navBar->isMouseOver(mousePos) && !gui->sideBar->isMouseOver(mousePos))
                 {
-                    gui->canvas->drawOnPaintLayer(&leftMouseDown, &middleMouseDown, DRAW_SIZE * gui->thickSlider->getValue(), shapeStart);
+                    gui->canvas->drawOnPaintLayer(leftMouseDown, middleMouseDown, DRAW_SIZE * gui->thickSlider->getValue(), shapeStart, false);
                 }
             }
 
@@ -192,7 +192,7 @@ void PNTR_Window::processEvents()
         {
             if (!gui->navBar->isMouseOver(mousePos) && !gui->sideBar->isMouseOver(mousePos))
             {
-                gui->canvas->drawOnPaintLayer(&leftMouseDown, &middleMouseDown, DRAW_SIZE * gui->thickSlider->getValue(), shapeStart);
+                gui->canvas->drawOnPaintLayer(leftMouseDown, middleMouseDown, DRAW_SIZE * gui->thickSlider->getValue(), shapeStart, true);
             }
         }
         break;
@@ -205,7 +205,7 @@ void PNTR_Window::processEvents()
         {
             if (!gui->navBar->isMouseOver(mousePos) && !gui->sideBar->isMouseOver(mousePos))
             {
-                gui->canvas->drawOnPaintLayer(&leftMouseDown, &middleMouseDown, DRAW_SIZE * gui->thickSlider->getValue(), shapeStart);
+                gui->canvas->drawOnPaintLayer(leftMouseDown, middleMouseDown, DRAW_SIZE * gui->thickSlider->getValue(), shapeStart, false);
             }
         }
         middleMouseDown = false;

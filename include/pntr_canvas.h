@@ -45,7 +45,7 @@ class PNTR_Canvas : public PNTR_Widget{
         void clearPaintLayer();
         void clearGhostLayer();
 
-        void drawOnPaintLayer(bool* leftMouseDown, bool* middleMouseDown, int drawSize, PNTR_Vector2I* shapeStart);
+        void drawOnPaintLayer(bool leftMouseDown, bool middleMouseDown, int drawSize, PNTR_Vector2I* shapeStart, bool hold);
 
         SDL_Surface* combineLayers();
         void saveImage();
@@ -53,8 +53,9 @@ class PNTR_Canvas : public PNTR_Widget{
         bool isValid(PNTR_Vector2I position, SDL_Surface *read, SDL_Color *fill, SDL_Color *pixel);
         void floodFill(PNTR_Vector2I pos, SDL_Surface *read, SDL_Surface *write, SDL_Color *fill, SDL_Color *pixel);
 
-        static void drawSquare(SDL_Surface *surface, SDL_Rect bounds, PNTR_Vector2I center, int length);
-        static void drawLine(SDL_Surface *surface, SDL_Rect bounds, PNTR_Vector2I p1, PNTR_Vector2I p2);
+        static void drawSquare(SDL_Surface *surface, SDL_Rect bounds, PNTR_Vector2I tl, PNTR_Vector2I br, int thickness);
+        static void drawLine(SDL_Surface *surface, SDL_Rect bounds, PNTR_Vector2I p1, PNTR_Vector2I p2, int thickness);
+        static void drawCircle(SDL_Surface *surface, SDL_Rect bounds, PNTR_Vector2I* center, SDL_Color* color, int radius, int thickness);
 
 };
 
