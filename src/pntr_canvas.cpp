@@ -269,10 +269,12 @@ void PNTR_Canvas::floodFill(PNTR_Vector2I pos, SDL_Surface *read, SDL_Surface *w
 void PNTR_Canvas::drawThickLine(SDL_Surface *surface, SDL_Rect bounds, PNTR_Vector2I p1, PNTR_Vector2I p2, int thickness, SDL_Color *color) {
     for (float theta = 0; theta < 360; theta++) {
         float radians = (float)(theta * M_PI) / 180.0f;
-        PNTR_Vector2I c1 = PNTR_Vector2I(p1.x + SDL_cosf(radians) * thickness / 2, p1.y + SDL_sinf(radians) * thickness / 2);
-        PNTR_Vector2I c2 = PNTR_Vector2I(p2.x + SDL_cosf(radians) * thickness / 2, p2.y + SDL_sinf(radians) * thickness / 2);
-        if ((c1.x >= 0 && c1.x < bounds.w) && (c1.y >= 0 && c1.y < bounds.h) && (c2.x >= 0 && c2.x < bounds.w) && (c2.y >= 0 && c2.y < bounds.h)) {
-            drawLine(surface, bounds, c1, c2, color);
+        for (int t = 0; t < thickness / 2; t++) {
+            PNTR_Vector2I c1 = PNTR_Vector2I(p1.x + SDL_cosf(radians) * t, p1.y + SDL_sinf(radians) * t);
+            PNTR_Vector2I c2 = PNTR_Vector2I(p2.x + SDL_cosf(radians) * t, p2.y + SDL_sinf(radians) * t);
+            if ((c1.x >= 0 && c1.x < bounds.w) && (c1.y >= 0 && c1.y < bounds.h) && (c2.x >= 0 && c2.x < bounds.w) && (c2.y >= 0 && c2.y < bounds.h)) {
+                drawLine(surface, bounds, c1, c2, color);
+        }
         }
     }
 }
