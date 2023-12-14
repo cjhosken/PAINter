@@ -77,6 +77,7 @@ void PNTR_Window::processEvents()
 {
     SDL_Surface *cursorSurface;
     SDL_WaitEvent(event);
+
     if (SDL_GetWindowID(window) == event->window.windowID)
     {
         if (event->window.event == SDL_WINDOWEVENT_CLOSE)
@@ -320,43 +321,40 @@ void PNTR_Window::processEvents()
             gui->buttons.at(bdx)->setActive(false);
         }
     }
+
+    cursorOffset = new PNTR_Vector2I(0, 0);
+
     switch (paintMode)
     {
     case DRAW:
         gui->brushButton->setActive(true);
-        cursorSurface = IMG_Load("assets/icons/circle_48.png");
         break;
     case ERASE:
         gui->eraserButton->setActive(true);
-        cursorSurface = IMG_Load("assets/icons/circle_48.png");
         break;
     case FILL:
         gui->fillButton->setActive(true);
-        cursorSurface = IMG_Load("assets/icons/fill_48.png");
         break;
     case SHAPE_LINE:
         gui->shapeButtonLine->setActive(true);
-        cursorSurface = IMG_Load("assets/icons/circle_48.png");
         break;
     case SHAPE_CIRCLE:
         gui->shapeButtonCircle->setActive(true);
-        cursorSurface = IMG_Load("assets/icons/circle_48.png");
         break;
     case SHAPE_SQUARE:
         gui->shapeButtonSquare->setActive(true);
-        cursorSurface = IMG_Load("assets/icons/circle_48.png");
         break;
     case PICKER:
         gui->pickerButton->setActive(true);
-        cursorSurface = IMG_Load("assets/icons/picker_48.png");
     }
 
+    cursorSurface = IMG_Load("assets/icons/circle_48.png");
     float cursorSize = DRAW_SIZE * gui->thickSlider->getValue() * ((float)(gui->canvas->getBBox()->w / (float)gui->canvas->getSourceSize().w));
     SDL_Surface *scaledSurface = SDL_CreateRGBSurface(0, cursorSize, cursorSize, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
     SDL_FillRect(scaledSurface, NULL, SDL_MapRGBA(scaledSurface->format, 0, 0, 0, 0));
     SDL_BlitScaled(cursorSurface, NULL, scaledSurface, new SDL_Rect({0, 0, (int)cursorSize, (int)cursorSize}));
 
-    SDL_Cursor *cursor = SDL_CreateColorCursor(scaledSurface, cursorSize / 2, cursorSize / 2);
+    SDL_Cursor *cursor = SDL_CreateColorCursor(scaledSurface, (cursorSize / 2), (cursorSize / 2));
     SDL_SetCursor(cursor);
 
     SDL_FreeSurface(scaledSurface);
