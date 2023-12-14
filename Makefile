@@ -2,7 +2,7 @@
 
 TARGET=PAINter
 VERSION=v2
-DATE=11.12.2023
+DATE=14.12.2023
 
 CC = g++
 SRCDIR = src
@@ -24,7 +24,5 @@ $(BUILDDIR)/%.o: $(SRCDIR)/%.cpp
 
 clean:
 	rm -f $(BUILDDIR)/*.o $(TARGET)
-
-# Copyright © 2023 Christopher Hosken
 
 #https://stackoverflow.com/questions/54951379/gtk-3-native-file-chooser-allowed-file-types-and-default-file-name
