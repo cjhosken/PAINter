@@ -34,7 +34,7 @@ int main(int argc, char **argv) {
     mainWindow->run();
     mainWindow->dispose();
 
-    SDL_Quit();
     IMG_Quit();
+    SDL_Quit();
     return 0;
 }

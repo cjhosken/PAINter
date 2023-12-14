@@ -27,8 +27,6 @@ extern bool middleMouseDown;
 extern bool leftMouseDown; 
 extern bool buttonPressed; 
 
-extern PNTR_Vector2I *cursorOffset;
-
 enum PNTR_PaintMode
 {
     DRAW,

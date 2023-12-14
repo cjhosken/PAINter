@@ -272,6 +272,13 @@ void PNTR_Canvas::drawOnPaintLayer(int drawSize, PNTR_Vector2I *shapeStart, bool
 
 // FILL FUNCTIONS
 
+void PNTR_Canvas::recenter() {
+    getBBox()->x = (APP_WIDTH - getSourceSize().w) / 2;
+    getBBox()->y = (APP_HEIGHT - getSourceSize().h) /2;
+    getBBox()->w = getSourceSize().w;
+    getBBox()->h = getSourceSize().h;
+}
+
 bool PNTR_Canvas::isValid(PNTR_Vector2I position, SDL_Surface *read, SDL_Color *fill, SDL_Color *pixel)
 {
     return (position.x >= 0 && position.x < getSourceSize().w) && (position.y >= 0 && position.y < getSourceSize().h) && !compare(fill, pixel) && compare(getSurfacePixel(read, position), pixel);
@@ -379,4 +386,14 @@ void PNTR_Canvas::drawCircle(SDL_Surface *surface, SDL_Rect bounds, PNTR_Vector2
 
         drawThickLine(surface, bounds, PNTR_Vector2I(center->x + radius * cos(r1), center->y + radius * sin(r1)), PNTR_Vector2I(center->x + radius * cos(r2), center->y + radius * sin(r2)), thickness / 2, color);
     }
+}
+
+void PNTR_Canvas::destroy() {
+    SDL_DestroyTexture(imageLayerTexture);
+    SDL_DestroyTexture(paintLayerTexture);
+    SDL_DestroyTexture(ghostLayerTexture);
+    
+    SDL_FreeSurface(imageLayer);
+    SDL_FreeSurface(paintLayer);
+    SDL_FreeSurface(ghostLayer);    
 }

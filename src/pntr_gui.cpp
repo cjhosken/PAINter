@@ -87,13 +87,11 @@ PNTR_Gui::PNTR_Gui() {
         buttons.push_back(shapeButtonSquare);
         buttons.push_back(clearImageButton);
 
+        canvas = new PNTR_Canvas(new SDL_Rect({0, 0, 512, 512}), new SDL_Color({255, 255, 255, 255}));
+
         if (readFilePath != NULL)
         {
             canvas = new PNTR_Canvas(IMG_Load(readFilePath));
-        }
-        else
-        {
-            canvas = new PNTR_Canvas(new SDL_Rect({0, 0, 512, 512}), new SDL_Color({255, 255, 255, 255}));
         }
 }
 

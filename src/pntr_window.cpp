@@ -38,6 +38,8 @@ PNTR_Window::PNTR_Window()
 
     gui->thickSlider->setValue(0.25f);
 
+    gui->canvas->recenter();
+
     processEvents();
     draw();
 }
@@ -172,10 +174,7 @@ void PNTR_Window::processEvents()
             switch (event->key.keysym.sym)
             {
             case SDLK_h:
-                gui->canvas->getBBox()->x = 0;
-                gui->canvas->getBBox()->y = 0;
-                gui->canvas->getBBox()->w = gui->canvas->getSourceSize().w;
-                gui->canvas->getBBox()->h = gui->canvas->getSourceSize().h;
+                gui->canvas->recenter();
                 break;
             case SDLK_b:
                 paintMode = PNTR_PaintMode::DRAW;
@@ -322,8 +321,6 @@ void PNTR_Window::processEvents()
         }
     }
 
-    cursorOffset = new PNTR_Vector2I(0, 0);
-
     switch (paintMode)
     {
     case DRAW:
@@ -362,6 +359,7 @@ void PNTR_Window::processEvents()
 
 void PNTR_Window::dispose()
 {
+    gui->canvas->destroy();
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
 }

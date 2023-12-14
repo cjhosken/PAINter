@@ -51,6 +51,8 @@ class PNTR_Canvas : public PNTR_Widget{
         void clearPaintLayer();
         void clearGhostLayer();
 
+        void recenter();
+
         void drawOnPaintLayer(int drawSize, PNTR_Vector2I* shapeStart, bool hold);
 
         SDL_Surface* combineLayers();
@@ -64,6 +66,8 @@ class PNTR_Canvas : public PNTR_Widget{
         void drawLine(SDL_Surface *surface, SDL_Rect bounds, PNTR_Vector2I p1, PNTR_Vector2I p2, SDL_Color* color);
         void drawCircle(SDL_Surface *surface, SDL_Rect bounds, PNTR_Vector2I* center, SDL_Color* color, int radius, int thickness);
         void dilate(SDL_Surface* surface, SDL_Rect bounds, PNTR_Vector2I pos, int thickness);
+        
+        void destroy();
 };
 
 //https://stackoverflow.com/questions/1222713/how-do-i-create-a-line-of-arbitrary-thickness-using-bresenham
