@@ -208,7 +208,13 @@ void PNTR_Window::processEvents()
             {
                 if (!gui->navBar->isMouseOver(mousePos) && !gui->sideBar->isMouseOver(mousePos))
                 {
-                    gui->canvas->drawOnPaintLayer(DRAW_SIZE * gui->thickSlider->getValue(), shapeStart, false);
+                    gui->canvas->drawOnPaintLayer(DRAW_SIZE * gui->thickSlider->getValue(), shapeStart, true);
+                    if (paintMode == PNTR_PaintMode::DRAW || paintMode == PNTR_PaintMode::ERASE)
+                    {
+                        shapeStart = new PNTR_Vector2I(
+                            (int)(((mousePos->x - gui->canvas->getBBox()->x) / (float)gui->canvas->getBBox()->w) * gui->canvas->getImageLayer()->w),
+                            (int)(((mousePos->y - gui->canvas->getBBox()->y) / (float)gui->canvas->getBBox()->h) * gui->canvas->getImageLayer()->h));
+                    }
                 }
             }
             break;
@@ -286,8 +292,7 @@ void PNTR_Window::processEvents()
             break;
         }
 
-
-            activeColor->a = 255;
+        activeColor->a = 255;
         activeColor->r = (int)(255 * dialog->rSlider->getValue());
         activeColor->g = (int)(255 * dialog->gSlider->getValue());
         activeColor->b = (int)(255 * dialog->bSlider->getValue());
