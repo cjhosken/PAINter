@@ -1,8 +1,9 @@
-# inspired by MakeFileTutorial from https://makefiletutorial.com/
+
+# Source based on MakeFileTutorial and ChatGPT starts here: https://makefiletutorial.com/ https://chat.openai.com/
 
 TARGET=PAINter
 VERSION=v2
-DATE=14.12.2023
+DATE=18.12.2023
 
 CC = g++
 SRCDIR = src
@@ -25,4 +26,4 @@ $(BUILDDIR)/%.o: $(SRCDIR)/%.cpp
 clean:
 	rm -f $(BUILDDIR)/*.o $(TARGET)
 
-#https://stackoverflow.com/questions/54951379/gtk-3-native-file-chooser-allowed-file-types-and-default-file-name
+# Source based on MakeFileTutorial and ChatGPT ends here

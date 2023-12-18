@@ -19,7 +19,6 @@ int main(int argc, char **argv) {
     // It's ok for readFilePath and writeFilePath to remain empty.
     // They are nullchecked later on in the application. 
 
-    
     // Initiailize SDL and SDL_IMG
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
     {
