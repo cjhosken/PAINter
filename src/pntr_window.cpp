@@ -347,6 +347,9 @@ void PNTR_Window::processEvents()
     // Otherwise, if the middle mouse is down, move the canvas.
     else if (middleMouseDown)
     {
+        // The code sets the canvas location to the sum ofits previous location
+        // and the difference between the mouse and it's last location.
+        // This works on a per-call basis and gives a smooth looking translation.
         gui->canvas->getBBox()->x = lastCanvasPos->x + mousePos->x - lastPos->x;
         gui->canvas->getBBox()->y = lastCanvasPos->y + mousePos->y - lastPos->y;
     }
