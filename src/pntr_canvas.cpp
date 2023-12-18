@@ -167,30 +167,16 @@ void PNTR_Canvas::drawOnPaintLayer(int drawSize, PNTR_Vector2I *shapeStart, bool
     switch (paintMode)
     {
     case PNTR_PaintMode::DRAW:
-        if (hold)
-        {
-            PNTR_Canvas::drawThickLine(paintLayer, sourceSize, *shapeStart, mouseOnCanvas, drawSize, activeColor);
-        }
-        else
-        {
-            circleSurface = PNTR_Circle::circleToSurface(new PNTR_Vector2I(), activeColor, drawSize / 2);
-            SDL_BlitSurface(circleSurface, NULL, paintLayer, new SDL_Rect({mouseOnCanvas.x - drawSize / 2, mouseOnCanvas.y - drawSize / 2, drawSize, drawSize}));
-        }
+        circleSurface = PNTR_Circle::circleToSurface(new PNTR_Vector2I(), activeColor, drawSize / 2);
+        SDL_BlitSurface(circleSurface, NULL, paintLayer, new SDL_Rect({mouseOnCanvas.x - drawSize / 2, mouseOnCanvas.y - drawSize / 2, drawSize, drawSize}));
         paintChanged = true;
         break;
 
     case PNTR_PaintMode::ERASE:
-        if (hold)
-        {
-            drawThickLine(paintLayer, sourceSize, *shapeStart, mouseOnCanvas, drawSize, new SDL_Color({255, 255, 255, 255}));
-            shapeStart = &mouseOnCanvas;
-        }
-        else
-        {
-            circleSurface = PNTR_Circle::circleToSurface(new PNTR_Vector2I(), new SDL_Color({255, 255, 255, 255}), drawSize / 2);
-            SDL_BlitSurface(circleSurface, NULL, paintLayer, new SDL_Rect({mouseOnCanvas.x - drawSize / 2, mouseOnCanvas.y - drawSize / 2, drawSize, drawSize}));
-            shapeStart = &mouseOnCanvas;
-        }
+        SDL_SetSurfaceBlendMode(circleSurface, SDL_BLENDMODE_BLEND);
+        circleSurface = PNTR_Circle::circleToSurface(new PNTR_Vector2I(), new SDL_Color({255, 255, 255, 0}), drawSize / 2);
+        SDL_BlitSurface(circleSurface, NULL, paintLayer, new SDL_Rect({mouseOnCanvas.x - drawSize / 2, mouseOnCanvas.y - drawSize / 2, drawSize, drawSize}));
+        shapeStart = &mouseOnCanvas;
         paintChanged = true;
         break;
 
@@ -272,9 +258,10 @@ void PNTR_Canvas::drawOnPaintLayer(int drawSize, PNTR_Vector2I *shapeStart, bool
 
 // FILL FUNCTIONS
 
-void PNTR_Canvas::recenter() {
+void PNTR_Canvas::recenter()
+{
     getBBox()->x = (APP_WIDTH - getSourceSize().w) / 2;
-    getBBox()->y = (APP_HEIGHT - getSourceSize().h) /2;
+    getBBox()->y = (APP_HEIGHT - getSourceSize().h) / 2;
     getBBox()->w = getSourceSize().w;
     getBBox()->h = getSourceSize().h;
 }
@@ -388,12 +375,13 @@ void PNTR_Canvas::drawCircle(SDL_Surface *surface, SDL_Rect bounds, PNTR_Vector2
     }
 }
 
-void PNTR_Canvas::destroy() {
+void PNTR_Canvas::destroy()
+{
     SDL_DestroyTexture(imageLayerTexture);
     SDL_DestroyTexture(paintLayerTexture);
     SDL_DestroyTexture(ghostLayerTexture);
-    
+
     SDL_FreeSurface(imageLayer);
     SDL_FreeSurface(paintLayer);
-    SDL_FreeSurface(ghostLayer);    
+    SDL_FreeSurface(ghostLayer);
 }

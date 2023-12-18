@@ -82,7 +82,7 @@ inline SDL_Color* getSurfacePixel(SDL_Surface* surface, PNTR_Vector2I position) 
 inline void setSurfacePixel(SDL_Surface* surface, SDL_Color *color, PNTR_Vector2I position)
 {
     Uint32 *pixels = (Uint32*)surface->pixels;
-    Uint32 pixel = SDL_MapRGB(surface->format, color->r, color->g, color->b);
+    Uint32 pixel = SDL_MapRGBA(surface->format, color->r, color->g, color->b, color->a);
     pixels[position.x+position.y*surface->w] = pixel;
 
 }
