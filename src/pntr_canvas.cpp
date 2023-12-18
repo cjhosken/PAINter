@@ -182,17 +182,15 @@ void PNTR_Canvas::drawOnPaintLayer(int drawSize, PNTR_Vector2I *shapeStart, bool
     switch (paintMode)
     {
     case PNTR_PaintMode::DRAW:
-        // Copy a circle with color "activeColor" to the paintLayer
-        circleSurface = PNTR_Circle::circleToSurface(drawSize / 2, activeColor, new PNTR_Vector2I());
-        SDL_BlitSurface(circleSurface, NULL, paintLayer, new SDL_Rect({mouseOnCanvas.x - drawSize / 2, mouseOnCanvas.y - drawSize / 2, drawSize, drawSize}));
+        // Draw a line between the last mouse position and current with color"activeColor" to the paintLayer
+        PNTR_Canvas::drawThickLine(paintLayer, sourceSize, *shapeStart, mouseOnCanvas, drawSize, activeColor);
+        shapeStart = &mouseOnCanvas;
         paintChanged = true;
         break;
 
     case PNTR_PaintMode::ERASE:
-        // Copy a circle with color "transparent" to the paintLayer
-        SDL_SetSurfaceBlendMode(circleSurface, SDL_BLENDMODE_BLEND);
-        circleSurface = PNTR_Circle::circleToSurface(drawSize / 2, new SDL_Color({255, 255, 255, 0}), new PNTR_Vector2I);
-        SDL_BlitSurface(circleSurface, NULL, paintLayer, new SDL_Rect({mouseOnCanvas.x - drawSize / 2, mouseOnCanvas.y - drawSize / 2, drawSize, drawSize}));
+        // Draw a line between the last mouse position and current with color "transparent" to the paintLayer
+        drawThickLine(paintLayer, sourceSize, *shapeStart, mouseOnCanvas, drawSize, new SDL_Color({255, 255, 255, 0}));
         shapeStart = &mouseOnCanvas;
         paintChanged = true;
         break;
