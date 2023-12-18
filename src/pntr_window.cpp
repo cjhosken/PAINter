@@ -200,6 +200,12 @@ void PNTR_Window::processEvents()
             case SDLK_w:
                 openColorDialog();
                 break;
+            case SDLK_EQUALS:
+                gui->thickSlider->setValue(gui->thickSlider->getValue()+0.01);
+                break;
+            case SDLK_MINUS:
+                gui->thickSlider->setValue(gui->thickSlider->getValue()-0.01);
+                break;
             default:
                 break;
             }
