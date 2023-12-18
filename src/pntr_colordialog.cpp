@@ -4,6 +4,7 @@
 #include "../include/pntr_panel.h"
 #include <vector>
 
+// Constructor method
 PNTR_ColorDialog::PNTR_ColorDialog(SDL_Event *e)
 {
     event = e;
@@ -25,6 +26,7 @@ PNTR_ColorDialog::PNTR_ColorDialog(SDL_Event *e)
     sliders.push_back(bSlider);
 }
 
+// The dialog is never destroyed, only hidden.
 void PNTR_ColorDialog::show()
 {
     colorView->setColor(activeColor);
@@ -35,6 +37,7 @@ void PNTR_ColorDialog::show()
     invoked = true;
 }
 
+// Very simple draw implementation, similar to how buttons are drawn in the Gui.
 void PNTR_ColorDialog::draw()
 {
     SDL_SetRenderDrawColor(renderer, 240, 240, 240, 255);
@@ -48,9 +51,10 @@ void PNTR_ColorDialog::draw()
 
     SDL_RenderPresent(renderer);
 }
-
+// Function to check whether the window is hidden or not.
 bool PNTR_ColorDialog::isInvoked() { return invoked; }
 
+// Function to hide the window.
 void PNTR_ColorDialog::hide()
 {
     invoked = false;

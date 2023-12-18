@@ -8,6 +8,8 @@
 #include "pntr_panel.h"
 #include "pntr_colordialog.h"
 
+// The Gui is extremely specific to this application. Here is where all the panels, buttons, sliders are created and designed.
+
 class PNTR_Gui {
     public:
         PNTR_Panel* navBar;

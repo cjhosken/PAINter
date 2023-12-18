@@ -8,6 +8,8 @@
 
 using namespace std;
 
+// PNTR_Canvas is where all the painting is done. 
+
 class PNTR_Canvas : public PNTR_Widget{
     private:
         SDL_Surface* imageLayer;

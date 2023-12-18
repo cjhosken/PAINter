@@ -6,6 +6,7 @@
 #include "../include/pntr_canvas.h"
 #include "../include/pntr_vector2i.h"
 
+// These are all the different button actions that the Gui buttons use.
 void openWebPage() {
     SDL_OpenURL("https://github.com/cjhosken/PAINter");
 }
@@ -45,7 +46,10 @@ void setModePicker()
     paintMode = PNTR_PaintMode::PICKER;
 }
 
+// Constructor method
 PNTR_Gui::PNTR_Gui() {
+        // This set's up all the panel, button, slider positions, colors, etc.
+
         navBar = new PNTR_Panel(new SDL_Rect({0, 0, 1280, 64}), new SDL_Color({225, 225, 225, 200}), 0);
         sideBar = new PNTR_Panel(new SDL_Rect({16, 80, 64, 410}), new SDL_Color({225, 225, 225, 200}), 24);
 
@@ -75,6 +79,7 @@ PNTR_Gui::PNTR_Gui() {
 
         colorView = new PNTR_Panel(new SDL_Rect({1160, 20, 24, 24}), activeColor);
 
+        // The buttons are added to a button vector, this is so that they can be iteratively drawn and checked for press events.
         buttons.push_back(iconButton);
         buttons.push_back(saveImageButton);
         buttons.push_back(colorsButton);
@@ -89,30 +94,24 @@ PNTR_Gui::PNTR_Gui() {
 
         canvas = new PNTR_Canvas(new SDL_Rect({0, 0, 512, 512}), new SDL_Color({255, 255, 255, 255}));
 
-        if (readFilePath != NULL)
+        if (readFilePath != nullptr)
         {
             canvas = new PNTR_Canvas(IMG_Load(readFilePath));
         }
+        // The canvas will initialize as 512x512 white if there is no readFilePath.
 }
 
 void PNTR_Gui::draw(SDL_Renderer* renderer, SDL_Event* event, SDL_Window* window) {
-    // CANVAS
+    // All the panels, sliders, and buttons are drawn.
+
     canvas->draw(renderer);
 
-    // BUILD NAV BAR
     navBar->draw(renderer);
 
-    // LOAD AND SAVING BUTTONS
-    
-    // THICKNESS BUTTONS
     thickSlider->draw(renderer);
-
-    // COLOR BUTTONS
-    
+ 
     colorView->setColor(activeColor);
     colorView->draw(renderer);
-    
-    // BUILD SIDE BAR
     
     sideBar->draw(renderer);
     

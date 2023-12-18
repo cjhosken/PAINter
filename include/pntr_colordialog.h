@@ -6,6 +6,7 @@
 #include "../include/pntr_panel.h"
 #include <vector>
 
+// Like the PNTR_Window, the colorDialog is specific to this application. It would be nice to get a scalable class working, but there simply isn't enough time.
 class PNTR_ColorDialog {
     public:
         PNTR_Slider* rSlider;

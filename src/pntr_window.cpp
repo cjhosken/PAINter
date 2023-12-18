@@ -5,8 +5,10 @@
 #include "../include/pntr_colordialog.h"
 #include <functional>
 
+// The constructor method. This is what is shown on your screen.
 PNTR_Window::PNTR_Window()
 {
+    // Create a window and add icons to it, setup the renderer, events, gui, and color builder dialog.
     window = SDL_CreateWindow("PAINter", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, size.x, size.y, SDL_WINDOW_SHOWN);
     icon = IMG_Load("assets/images/ross.jpg");
     SDL_SetWindowIcon(window, icon);
@@ -14,6 +16,8 @@ PNTR_Window::PNTR_Window()
     event = new SDL_Event();
     gui = new PNTR_Gui();
     dialog = new PNTR_ColorDialog(event);
+
+    // Assign button actions. Since these actions must adjust the gui, and therefore must be class functions, they have to be assigned using std::function and std::bind.
     std::function<void()> clearFunc = bind(&PNTR_Window::clearPaintLayerAction, this);
     std::function<void()> saveFunc = bind(&PNTR_Window::saveLayersAction, this);
     std::function<void()> colorFunc = bind(&PNTR_Window::openColorDialog, this);
@@ -21,16 +25,18 @@ PNTR_Window::PNTR_Window()
     gui->clearImageButton->setAction(clearFunc);
     gui->colorsButton->setAction(colorFunc);
 
+    // Initialize the thickness slider, and recenter the canvas
     gui->thickSlider->setValue(0.25f);
-
     gui->canvas->recenter();
 
+    // Do one processEvent and draw call.
     processEvents();
     draw();
 }
 
 void PNTR_Window::run()
 {
+    // Very simple, keep checking for events and drawing.
     running = true;
     while (running)
     {
@@ -41,32 +47,40 @@ void PNTR_Window::run()
 
 void PNTR_Window::draw()
 {
+    // Set the background color, and clear the renderer.
     SDL_SetRenderDrawColor(renderer, 245, 245, 245, 255);
     SDL_RenderClear(renderer);
 
+    // Draw the gui
     gui->draw(renderer, event, window);
 
+    // if the colorbuilder is invoked, draw it.
     if (dialog->isInvoked())
     {
         dialog->draw();
     }
 
     SDL_RenderPresent(renderer);
+    // Clear the ghost layer
     gui->canvas->clearGhostLayer();
 }
 
+// This function is used by the colorPicker to select any color in the application window.
 void PNTR_Window::pickColor()
 {
     activeColor = getPixel(renderer, *mousePos);
 }
 
+// processEvents() is where all the ui controlling is done. It's split between the main application window and the color builder dialog as I couldnt find a way to process their events seperately.
 void PNTR_Window::processEvents()
 {
     SDL_Surface *cursorSurface;
     SDL_WaitEvent(event);
 
+    // Check if the window is the application window
     if (SDL_GetWindowID(window) == event->window.windowID)
     {
+        // If the window is closed, shutdown the app.
         if (event->window.event == SDL_WINDOWEVENT_CLOSE)
             running = false;
 
@@ -76,11 +90,13 @@ void PNTR_Window::processEvents()
             switch (event->button.button)
             {
             case SDL_BUTTON_LEFT:
+                // On a left button press, set the global leftMouseDown to true, save the click location in canvas coords.
                 leftMouseDown = true;
                 shapeStart = new PNTR_Vector2I(
                     (int)(((mousePos->x - gui->canvas->getBBox()->x) / (float)gui->canvas->getBBox()->w) * gui->canvas->getImageLayer()->w),
                     (int)(((mousePos->y - gui->canvas->getBBox()->y) / (float)gui->canvas->getBBox()->h) * gui->canvas->getImageLayer()->h));
 
+                // If the picker is enabled, pick the color under the mouse and switch to draw mode.
                 if (paintMode == PNTR_PaintMode::PICKER)
                 {
                     pickColor();
@@ -88,10 +104,13 @@ void PNTR_Window::processEvents()
                     break;
                 }
 
+                // Reset buttonPressed to false.
                 buttonPressed = false;
 
+                // Iterate through all the buttons
                 for (int bdx = 0; bdx < (int)gui->buttons.size(); bdx++)
                 {
+                    // If a button is pressed, run the pressEvent and set buttonPressed to true
                     if (gui->buttons.at(bdx)->isMouseOver(mousePos))
                     {
                         gui->buttons.at(bdx)->pressEvent();
@@ -100,8 +119,10 @@ void PNTR_Window::processEvents()
                     }
                 }
 
+                // Check if the slider is active. If so, set the activeSlider to thickSlider
                 if (gui->thickSlider->isMouseOver(mousePos))
                 {
+                    // middleMouserDown is used as a way to disable drawing, there is not actual middle mouse button being pressed.
                     middleMouseDown = true;
                     activeSlider = gui->thickSlider;
                     lastPos = mousePos;
@@ -110,6 +131,7 @@ void PNTR_Window::processEvents()
 
                 if (!buttonPressed)
                 {
+                    // If no buttons have been pressed, and the mouse is not over the navBar or sideBar, draw on the paintLayer.
                     if (!gui->navBar->isMouseOver(mousePos) && !gui->sideBar->isMouseOver(mousePos))
                     {
                         gui->canvas->drawOnPaintLayer(DRAW_SIZE * gui->thickSlider->getValue(), shapeStart, false);
@@ -119,6 +141,7 @@ void PNTR_Window::processEvents()
                 break;
 
             case SDL_BUTTON_MIDDLE:
+                // If the mouse is not over the navBar or sideBar, calculate the canvas position so that it can be moved later.
                 if (!gui->navBar->isMouseOver(mousePos) && !gui->sideBar->isMouseOver(mousePos))
                 {
                     lastCanvasPos = new PNTR_Vector2I(gui->canvas->getBBox()->x, gui->canvas->getBBox()->y);
@@ -129,13 +152,16 @@ void PNTR_Window::processEvents()
             break;
 
         case SDL_MOUSEWHEEL:
+            // On the mouse scroll, increase/decrease the scale of the canvas.
             if (!gui->navBar->isMouseOver(mousePos) && !gui->sideBar->isMouseOver(mousePos))
             {
                 float scalar = 75;
                 float aspect = (float)gui->canvas->getBBox()->h / gui->canvas->getBBox()->w;
 
+                // The scale is calculated by multiplying the scalar with the difference between the canvas and mouse position, and then dividing by the size of the canvas.
                 PNTR_Vector2I scale = PNTR_Vector2I(scalar * (gui->canvas->getBBox()->x - mousePos->x) / (float)gui->canvas->getBBox()->w, scalar * (gui->canvas->getBBox()->y - mousePos->y) / (float)gui->canvas->getBBox()->h);
 
+                // The scale is then added to the x & y coordinates of the canvas bbox, with the height and width being increased accordingly to the image aspect ratio.
                 if (event->wheel.y > 0)
                 {
                     gui->canvas->getBBox()->x += scale.x;
@@ -144,6 +170,7 @@ void PNTR_Window::processEvents()
                     gui->canvas->getBBox()->h += scalar * aspect;
                 }
 
+                // I've made a "minimum scale" value so that the canvas cant shrink to 0 and then never grow again.
                 if (event->wheel.y < 0 && gui->canvas->getBBox()->h > 75)
                 {
                     gui->canvas->getBBox()->x -= scale.x;
@@ -156,6 +183,7 @@ void PNTR_Window::processEvents()
             break;
 
         case SDL_KEYDOWN:
+            // process all the key events.
             switch (event->key.keysym.sym)
             {
             case SDLK_h:
@@ -197,14 +225,19 @@ void PNTR_Window::processEvents()
             break;
 
         case SDL_MOUSEMOTION:
+            // When the mouse moves, capture the movement location.
             mousePos = new PNTR_Vector2I(event->motion.x, event->motion.y);
+            // If the mouse can draw
             if (leftMouseDown && !middleMouseDown)
             {
                 if (!gui->navBar->isMouseOver(mousePos) && !gui->sideBar->isMouseOver(mousePos))
                 {
+                    // Draw on the canvas
                     gui->canvas->drawOnPaintLayer(DRAW_SIZE * gui->thickSlider->getValue(), shapeStart, true);
                     if (paintMode == PNTR_PaintMode::DRAW || paintMode == PNTR_PaintMode::ERASE)
                     {
+                        // If the draw mode is draw or erase, then recalculate shapeStart. This is done so that no matter how fast you move your mouse, you will always draw between the captured mouse positions.
+                        // In other terms, it stops the "spottyness" from happening when the mouse is moved too fast.
                         shapeStart = new PNTR_Vector2I(
                             (int)(((mousePos->x - gui->canvas->getBBox()->x) / (float)gui->canvas->getBBox()->w) * gui->canvas->getImageLayer()->w),
                             (int)(((mousePos->y - gui->canvas->getBBox()->y) / (float)gui->canvas->getBBox()->h) * gui->canvas->getImageLayer()->h));
@@ -214,9 +247,12 @@ void PNTR_Window::processEvents()
             break;
 
         case SDL_MOUSEBUTTONUP:
+            // When the mouse is release, reset all the global variables.
             leftMouseDown = false;
             buttonPressed = false;
             activeSlider = nullptr;
+
+            // If the paintMode is in circle, line, or square, confirm the draw and write it to the paintLayer
             if (paintMode == PNTR_PaintMode::SHAPE_CIRCLE || paintMode == PNTR_PaintMode::SHAPE_LINE || paintMode == PNTR_PaintMode::SHAPE_SQUARE)
             {
                 if (!gui->navBar->isMouseOver(mousePos) && !gui->sideBar->isMouseOver(mousePos))
@@ -227,6 +263,7 @@ void PNTR_Window::processEvents()
             middleMouseDown = false;
             break;
 
+        // If the quit button is pressed, quit the application
         case SDL_QUIT:
             running = false;
             break;
@@ -235,10 +272,11 @@ void PNTR_Window::processEvents()
             break;
         }
     }
-    else
+    else // These are the events for the color builder dialog
     {
         switch (event->window.event)
         {
+        // If the dialog is closed, hide it. We don't want to re-initialize the dialog each time, so hiding it works better.
         case SDL_WINDOWEVENT_CLOSE:
             dialog->hide();
             break;
@@ -249,6 +287,7 @@ void PNTR_Window::processEvents()
 
         switch (event->type)
         {
+        // Capture the mouse movement and store it in mousePos.
         case SDL_MOUSEMOTION:
             mousePos = new PNTR_Vector2I(event->motion.x, event->motion.y);
             break;
@@ -258,11 +297,13 @@ void PNTR_Window::processEvents()
             {
 
             case SDL_BUTTON_LEFT:
+                // If the left mouse button is pressed, set the global variables, then iterate through all the sliders in the color builder dialog.
                 leftMouseDown = true;
 
                 buttonPressed = false;
                 for (int sdx = 0; sdx < (int)dialog->sliders.size(); sdx++)
                 {
+                    // If on the sliders is selected, set it to active and begin calculating the new value.
                     if (dialog->sliders.at(sdx)->isMouseOver(mousePos))
                     {
                         dialog->sliders.at(sdx)->pressEvent();
@@ -278,6 +319,7 @@ void PNTR_Window::processEvents()
             break;
 
         case SDL_MOUSEBUTTONUP:
+            // On mouse release, reset all the global variables.
             leftMouseDown = false;
             middleMouseDown = false;
             buttonPressed = false;
@@ -286,12 +328,15 @@ void PNTR_Window::processEvents()
             break;
         }
 
+        // Update the color that is calculated byt the sliders
         activeColor->a = 255;
         activeColor->r = (int)(255 * dialog->rSlider->getValue());
         activeColor->g = (int)(255 * dialog->gSlider->getValue());
         activeColor->b = (int)(255 * dialog->bSlider->getValue());
     }
 
+    // Once all the events are processed...
+    // Check if the user is currently moving a slider. If so, update the slider based on the mouse position.
     if (leftMouseDown)
     {
         if (activeSlider != nullptr)
@@ -299,13 +344,15 @@ void PNTR_Window::processEvents()
             activeSlider->setValue((float(mousePos->x) - float(activeSlider->getBBox()->x)) / float(activeSlider->getBBox()->w));
         }
     }
-
+    // Otherwise, if the middle mouse is down, move the canvas.
     else if (middleMouseDown)
     {
         gui->canvas->getBBox()->x = lastCanvasPos->x + mousePos->x - lastPos->x;
         gui->canvas->getBBox()->y = lastCanvasPos->y + mousePos->y - lastPos->y;
     }
 
+
+    // Here, disable all the buttons...
     else
     {
         for (int bdx = 0; bdx < (int)gui->buttons.size(); bdx++)
@@ -315,6 +362,7 @@ void PNTR_Window::processEvents()
         }
     }
 
+    // ...Then enable the active one. It's a cheap hack for getting radio buttons.
     switch (paintMode)
     {
     case DRAW:
@@ -338,7 +386,8 @@ void PNTR_Window::processEvents()
     case PICKER:
         gui->pickerButton->setActive(true);
     }
-
+    
+    // Finish the event processing by re-creating the cursor so that it's size is correct when zooming.
     cursorSurface = IMG_Load("assets/icons/circle_48.png");
     float cursorSize = DRAW_SIZE * gui->thickSlider->getValue() * ((float)(gui->canvas->getBBox()->w / (float)gui->canvas->getSourceSize().w));
     SDL_Surface *scaledSurface = SDL_CreateRGBSurface(0, cursorSize, cursorSize, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
