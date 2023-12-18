@@ -5,21 +5,6 @@
 #include "../include/pntr_colordialog.h"
 #include <functional>
 
-void PNTR_Window::saveLayersAction()
-{
-    gui->canvas->saveImage();
-}
-
-void PNTR_Window::clearPaintLayerAction()
-{
-    gui->canvas->clearPaintLayer();
-}
-
-void PNTR_Window::openColorDialog()
-{
-    dialog->show();
-}
-
 PNTR_Window::PNTR_Window()
 {
     window = SDL_CreateWindow("PAINter", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, size.x, size.y, SDL_WINDOW_SHOWN);
@@ -366,6 +351,25 @@ void PNTR_Window::processEvents()
     SDL_FreeSurface(scaledSurface);
 }
 
+// action function for saving the image.
+void PNTR_Window::saveLayersAction()
+{
+    gui->canvas->saveImage();
+}
+
+// action function for clearing the paint layer
+void PNTR_Window::clearPaintLayerAction()
+{
+    gui->canvas->clearPaintLayer();
+}
+
+// action function for opening the color builder.
+void PNTR_Window::openColorDialog()
+{
+    dialog->show();
+}
+
+// To avoid any memory issues, destroy the canvas, renderer, and window.
 void PNTR_Window::dispose()
 {
     gui->canvas->destroy();

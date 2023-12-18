@@ -7,6 +7,8 @@
 #include "pntr_slider.h"
 #include "../include/pntr_colordialog.h"
 
+// The PNTR_Window is not very scalable as I've designed most of its code to be specific for this project. However it can be fixed for use as multiple windows containing different UIs.
+
 class PNTR_Window {
     private:
         SDL_Window* window;

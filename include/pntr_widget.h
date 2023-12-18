@@ -4,6 +4,8 @@
 #include "common.h"
 #include "pntr_vector2i.h"
 
+// PNTR_Widget is a class that most of the other UI elements derive from. 
+// It has a base BBox and color, as well as an overridable mouseOver, pressEvent, and draw function.
 class PNTR_Widget {
     protected:
         SDL_Rect* bbox;

@@ -4,6 +4,8 @@
 #include "common.h"
 #include "pntr_widget.h"
 
+// A panel class, this was for making the UI look nice with bevelled boxes behind buttons and similar effects.
+
 class PNTR_Panel : public PNTR_Widget {
     protected:
         int radius;

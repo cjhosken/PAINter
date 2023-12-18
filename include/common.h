@@ -11,10 +11,15 @@
 
 using namespace std;
 
+
+// Specify the size of the applicaiton. If this were to change, the UI will likely break.
 #define APP_WIDTH 1280
 #define APP_HEIGHT 720
 
+// Max draw size (in pixels)
 #define DRAW_SIZE 64
+
+// Initialize global variables
 
 extern SDL_Window *window;
 extern SDL_Renderer *renderer;
@@ -27,6 +32,11 @@ extern bool middleMouseDown;
 extern bool leftMouseDown; 
 extern bool buttonPressed; 
 
+extern PNTR_Vector2I* mousePos;
+extern PNTR_Vector2I* lastPos;
+extern SDL_Color *activeColor;
+
+// An enum for the different draw types.
 enum PNTR_PaintMode
 {
     DRAW,
@@ -38,17 +48,17 @@ enum PNTR_PaintMode
     PICKER
 };
 
-extern PNTR_Vector2I* mousePos;
-extern PNTR_Vector2I* lastPos;
-
 extern PNTR_PaintMode paintMode;
 
-extern SDL_Color *activeColor;
 
+/* Source based on Eike Anderson starts here : https://brightspace.bournemouth.ac.uk/d2l/le/lessons/345037/topics/1968571 */
+
+// Since SDL has no function to compare two colors, we write our own here. 
 inline bool compare(SDL_Color* a, SDL_Color* b) {
     return (a->r == b->r) && (a->g == b->g) && (a->b == b->b);
 }
 
+// Get pixel color from the renderer at a certain position. This is for the color picker that needs requires the full application window pixels.
 inline SDL_Color* getPixel(SDL_Renderer* renderer, PNTR_Vector2I position)
 {
     SDL_Color* pixelColor = new SDL_Color({0, 0, 0, 255});
@@ -70,7 +80,7 @@ inline SDL_Color* getPixel(SDL_Renderer* renderer, PNTR_Vector2I position)
     return pixelColor;
 }
 
-
+// Get pixel color from a certain surface at a certain position. This is primarily for the canvas surface layers.
 inline SDL_Color* getSurfacePixel(SDL_Surface* surface, PNTR_Vector2I position) {
     SDL_Color* pixelColor = new SDL_Color({0, 0, 0, 255});
     Uint32 *pixels = (Uint32*)surface->pixels;
@@ -79,12 +89,14 @@ inline SDL_Color* getSurfacePixel(SDL_Surface* surface, PNTR_Vector2I position) 
     return pixelColor;
 }
 
+// Set pixel color on a certain surface at a certain position. This is primarily for the canvas surface layers.
 inline void setSurfacePixel(SDL_Surface* surface, SDL_Color *color, PNTR_Vector2I position)
 {
     Uint32 *pixels = (Uint32*)surface->pixels;
     Uint32 pixel = SDL_MapRGBA(surface->format, color->r, color->g, color->b, color->a);
     pixels[position.x+position.y*surface->w] = pixel;
-
 }
+
+/* Source based on Eike Anderson ends here */
 
 #endif

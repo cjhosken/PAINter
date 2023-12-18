@@ -5,6 +5,8 @@
 #include "pntr_panel.h"
 #include "pntr_vector2i.h"
 
+// PNTR_Circle is mainly written for static circle drawing functions. However it's also used as a knob in the slider (which is why it has an isMouseOver function).
+
 class PNTR_Circle : public PNTR_Panel {
     private:
         PNTR_Vector2I* position;
@@ -28,13 +30,11 @@ class PNTR_Circle : public PNTR_Panel {
 
         PNTR_Vector2I* getPosition();
 
-        void draw(SDL_Renderer* renderer, bool fill);
+        void draw(SDL_Renderer* renderer);
 
         bool isMouseOver(PNTR_Vector2I* mouse) override;
 
-        static void circleOnSurface(SDL_Surface *surface, SDL_Rect* bbox, PNTR_Vector2I* position, SDL_Color* color, int radius, bool fill);
         static SDL_Surface* circleToSurface(PNTR_Vector2I* position, SDL_Color* color, int radius);
-        static void renderCircle(SDL_Renderer *renderer, SDL_Rect* bbox, PNTR_Vector2I* position, SDL_Color* color, int radius);
         static void renderCircle(SDL_Renderer *renderer, PNTR_Vector2I *position, SDL_Color *color, int radius, PNTR_Vector2I *trim);
         static SDL_Surface* fillCircle(int radius, SDL_Color* color, PNTR_Vector2I* trim);
 

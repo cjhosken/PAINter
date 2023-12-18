@@ -59,7 +59,7 @@ void PNTR_Slider::draw(SDL_Renderer *renderer)
 {
     PNTR_Panel::renderPanel(renderer, *bbox, *color, 0);
     knob->setPosition(new PNTR_Vector2I(bbox->x + (value * bbox->w), bbox->y - knob->getRadius()));;
-    knob->draw(renderer, true);
+    knob->draw(renderer);
 }
 
 bool PNTR_Slider::isMouseOver(PNTR_Vector2I* mouse) {

@@ -1,6 +1,8 @@
 #include "common.h"
 #include "../include/pntr_vector2i.h"
 
+// Initialize everything as null, empty, or false (default values).
+
 SDL_Window *window = nullptr;
 SDL_Renderer *renderer = nullptr;
 SDL_Event event;

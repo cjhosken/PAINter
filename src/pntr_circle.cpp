@@ -2,6 +2,7 @@
 #include "../include/common.h"
 #include "../include/pntr_vector2i.h"
 
+// Constructor methods
 PNTR_Circle::PNTR_Circle() : PNTR_Panel()
 {
     position = new PNTR_Vector2I();
@@ -16,6 +17,7 @@ PNTR_Circle::PNTR_Circle(PNTR_Vector2I *p) : PNTR_Panel()
     bbox = new SDL_Rect({position->x - radius, position->y - radius, radius * 2, radius * 2});
 }
 
+// these functions rely on the intialize bounding box to be perfectly square, otherwise you may get overflow on the y-axis.
 PNTR_Circle::PNTR_Circle(SDL_Rect *bb) : PNTR_Panel(bb)
 {
     radius = bbox->w / 2.0f;
@@ -53,17 +55,12 @@ void PNTR_Circle::setPosition(PNTR_Vector2I *p)
     bbox = new SDL_Rect({position->x - radius, position->y, radius*2, radius*2});
 }
 
-void PNTR_Circle::draw(SDL_Renderer *renderer, bool fill)
+// I'm using two circle algorithms
+void PNTR_Circle::draw(SDL_Renderer *renderer)
 {
     SDL_Surface *surface = SDL_CreateRGBSurfaceWithFormat(0, radius * 2, radius * 2, 32, SDL_PIXELFORMAT_RGBA8888);
-    if (fill)
-    {
-        surface = PNTR_Circle::fillCircle(radius, color, new PNTR_Vector2I());
-    }
-    else
-    {
-        PNTR_Circle::circleOnSurface(surface, bbox, position, color, radius, true);
-    }
+    surface = PNTR_Circle::fillCircle(radius, color, new PNTR_Vector2I());
+
 
     SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
     SDL_FreeSurface(surface);
@@ -107,68 +104,6 @@ SDL_Surface *PNTR_Circle::fillCircle(int radius, SDL_Color *color, PNTR_Vector2I
         }
     }
     return surface;
-}
-
-void PNTR_Circle::circleOnSurface(SDL_Surface *surface, SDL_Rect *bbox, PNTR_Vector2I *position, SDL_Color *color, int radius, bool fill)
-{
-    if (!fill)
-    {
-        int x = radius, y = 0, error = 1 - radius;
-        while (x >= y)
-        { /* 1 draw call for each octant - ensure coordinates are valid before drawing */
-            if ((x + position->x) >= 0 && (x + position->x) < bbox->w && (y + position->y) >= 0 && (y + position->y) < bbox->h)
-                setSurfacePixel(surface, color, PNTR_Vector2I(x + position->x, y + position->y));
-            /* draw point in octant 1 if coordinate is valid */
-            if ((y + position->x) >= 0 && (y + position->x) < bbox->w && (x + position->y) >= 0 && (x + position->y) < bbox->h)
-                setSurfacePixel(surface, color, PNTR_Vector2I(y + position->x, x + position->y));
-            /* draw point in octant 2 if coordinate is valid */
-            if ((-x + position->x) >= 0 && (-x + position->x) < bbox->w && (y + position->y) >= 0 && (y + position->y) < bbox->h)
-                setSurfacePixel(surface, color, PNTR_Vector2I(-x + position->x, y + position->y));
-            /* draw point in octant 3 if coordinate is valid */
-            if ((-y + position->x) >= 0 && (-y + position->x) < bbox->w && (x + position->y) >= 0 && (x + position->y) < bbox->h)
-                setSurfacePixel(surface, color, PNTR_Vector2I(-y + position->x, x + position->y));
-            /* draw point in octant 4 if coordinate is valid */
-            if ((-x + position->x) >= 0 && (-x + position->x) < bbox->w && (-y + position->y) >= 0 && (-y + position->y) < bbox->h)
-                setSurfacePixel(surface, color, PNTR_Vector2I(-x + position->x, -y + position->y));
-            /* draw point in octant 5 if coordinate is valid */
-            if ((-y + position->x) >= 0 && (-y + position->x) < bbox->w && (-x + position->y) >= 0 && (-x + position->y) < bbox->h)
-                setSurfacePixel(surface, color, PNTR_Vector2I(-y + position->x, -x + position->y));
-            /* draw point in octant 6 if coordinate is valid */
-            if ((x + position->x) >= 0 && (x + position->x) < bbox->w && (-y + position->y) >= 0 && (-y + position->y) < bbox->h)
-                setSurfacePixel(surface, color, PNTR_Vector2I(x + position->x, -y + position->y));
-            /* draw point in octant 7 if coordinate is valid */
-            if ((y + position->x) >= 0 && (y + position->x) < bbox->w && (-x + position->y) >= 0 && (-x + position->y) < bbox->h)
-                setSurfacePixel(surface, color, PNTR_Vector2I(y + position->x, -x + position->y));
-
-            /* draw point in octant 8 if coordinate is valid */
-            y++; /* increment y coordinate */
-            if (error < 0)
-            {
-                error += 2 * y + 1;
-            }
-            else
-            {
-                x--;
-                error += 2 * (y - x) + 1;
-            }
-        }
-    }
-    else
-    {
-        surface = PNTR_Circle::fillCircle(radius, color, new PNTR_Vector2I(0, 0));
-    }
-}
-
-void PNTR_Circle::renderCircle(SDL_Renderer *renderer, SDL_Rect *bbox, PNTR_Vector2I *position, SDL_Color *color, int radius)
-{
-    SDL_Surface *surface = SDL_CreateRGBSurfaceWithFormat(0, bbox->w, bbox->h, 32, SDL_PIXELFORMAT_RGBA8888);
-    PNTR_Circle::circleOnSurface(surface, bbox, position, color, radius, true);
-
-    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
-    SDL_FreeSurface(surface);
-
-    SDL_RenderCopy(renderer, texture, NULL, bbox);
-    SDL_DestroyTexture(texture);
 }
 
 void PNTR_Circle::renderCircle(SDL_Renderer *renderer, PNTR_Vector2I *position, SDL_Color *color, int radius, PNTR_Vector2I *trim)

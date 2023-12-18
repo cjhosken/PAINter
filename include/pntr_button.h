@@ -5,6 +5,8 @@
 #include "pntr_panel.h"
 #include <functional>
 
+// PNTR_Button derives from PNTR_Panel.
+// it holds an optional icon, runnable action (for pressEvents), and active variable incase for toggleable functionality.
 class PNTR_Button : public PNTR_Panel
 {
     private:

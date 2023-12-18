@@ -4,12 +4,6 @@
 ### Installation
 On new linux machines, run `sudo apt install libsdl2-dev`
 
-
-## TODO
-seperate .h and .c files 
-split main.cpp into more files
-
-
 using SDL2_image
 
 ### USED LINKS

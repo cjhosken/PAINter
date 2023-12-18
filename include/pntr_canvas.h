@@ -70,6 +70,4 @@ class PNTR_Canvas : public PNTR_Widget{
         void destroy();
 };
 
-//https://stackoverflow.com/questions/1222713/how-do-i-create-a-line-of-arbitrary-thickness-using-bresenham
-
 #endif
