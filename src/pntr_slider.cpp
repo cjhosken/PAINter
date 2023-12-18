@@ -4,6 +4,7 @@
 #include "../include/pntr_vector2i.h"
 #include "../include/common.h"
 
+// Constructor methods
 PNTR_Slider::PNTR_Slider() : PNTR_Widget()
 {
     value = 0.0f;
@@ -45,6 +46,8 @@ PNTR_Slider::PNTR_Slider(SDL_Rect *bb, SDL_Color *c, PNTR_Circle *k, float v) : 
 };
 
 void PNTR_Slider::setKnob(PNTR_Circle *k) { knob = k; };
+
+// setValue takes an input and clamps it between 0.0f and 1.0f.
 void PNTR_Slider::setValue(float v) { value = SDL_min(SDL_max(0.0f, v), 1.0f); };
 
 float PNTR_Slider::getValue() {
@@ -55,6 +58,7 @@ PNTR_Circle* PNTR_Slider::getKnob() {
     return knob;
 }
 
+// Draw a line (the slider bbox) and the knob
 void PNTR_Slider::draw(SDL_Renderer *renderer)
 {
     PNTR_Panel::renderPanel(renderer, *bbox, *color, 0);
@@ -62,10 +66,14 @@ void PNTR_Slider::draw(SDL_Renderer *renderer)
     knob->draw(renderer);
 }
 
+// The isMouseOver is only true if the mouse is over the knob.
 bool PNTR_Slider::isMouseOver(PNTR_Vector2I* mouse) {
     return knob->isMouseOver(mouse);
 }
 
+// When the mouse is down and the slider is active, it sets the value of the slider to:
+// (distance from mosue position to slider start) / (width of slider)
+// this means that the value is 0.0f when the mouse is at the start of the slider, and 1.0f when the mouse is at the end of the slider
 void PNTR_Slider::pressEvent()
 {
     setValue((float(mousePos->x) - float(getBBox()->x)) / float(getBBox()->w));

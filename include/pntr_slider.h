@@ -5,6 +5,7 @@
 #include "pntr_circle.h"
 #include "pntr_widget.h"
 
+// PNTR_Slider derives from PNTR_Widget. It stores a value from 0.0f to 1.0f and is controlled from its knob.
 class PNTR_Slider : public PNTR_Widget {
     private:
         float value;

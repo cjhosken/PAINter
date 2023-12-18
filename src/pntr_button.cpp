@@ -3,6 +3,7 @@
 #include "../include/common.h"
 #include <functional>
 
+// Constructor methods
 PNTR_Button::PNTR_Button() : PNTR_Panel(){
     active = false;
 };
@@ -34,26 +35,30 @@ void PNTR_Button::executeAction()
 
 void PNTR_Button::draw(SDL_Renderer *renderer, SDL_Event* event, SDL_Window* window)
 {
+    // Draw the button depending on whether it is active and if the mouse is hovering over it
     if (isMouseOver(mousePos) && SDL_GetWindowID(window) == event->window.windowID)
     {
+        // hover button draw
         PNTR_Panel::renderPanel(renderer, *bbox, SDL_Color({0, 0, 0, 75}), radius);
     }
     else if (active)
     {
+        // active button draw
         PNTR_Panel::renderPanel(renderer, *bbox, SDL_Color({255, 255, 255, 255}), radius);
     }
     else
     {
+        // default button draw
         PNTR_Panel::renderPanel(renderer, *bbox, *color, 0);
     }
 
-    // Render the image texture onto the rectangle
-    if (icon != nullptr)
+    // Render the image texture ontop of the button rectangle
+    if (icon != nullptr) // check if the button has an icon
     {
         SDL_Texture *iconTexture = SDL_CreateTextureFromSurface(renderer, icon);
         SDL_RenderCopy(renderer, iconTexture, NULL, bbox);
 
-        // Free the texture when done
+        // free the texture when done
         SDL_DestroyTexture(iconTexture);
     }
 }
@@ -73,7 +78,8 @@ bool PNTR_Button::isActive()
     return active;
 }
 
+// On the press event, execute the action and set the button to be active.
 void PNTR_Button::pressEvent() {
-    executeAction();
     setActive(true);
+    executeAction();
 };
