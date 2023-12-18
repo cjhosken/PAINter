@@ -34,9 +34,8 @@ class PNTR_Circle : public PNTR_Panel {
 
         bool isMouseOver(PNTR_Vector2I* mouse) override;
 
-        static SDL_Surface* circleToSurface(PNTR_Vector2I* position, SDL_Color* color, int radius);
         static void renderCircle(SDL_Renderer *renderer, PNTR_Vector2I *position, SDL_Color *color, int radius, PNTR_Vector2I *trim);
-        static SDL_Surface* fillCircle(int radius, SDL_Color* color, PNTR_Vector2I* trim);
+        static SDL_Surface* circleToSurface(int radius, SDL_Color* color, PNTR_Vector2I* trim);
 
 };
 

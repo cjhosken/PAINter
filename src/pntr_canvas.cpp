@@ -167,14 +167,14 @@ void PNTR_Canvas::drawOnPaintLayer(int drawSize, PNTR_Vector2I *shapeStart, bool
     switch (paintMode)
     {
     case PNTR_PaintMode::DRAW:
-        circleSurface = PNTR_Circle::circleToSurface(new PNTR_Vector2I(), activeColor, drawSize / 2);
+        circleSurface = PNTR_Circle::circleToSurface(drawSize / 2, activeColor, new PNTR_Vector2I());
         SDL_BlitSurface(circleSurface, NULL, paintLayer, new SDL_Rect({mouseOnCanvas.x - drawSize / 2, mouseOnCanvas.y - drawSize / 2, drawSize, drawSize}));
         paintChanged = true;
         break;
 
     case PNTR_PaintMode::ERASE:
         SDL_SetSurfaceBlendMode(circleSurface, SDL_BLENDMODE_BLEND);
-        circleSurface = PNTR_Circle::circleToSurface(new PNTR_Vector2I(), new SDL_Color({255, 255, 255, 0}), drawSize / 2);
+        circleSurface = PNTR_Circle::circleToSurface(drawSize / 2, new SDL_Color({255, 255, 255, 0}), new PNTR_Vector2I);
         SDL_BlitSurface(circleSurface, NULL, paintLayer, new SDL_Rect({mouseOnCanvas.x - drawSize / 2, mouseOnCanvas.y - drawSize / 2, drawSize, drawSize}));
         shapeStart = &mouseOnCanvas;
         paintChanged = true;
