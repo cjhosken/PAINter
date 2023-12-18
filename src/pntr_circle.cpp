@@ -55,6 +55,8 @@ void PNTR_Circle::setPosition(PNTR_Vector2I *p)
     bbox = new SDL_Rect({position->x - radius, position->y, radius*2, radius*2});
 }
 
+PNTR_Vector2I *PNTR_Circle::getPosition() { return position; };
+
 // Use the static function circleToSurface() to draw the circle
 void PNTR_Circle::draw(SDL_Renderer *renderer)
 {
@@ -93,20 +95,11 @@ SDL_Surface *PNTR_Circle::circleToSurface(int radius, SDL_Color *color, PNTR_Vec
             {
                 PNTR_Vector2I change = PNTR_Vector2I(radius + index.x - trim->x, radius + index.y - trim->y);
 
-                // If the point is within the trimmed image bounds, draw it onto the surface/
+                // If the point is within the trimmed image bounds, draw it onto the surface
 
                 if (change.x >= 0 && change.x < surface->w && change.y >= 0 && change.y < surface->h)
                 {
-                    // Calculate the pixel offset
-
-                    Uint32 *pixels = (Uint32 *)surface->pixels;
-                    int pixelIndex = change.y * (surface->pitch / sizeof(Uint32)) + change.x;
-
-                    // Create the pixel value combining RGBA components
-                    Uint32 pixelValue = SDL_MapRGBA(surface->format, color->r, color->g, color->b, color->a);
-
-                    // Set the pixel value
-                    pixels[pixelIndex] = pixelValue;
+                    setSurfacePixel(surface, color, change);
                 }
             }
         }
@@ -127,5 +120,3 @@ void PNTR_Circle::renderCircle(SDL_Renderer *renderer, PNTR_Vector2I *position, 
     SDL_RenderCopy(renderer, texture, NULL, &dstRect);
     SDL_DestroyTexture(texture);
 }
-
-PNTR_Vector2I *PNTR_Circle::getPosition() { return position; };
