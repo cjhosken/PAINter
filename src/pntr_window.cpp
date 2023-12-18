@@ -197,6 +197,9 @@ void PNTR_Window::processEvents()
             case SDLK_p:
                 paintMode = PNTR_PaintMode::PICKER;
                 break;
+            case SDLK_w:
+                openColorDialog();
+                break;
             default:
                 break;
             }
