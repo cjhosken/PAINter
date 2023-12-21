@@ -68,6 +68,6 @@ Pressing S will let you use the square tool. Click to specify the top-left corne
 If you ever feel the need to start again, you can wipe the canvas by pressing the square in the top left of PAINter.
 
 ## Conclusion
-Congratulations! You know now how to use PAINter. I look forward to seeing the art that you’ll go on to create. If you come across any bug or issue, don't be afraid to report it. Good luck painting!
+Congratulations! You know now how to use PAINter. I look forward to seeing the art that you’ll go on to create. If you come across any bug or issue, don't be afraid to [report](https://github.com/cjhosken/PAINter/issues) it. Good luck painting!
 
 This program was written by me, Christopher Hosken, for L4 Programming Principles at Bournemouth University. If you wish to get in contact with me, you can do so by messaging my on [LinkedIn](https://www.linkedin.com/in/christopher-hosken/) or sending an email to [hoskenchristopher@gmail.com]().
