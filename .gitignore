@@ -30,7 +30,3 @@
 *.exe
 *.out
 *.app
-
-# The PAINter file
-PAINter
-.vscode
