@@ -2,8 +2,8 @@
 # Source based on MakeFileTutorial and ChatGPT starts here: https://makefiletutorial.com/ https://chat.openai.com/
 
 TARGET=PAINter
-VERSION=v3
-DATE=21.12.2023
+VERSION=v4
+DATE=10.01.2023
 
 CC = g++
 SRCDIR = src
